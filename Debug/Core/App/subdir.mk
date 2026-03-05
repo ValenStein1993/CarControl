@@ -6,14 +6,17 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
 ../Core/App/main_app.cpp \
+../Core/App/scheduler.cpp \
 ../Core/App/uart.cpp 
 
 OBJS += \
 ./Core/App/main_app.o \
+./Core/App/scheduler.o \
 ./Core/App/uart.o 
 
 CPP_DEPS += \
 ./Core/App/main_app.d \
+./Core/App/scheduler.d \
 ./Core/App/uart.d 
 
 
@@ -24,7 +27,7 @@ Core/App/%.o Core/App/%.su Core/App/%.cyclo: ../Core/App/%.cpp Core/App/subdir.m
 clean: clean-Core-2f-App
 
 clean-Core-2f-App:
-	-$(RM) ./Core/App/main_app.cyclo ./Core/App/main_app.d ./Core/App/main_app.o ./Core/App/main_app.su ./Core/App/uart.cyclo ./Core/App/uart.d ./Core/App/uart.o ./Core/App/uart.su
+	-$(RM) ./Core/App/main_app.cyclo ./Core/App/main_app.d ./Core/App/main_app.o ./Core/App/main_app.su ./Core/App/scheduler.cyclo ./Core/App/scheduler.d ./Core/App/scheduler.o ./Core/App/scheduler.su ./Core/App/uart.cyclo ./Core/App/uart.d ./Core/App/uart.o ./Core/App/uart.su
 
 .PHONY: clean-Core-2f-App
 

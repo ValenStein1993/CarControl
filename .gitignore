@@ -6,3 +6,5 @@
 *.d
 *.o
 *.su
+*.launch
+*.mk

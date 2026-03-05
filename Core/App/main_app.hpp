@@ -7,10 +7,14 @@
 
 #ifndef APP_MAIN_APP_HPP_
 #define APP_MAIN_APP_HPP_
-
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 void main_init();
 void main_loop();
 
-
+#ifdef __cplusplus
+}
+#endif
 #endif /* APP_MAIN_APP_HPP_ */
