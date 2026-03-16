@@ -9,11 +9,12 @@
 #define INC_DATATYPES_HPP_
 #include <cstdint>
 
-#include "cnl/scaled_integer.h"
+#include "cnl/elastic_scaled_integer.h"
 
-typedef cnl::scaled_integer<std::uint8_t, cnl::power<-7>> uq1_7_t;
-typedef cnl::scaled_integer<std::int16_t, cnl::power<-12>> q4_12_t;
-typedef cnl::scaled_integer<std::int16_t, cnl::power<-10>> q6_10_t;
+typedef cnl::elastic_scaled_integer<8, cnl::power<-7>, unsigned> uq1_7_t;
+typedef cnl::elastic_scaled_integer<8, cnl::power<-5>, unsigned> uq3_5_t;
+typedef cnl::elastic_scaled_integer<16, cnl::power<-12>, signed> q4_12_t;
+typedef cnl::elastic_scaled_integer<16, cnl::power<-10>, signed> q6_10_t;
 
 
 #endif /* INC_DATATYPES_HPP_ */

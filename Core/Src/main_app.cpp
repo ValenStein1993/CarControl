@@ -11,6 +11,7 @@
 #include "motor_control.hpp"
 #include "mpu6050.hpp"
 #include "wheel_encoder.hpp"
+#include "datatypes.hpp"
 
 extern "C" {
     extern UART_HandleTypeDef huart2;
@@ -20,44 +21,42 @@ extern "C" {
     extern I2C_HandleTypeDef hi2c1;
 };
 
+// global task time
+uq1_7_t dt = 0;
 // initialize uart object
 static 	Uart uartDebug(&huart2);
 // initialize task scheduler
 static Scheduler scheduler;
 // initialize drive motor control
-static MotorControl driveControl(&htim10);
+//static MotorControl driveControl(&htim10);
 // initialize accelerometer and gyroscope
-static MPU6050 mpu6050(&hi2c1);
+//static MPU6050 mpu6050(&hi2c1);
 // initialize wheel encoder
-static WheelEncoder wheelEncoder(&htim2);
+//static WheelEncoder wheelEncoder(&htim2);
+// initialize localizer
+ static Localizer localizer(mpu6050, wheelEncoder);
 
 
 void main_init() {
 	// setup interrupts on overflow of timer3
 	HAL_TIM_Base_Start_IT(&htim3);
 	// set initial duty cycle
-	driveControl.setDutyCycle(0.9);
+	//driveControl.setDutyCycle(0.9);
 
 };
 
 void main_loop() {
-	if (scheduler.tick10ms)
-	{
-		scheduler.tick10ms--;
+	if (scheduler.run10ms()) {
 
 	}
 
-	if (scheduler.tick100ms)
-	{
-		scheduler.tick100ms--;
+	if (scheduler.run100ms()) {
 
 	}
 
-	if (scheduler.tick1000ms)
-	{
-		scheduler.tick1000ms--;
+	if (scheduler.run1000ms()) {
 		uartDebug.print("TEST");
-		wheelEncoder.calcRotSpeed(1);
+		localizer.update();
 	}
 };
 

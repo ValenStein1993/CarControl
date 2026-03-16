@@ -23,8 +23,8 @@ class MPU6050 {
 public:
 	MPU6050(I2C_HandleTypeDef* handle);
 
-	AccelData readAccel();
-	AccelData readGyro();
+	AccelData getAccel();
+	AccelData getGyro();
 
 
 private:

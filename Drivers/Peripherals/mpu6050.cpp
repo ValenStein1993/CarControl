@@ -20,7 +20,7 @@ MPU6050::MPU6050(I2C_HandleTypeDef* handle) {
 	calibrate();
 }
 
-AccelData MPU6050::readAccel() {
+AccelData MPU6050::getAccel() {
 	uint8_t buffer[6];
 	HAL_I2C_Mem_Read(m_handle, MPU6050_ADDR, 0x3B, 1, buffer, 6, HAL_MAX_DELAY);
 
@@ -31,7 +31,7 @@ AccelData MPU6050::readAccel() {
 	return accel;
 }
 
-AccelData MPU6050::readGyro() {
+AccelData MPU6050::getGyro() {
 	uint8_t buffer[6];
 	HAL_I2C_Mem_Read(m_handle, MPU6050_ADDR, 0x43, 1, buffer, 6, HAL_MAX_DELAY);
 
@@ -65,8 +65,8 @@ void MPU6050::calibrate() {
 	calibGyro.z = 0;
 
 	for (uint16_t i = 0; i < 100; i++) {
-		AccelData accel = readAccel();
-		AccelData gyro = readGyro();
+		AccelData accel = getAccel();
+		AccelData gyro = getGyro();
 
 		calibAccel.x = calibAccel.x + (accel.x - calibAccel.x) / i;
 		calibAccel.y = calibAccel.y + (accel.y - calibAccel.y) / i;
