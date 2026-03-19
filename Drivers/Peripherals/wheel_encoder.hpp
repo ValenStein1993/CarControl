@@ -14,8 +14,8 @@
 class WheelEncoder {
 public:
 	WheelEncoder(TIM_HandleTypeDef* handle);
-	q4_12_t getRotSpeed();
-	q4_12_t getTranslSpeed();
+	float getRotSpeed();
+	float getTranslSpeed();
 
 private:
 	TIM_HandleTypeDef* m_handle;

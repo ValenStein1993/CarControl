@@ -16,6 +16,7 @@ public:
     Uart(UART_HandleTypeDef* handle);
 
     void print(const char* str);
+    void send(uint8_t* buffer, size_t& size);
 
 private:
     UART_HandleTypeDef* m_handle;

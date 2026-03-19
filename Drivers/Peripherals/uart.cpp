@@ -1,17 +1,19 @@
 #include <uart.hpp>
 #include <cstring>
 
-Uart::Uart(UART_HandleTypeDef* handle)
-{
+Uart::Uart(UART_HandleTypeDef* handle) {
 	m_handle = handle;
 }
 
-void Uart::print(const char* str)
-{
+void Uart::print(const char* str) {
     HAL_UART_Transmit(
         m_handle,
         (uint8_t*)str,
         strlen(str),
         HAL_MAX_DELAY
     );
+}
+
+void Uart::send(uint8_t* buffer, size_t& size) {
+	HAL_UART_Transmit(m_handle, buffer, size, HAL_MAX_DELAY);
 }

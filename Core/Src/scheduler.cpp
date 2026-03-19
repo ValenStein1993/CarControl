@@ -6,8 +6,9 @@
  */
 
 #include "scheduler.hpp"
+#include "datatypes.hpp"
 
-extern dt
+extern uq1_7_t dt;
 
 Scheduler::Scheduler()
 {

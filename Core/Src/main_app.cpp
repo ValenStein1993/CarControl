@@ -12,6 +12,8 @@
 #include "mpu6050.hpp"
 #include "wheel_encoder.hpp"
 #include "datatypes.hpp"
+#include "datalogger.hpp"
+#include "localizer.hpp"
 
 extern "C" {
     extern UART_HandleTypeDef huart2;
@@ -22,7 +24,7 @@ extern "C" {
 };
 
 // global task time
-uq1_7_t dt = 0;
+float dt = 0;
 // initialize uart object
 static 	Uart uartDebug(&huart2);
 // initialize task scheduler
@@ -34,14 +36,18 @@ static Scheduler scheduler;
 // initialize wheel encoder
 //static WheelEncoder wheelEncoder(&htim2);
 // initialize localizer
- static Localizer localizer(mpu6050, wheelEncoder);
-
+ //static Localizer localizer(mpu6050, wheelEncoder);
+// initialize logger
+static DataLogger datalogger{uartDebug};
 
 void main_init() {
 	// setup interrupts on overflow of timer3
 	HAL_TIM_Base_Start_IT(&htim3);
 	// set initial duty cycle
 	//driveControl.setDutyCycle(0.9);
+
+	// add logger variables
+	datalogger.addVariable("10ms", &scheduler.tick100ms, sizeof(scheduler.tick100ms));
 
 };
 
@@ -56,7 +62,7 @@ void main_loop() {
 
 	if (scheduler.run1000ms()) {
 		uartDebug.print("TEST");
-		localizer.update();
+		//localizer.update();
 	}
 };
 

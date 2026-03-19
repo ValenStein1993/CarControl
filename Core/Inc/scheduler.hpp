@@ -22,9 +22,9 @@ public:
 	uint8_t tick1000ms;
 
 	void update();
-	bool Scheduler::run10ms();
-	bool Scheduler::run100ms();
-	bool Scheduler::run1000ms();
+	bool run10ms();
+	bool run100ms();
+	bool run1000ms();
 
 };
 
