@@ -14,9 +14,9 @@
 #define MPU6050_ADDR 0x68 << 1
 
 struct AccelData {
-	q6_10_t x;
-	q6_10_t y;
-	q6_10_t z;
+	float x;
+	float y;
+	float z;
 };
 
 class MPU6050 {
@@ -34,8 +34,8 @@ private:
 
 
 	void calibrate();
-	q6_10_t convAccel(int16_t val_raw);
-	q6_10_t convGyro(int16_t val_raw);
+	float convAccel(int16_t val_raw);
+	float convGyro(int16_t val_raw);
 
 };
 

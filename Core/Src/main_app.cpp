@@ -26,7 +26,7 @@ extern "C" {
 // global task time
 float dt = 0;
 // initialize uart object
-static 	Uart uartDebug(&huart2);
+static 	Uart uart(&huart2);
 // initialize task scheduler
 static Scheduler scheduler;
 // initialize drive motor control
@@ -38,7 +38,7 @@ static Scheduler scheduler;
 // initialize localizer
  //static Localizer localizer(mpu6050, wheelEncoder);
 // initialize logger
-static DataLogger datalogger{uartDebug};
+static DataLogger datalogger{uart};
 
 void main_init() {
 	// setup interrupts on overflow of timer3
@@ -47,7 +47,7 @@ void main_init() {
 	//driveControl.setDutyCycle(0.9);
 
 	// add logger variables
-	datalogger.addVariable("10ms", &scheduler.tick100ms, sizeof(scheduler.tick100ms));
+	datalogger.addVariable<uint8_t>("10ms", &scheduler.tick100ms);
 
 };
 
@@ -57,11 +57,11 @@ void main_loop() {
 	}
 
 	if (scheduler.run100ms()) {
-
+		datalogger.log();
 	}
 
 	if (scheduler.run1000ms()) {
-		uartDebug.print("TEST");
+		datalogger.sendConfig();
 		//localizer.update();
 	}
 };

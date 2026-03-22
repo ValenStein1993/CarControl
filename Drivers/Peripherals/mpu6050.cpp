@@ -42,17 +42,17 @@ AccelData MPU6050::getGyro() {
 	return accel;
 }
 
-q6_10_t MPU6050::convAccel(int16_t val_raw) {
+float MPU6050::convAccel(int16_t val_raw) {
 	// scaling for +- 2g resolution: 16384
 	// g = 9.81 m/s^2
-	q6_10_t val_conv = 9.81;
+	float val_conv = 9.81;
 	return val_conv * val_raw  / 16384;
 }
 
-q6_10_t MPU6050::convGyro(int16_t val_raw) {
+float MPU6050::convGyro(int16_t val_raw) {
 	// scaling for +- 250°/s resolution: 131
 	// rad = pi / 180 * 250
-	q6_10_t val_conv = 3.141592;
+	float val_conv = 3.141592;
 	return val_conv / 180 * 250 * val_raw  / 131;
 }
 
