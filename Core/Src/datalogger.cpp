@@ -23,6 +23,7 @@ void DataLogger::log() {
     uint8_t buffer[128];
     size_t size = 0;
     serialize(buffer + 3, size);
+    size += 3;
     buffer[0] = 0xAA;
     buffer[1] = 0x55;
     buffer[2] = 0x02;

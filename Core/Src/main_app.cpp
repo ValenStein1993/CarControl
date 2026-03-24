@@ -40,6 +40,7 @@ static Scheduler scheduler;
 // initialize logger
 static DataLogger datalogger{uart};
 
+
 void main_init() {
 	// setup interrupts on overflow of timer3
 	HAL_TIM_Base_Start_IT(&htim3);

@@ -9,3 +9,4 @@
 *.launch
 *.mk
 Libs
+External/.vscode
