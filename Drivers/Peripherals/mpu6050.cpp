@@ -11,7 +11,9 @@
 
 MPU6050::MPU6050(I2C_HandleTypeDef* handle) {
 	m_handle = handle;
+}
 
+void MPU6050::init() {
 	uint8_t data = 0;
 	HAL_I2C_Mem_Write(m_handle, MPU6050_ADDR, 0x6B, 1, &data, 1, HAL_MAX_DELAY); // wake up
 	HAL_I2C_Mem_Write(m_handle, MPU6050_ADDR, 0x1C, 1, &data, 1, HAL_MAX_DELAY); // accel ±2g

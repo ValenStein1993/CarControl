@@ -53,6 +53,10 @@ void main_init() {
 	HAL_TIM_PWM_Start(&htim10, TIM_CHANNEL_1);
 	driveControl.setDutyCycle(0.9);
 
+	// initialize peripheral drivers
+	//mpu6050.init();
+	powerSensor.init();
+
 	// add logger variables
 	datalogger.addVariable<uint8_t>("10ms", &scheduler.tick100ms);
 	datalogger.addVariable<uint8_t>("sum1000", &scheduler.sum1000);

@@ -23,6 +23,7 @@ class MPU6050 {
 public:
 	MPU6050(I2C_HandleTypeDef* handle);
 
+	void init();
 	AccelData readAccel();
 	AccelData readGyro();
 

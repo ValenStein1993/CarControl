@@ -12,6 +12,9 @@
 
 INA219::INA219(I2C_HandleTypeDef* handle) {
 	m_handle = handle;
+}
+
+void INA219::init() {
 	calibrate();
 }
 
@@ -32,7 +35,7 @@ float INA219::readCurrent() {
     HAL_I2C_Mem_Read(m_handle, INA219_ADDR, 0x04, 1, data, 2, HAL_MAX_DELAY);
 
     raw = (int16_t)(data[0] << 8 | data[1]);
-    float current = raw * 0.1f;
+    float current = raw;
 
     return current;
 }

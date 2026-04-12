@@ -16,6 +16,7 @@ class INA219 {
 public:
 	INA219(I2C_HandleTypeDef* handle);
 
+	void init();
 	float readCurrent();
 
 
