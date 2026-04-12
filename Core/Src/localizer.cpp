@@ -22,7 +22,7 @@ Localizer::Localizer(MPU6050& mpu6050, WheelEncoder& wheelEncoder)
 }
 
 void Localizer::update() {
-	AccelData gyro = m_mpu6050.getGyro();
+	AccelData gyro = m_mpu6050.readGyro();
 	q4_12_t rotSpeed = m_wheelEncoder.getTranslSpeed();
 
 	m_pos.phi = m_pos.phi + static_cast<q4_12_t>(dt * gyro.z);

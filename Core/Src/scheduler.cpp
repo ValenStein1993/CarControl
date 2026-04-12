@@ -8,7 +8,7 @@
 #include "scheduler.hpp"
 #include "datatypes.hpp"
 
-extern uq1_7_t dt;
+extern float dt;
 
 Scheduler::Scheduler()
 {

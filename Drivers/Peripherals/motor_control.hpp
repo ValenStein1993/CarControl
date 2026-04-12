@@ -12,12 +12,11 @@
 #include "stm32f4xx_hal.h"
 
 
-class MotorControl
-{
+class MotorControl {
 public:
 	MotorControl(TIM_HandleTypeDef* handle);
 
-	void setDutyCycle(uq1_7_t fac_dutyCycle);
+	void setDutyCycle(float fac_dutyCycle);
 
 private:
 	TIM_HandleTypeDef* m_handle;
