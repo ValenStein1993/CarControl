@@ -19,7 +19,7 @@ void INA219::init() {
 }
 
 void INA219::calibrate() {
-    uint16_t cal = 4096; // maxCurrent ~ 3.2 A, Rshunt = 0.1 Ohm
+	uint16_t cal = (uint16_t)INA219_CAL;
 
     uint8_t data[2];
     data[0] = (cal >> 8) & 0xFF;
@@ -35,8 +35,18 @@ float INA219::readCurrent() {
     HAL_I2C_Mem_Read(m_handle, INA219_ADDR, 0x04, 1, data, 2, HAL_MAX_DELAY);
 
     raw = (int16_t)(data[0] << 8 | data[1]);
-    float current = raw;
-
+    float current = raw * CURR_LSB;
     return current;
+}
+
+float INA219::readPower() {
+    uint8_t data[2];
+    int16_t raw;
+
+    HAL_I2C_Mem_Read(m_handle, INA219_ADDR, 0x03, 1, data, 2, HAL_MAX_DELAY);
+
+    raw = (int16_t)(data[0] << 8 | data[1]);
+    float power = 20 * raw * CURR_LSB;
+    return power;
 }
 

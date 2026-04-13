@@ -16,7 +16,7 @@ class MotorControl {
 public:
 	MotorControl(TIM_HandleTypeDef* handle);
 
-	void setDutyCycle(float fac_dutyCycle);
+	void setDutyCycle(float fac_dutyCycle, uint32_t channel = TIM_CHANNEL_1);
 
 private:
 	TIM_HandleTypeDef* m_handle;

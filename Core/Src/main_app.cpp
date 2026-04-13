@@ -67,7 +67,7 @@ void main_init() {
 
 void main_loop() {
 	if (scheduler.run10ms()) {
-		curr = powerSensor.readCurrent();
+		curr = powerSensor.readPower();
 	}
 
 	if (scheduler.run100ms()) {
