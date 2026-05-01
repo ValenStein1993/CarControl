@@ -11,7 +11,7 @@
 #include "wheel_encoder.hpp"
 #include "cnl/cmath.h"
 
-extern uq1_7_t dt;
+extern float dt;
 
 Localizer::Localizer(MPU6050& mpu6050, WheelEncoder& wheelEncoder)
 	: m_mpu6050{mpu6050}, m_wheelEncoder{wheelEncoder} {

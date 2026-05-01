@@ -12,6 +12,7 @@
 #include "stm32f4xx_hal.h"
 #include "motor_control.hpp"
 #include "ina219.hpp"
+#include "cjmcu103.hpp"
 
 enum class SteerCalState {
     INIT,
@@ -23,7 +24,7 @@ enum class SteerCalState {
 class SteerControl: public MotorControl {
 public:
 
-	SteerControl(TIM_HandleTypeDef* handle, INA219& powSense);
+	SteerControl(TIM_HandleTypeDef* handle, INA219& powSense, CJMCU103& angSense);
 
 	SteerCalState m_calState;
 
@@ -34,6 +35,8 @@ public:
 
 private:
 	INA219& m_powSense;
+	CJMCU103& m_angSense;
+	float m_powIdle;
 };
 
 

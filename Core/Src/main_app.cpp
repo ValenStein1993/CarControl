@@ -16,6 +16,7 @@
 #include "localizer.hpp"
 #include "ina219.hpp"
 #include "steer_control.hpp"
+#include "cjmcu103.hpp"
 
 extern "C" {
     extern UART_HandleTypeDef huart2;
@@ -45,8 +46,10 @@ static MotorControl driveControl(&htim10);
 static DataLogger datalogger{uart};
 // initialize power sensing
 static INA219 powerSensor(&hi2c1);
+// initialize power sensing
+static CJMCU103 angleSensor(&hadc1);
 // initialize steering control
-static SteerControl steerControl(&htim12, powerSensor);
+static SteerControl steerControl(&htim12, powerSensor, angleSensor);
 float curr;
 
 
@@ -60,9 +63,12 @@ void main_init() {
 
 	// driveControl.setDutyCycle(0.9);
 
-	// initialize peripheral drivers
+	// since constructors of static objects are called before main() and HAL_init,
+	// calibration and initialization of sensors have to be executed from separate functions
+
 	//mpu6050.init();
 	powerSensor.init();
+	angleSensor.init();
 
 	// add logger variables
 	datalogger.addVariable<float>("current", &curr);

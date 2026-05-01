@@ -7,8 +7,8 @@
 
 #include "steer_control.hpp"
 
-SteerControl::SteerControl(TIM_HandleTypeDef* handle, INA219& powSense)
-	: MotorControl{handle}, m_calState{SteerCalState::INIT}, m_powSense{powSense} {}
+SteerControl::SteerControl(TIM_HandleTypeDef* handle, INA219& powSense, CJMCU103& angSense)
+	: MotorControl{handle}, m_calState{SteerCalState::INIT}, m_powSense{powSense}, m_angSense{angSense}, m_powIdle{0} {}
 
 void SteerControl::steerLeft() {
 	setDutyCycle(0, TIM_CHANNEL_1);
