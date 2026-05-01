@@ -13,15 +13,24 @@
 #include "motor_control.hpp"
 #include "ina219.hpp"
 
+enum class SteerCalState {
+    INIT,
+    STEER_LEFT,
+    STEER_RIGHT,
+    READY
+};
 
 class SteerControl: public MotorControl {
 public:
 
 	SteerControl(TIM_HandleTypeDef* handle, INA219& powSense);
 
+	SteerCalState m_calState;
+
 	void steerLeft();
 	void steerRight();
 	void stopSteer();
+	void calibrate();
 
 private:
 	INA219& m_powSense;

@@ -15,13 +15,16 @@
 #include "datalogger.hpp"
 #include "localizer.hpp"
 #include "ina219.hpp"
+#include "steer_control.hpp"
 
 extern "C" {
     extern UART_HandleTypeDef huart2;
     extern TIM_HandleTypeDef htim2;
     extern TIM_HandleTypeDef htim3;
     extern TIM_HandleTypeDef htim10;
+    extern TIM_HandleTypeDef htim12;
     extern I2C_HandleTypeDef hi2c1;
+    extern ADC_HandleTypeDef hadc1;
 };
 
 // global task time
@@ -42,7 +45,8 @@ static MotorControl driveControl(&htim10);
 static DataLogger datalogger{uart};
 // initialize power sensing
 static INA219 powerSensor(&hi2c1);
-
+// initialize steering control
+static SteerControl steerControl(&htim12, powerSensor);
 float curr;
 
 
@@ -51,15 +55,16 @@ void main_init() {
 	HAL_TIM_Base_Start_IT(&htim3);
 	// set initial duty cycle
 	HAL_TIM_PWM_Start(&htim10, TIM_CHANNEL_1);
-	driveControl.setDutyCycle(0.9);
+	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
+	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
+
+	// driveControl.setDutyCycle(0.9);
 
 	// initialize peripheral drivers
 	//mpu6050.init();
 	powerSensor.init();
 
 	// add logger variables
-	datalogger.addVariable<uint8_t>("10ms", &scheduler.tick100ms);
-	datalogger.addVariable<uint8_t>("sum1000", &scheduler.sum1000);
 	datalogger.addVariable<float>("current", &curr);
 
 
@@ -68,10 +73,12 @@ void main_init() {
 void main_loop() {
 	if (scheduler.run10ms()) {
 		curr = powerSensor.readPower();
+		datalogger.log();
+
 	}
 
 	if (scheduler.run100ms()) {
-		datalogger.log();
+		steerControl.calibrate();
 	}
 
 	if (scheduler.run1000ms()) {
