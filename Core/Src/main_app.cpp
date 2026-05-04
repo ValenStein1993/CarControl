@@ -5,6 +5,15 @@
  *      Author: valen
  */
 
+
+
+/*
+ *
+ * PID Controller für Motoren
+ *
+ *
+ */
+
 #include "main_app.hpp"
 #include "uart.hpp"
 #include "scheduler.hpp"
@@ -50,7 +59,8 @@ static INA219 powerSensor(&hi2c1);
 static CJMCU103 angleSensor(&hadc1);
 // initialize steering control
 static SteerControl steerControl(&htim12, powerSensor, angleSensor);
-float curr;
+// define logging variables
+float curr, angle, angleSpeed;
 
 
 void main_init() {
@@ -72,19 +82,21 @@ void main_init() {
 
 	// add logger variables
 	datalogger.addVariable<float>("current", &curr);
-
-
+	datalogger.addVariable<float>("angle", &angle);
+	datalogger.addVariable<float>("angleSpeed", &angleSpeed);
 };
 
 void main_loop() {
 	if (scheduler.run10ms()) {
-		curr = powerSensor.readPower();
-		datalogger.log();
-
 	}
 
 	if (scheduler.run100ms()) {
 		steerControl.calibrate();
+
+		curr = powerSensor.readPower();
+		angle = angleSensor.readAngle();
+		angleSpeed = angleSensor.readAngleSpeed();
+		datalogger.log();
 	}
 
 	if (scheduler.run1000ms()) {

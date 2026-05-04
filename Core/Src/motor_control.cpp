@@ -16,3 +16,8 @@ void MotorControl::setDutyCycle(float fac_dutyCycle, uint32_t channel) {
     uint8_t arrDuty = static_cast<uint8_t>(arr * fac_dutyCycle);
 	__HAL_TIM_SET_COMPARE(m_handle, channel, arrDuty);
 }
+
+void setRotSpeed(float rotSpeed, uint32_t channel = TIM_CHANNEL_1) {
+	// tbd
+}
+

@@ -13,12 +13,15 @@
 
 #define MAX_ANGLE 32.4f
 #define NUM_ANGLE 10u
+#define FREQ_TIM3 0.01f
 
 class CJMCU103 {
 public:
 	CJMCU103(ADC_HandleTypeDef* handle);
 	void init();
+	uint16_t readAngleRaw();
 	float readAngle();
+	float readAngleSpeedRaw();
 	float readAngleSpeed();
 	float convAngleRaw(float angleRaw);
 

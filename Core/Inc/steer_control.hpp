@@ -14,6 +14,8 @@
 #include "ina219.hpp"
 #include "cjmcu103.hpp"
 
+#define NUM_DEB 5u
+
 enum class SteerCalState {
     INIT,
     STEER_LEFT,
@@ -36,7 +38,8 @@ public:
 private:
 	INA219& m_powSense;
 	CJMCU103& m_angSense;
-	float m_powIdle;
+	float m_angleSpeedRawIdle;
+	uint8_t m_debCal;
 };
 
 

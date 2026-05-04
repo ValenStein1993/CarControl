@@ -12,28 +12,51 @@
 extern float dt;
 
 CJMCU103::CJMCU103(ADC_HandleTypeDef* handle)
-	: m_angleRawLeft{0}, m_angleRawRight{0}, m_handle {handle}, m_anglePrev{0} {};
+	: m_angleRawLeft{0},
+	  m_angleRawRight{0},
+	  m_handle {handle},
+	  m_anglePrev{0} {};
 
 void CJMCU103::init() {
 	HAL_ADC_Start_DMA(m_handle, (uint32_t*) m_angleRaw, NUM_ANGLE);
 }
 
-float CJMCU103::readAngle() {
+uint16_t CJMCU103::readAngleRaw() {
+	// calculate mean of DMA buffer to reduce noise
 	float avg_angleRaw = std::accumulate(m_angleRaw, m_angleRaw + NUM_ANGLE, 0.0f) / NUM_ANGLE;
+	return avg_angleRaw;
+};
+
+float CJMCU103::readAngle() {
+	// calculate mean of DMA buffer to reduce noise
+	float avg_angleRaw = readAngleRaw();
 	return convAngleRaw(avg_angleRaw);
 };
 
+float CJMCU103::readAngleSpeedRaw() {
+	int idxNext = NUM_ANGLE - __HAL_DMA_GET_COUNTER(m_handle->DMA_Handle);
+	int idxNewest = (idxNext - 1 + NUM_ANGLE) % NUM_ANGLE;
+	int idxOldest = idxNext % NUM_ANGLE;
+
+	float angleSpeed = (m_angleRaw[idxNewest] - m_angleRaw[idxOldest]) / (FREQ_TIM3 * (NUM_ANGLE - 1));
+	return angleSpeed;
+};
+
 float CJMCU103::readAngleSpeed() {
-	float angleNow = readAngle();
-	float angleSpeed = (angleNow - m_anglePrev) / dt;
-	m_anglePrev = angleNow;
+	int idxNext = NUM_ANGLE - __HAL_DMA_GET_COUNTER(m_handle->DMA_Handle);
+	int idxNewest = (idxNext - 1 + NUM_ANGLE) % NUM_ANGLE;
+	int idxOldest = idxNext % NUM_ANGLE;
+
+	float angleSpeed = (convAngleRaw(m_angleRaw[idxNewest]) - convAngleRaw(m_angleRaw[idxOldest])) / (FREQ_TIM3 * (NUM_ANGLE - 1));
 	return angleSpeed;
 };
 
 float CJMCU103::convAngleRaw(float angleRaw) {
+	// if calibration has not been finished, return 0
 	if (m_angleRawLeft == 0 && m_angleRawRight == 0) {
 		return 0.0;
 	}
+	// interpolate raw values between respective min and max values
 	return -MAX_ANGLE + (angleRaw - m_angleRawLeft) * 2 * MAX_ANGLE / (m_angleRawRight - m_angleRawLeft);
 }
 
