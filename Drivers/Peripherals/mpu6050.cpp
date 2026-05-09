@@ -7,40 +7,41 @@
 
 #include <cstdint>
 #include "mpu6050.hpp"
+#include "utils.hpp"
 
 
 MPU6050::MPU6050(I2C_HandleTypeDef* handle) {
-	m_handle = handle;
+	handle_ = handle;
 }
 
 void MPU6050::init() {
 	uint8_t data = 0;
-	HAL_I2C_Mem_Write(m_handle, MPU6050_ADDR, 0x6B, 1, &data, 1, HAL_MAX_DELAY); // wake up
-	HAL_I2C_Mem_Write(m_handle, MPU6050_ADDR, 0x1C, 1, &data, 1, HAL_MAX_DELAY); // accel ±2g
-	HAL_I2C_Mem_Write(m_handle, MPU6050_ADDR, 0x1B, 1, &data, 1, HAL_MAX_DELAY); // gyro ±250 dps
+	HAL_I2C_Mem_Write(handle_, MPU6050_ADDR, 0x6B, 1, &data, 1, HAL_MAX_DELAY); // wake up
+	HAL_I2C_Mem_Write(handle_, MPU6050_ADDR, 0x1C, 1, &data, 1, HAL_MAX_DELAY); // accel ±2g
+	HAL_I2C_Mem_Write(handle_, MPU6050_ADDR, 0x1B, 1, &data, 1, HAL_MAX_DELAY); // gyro ±250 dps
 
 	calibrate();
 }
 
-AccelData MPU6050::readAccel() {
+Coord MPU6050::readAccel() {
 	uint8_t buffer[6];
-	HAL_I2C_Mem_Read(m_handle, MPU6050_ADDR, 0x3B, 1, buffer, 6, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(handle_, MPU6050_ADDR, 0x3B, 1, buffer, 6, HAL_MAX_DELAY);
 
-	AccelData accel;
-	accel.x = convAccel((int16_t)(buffer[0] << 8 | buffer[1])) - calibAccel.x;
-	accel.y = convAccel((int16_t)(buffer[2] << 8 | buffer[3])) - calibAccel.y;
-	accel.z = convAccel((int16_t)(buffer[4] << 8 | buffer[5])) - calibAccel.z;
+	Coord accel;
+	accel.x = convAccel((int16_t)(buffer[0] << 8 | buffer[1])) - mu_accel_.x;
+	accel.y = convAccel((int16_t)(buffer[2] << 8 | buffer[3])) - mu_accel_.y;
+	accel.z = convAccel((int16_t)(buffer[4] << 8 | buffer[5])) - mu_accel_.z;
 	return accel;
 }
 
-AccelData MPU6050::readGyro() {
+Coord MPU6050::readGyro() {
 	uint8_t buffer[6];
-	HAL_I2C_Mem_Read(m_handle, MPU6050_ADDR, 0x43, 1, buffer, 6, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(handle_, MPU6050_ADDR, 0x43, 1, buffer, 6, HAL_MAX_DELAY);
 
-	AccelData accel;
-	accel.x = convGyro((int16_t)(buffer[0] << 8 | buffer[1])) - calibGyro.x;
-	accel.y = convGyro((int16_t)(buffer[2] << 8 | buffer[3])) - calibGyro.y;
-	accel.z = convGyro((int16_t)(buffer[4] << 8 | buffer[5])) - calibGyro.z;
+	Coord accel;
+	accel.x = convGyro((int16_t)(buffer[0] << 8 | buffer[1])) - mu_gyro_.x;
+	accel.y = convGyro((int16_t)(buffer[2] << 8 | buffer[3])) - mu_gyro_.y;
+	accel.z = convGyro((int16_t)(buffer[4] << 8 | buffer[5])) - mu_gyro_.z;
 	return accel;
 }
 
@@ -59,24 +60,22 @@ float MPU6050::convGyro(int16_t val_raw) {
 }
 
 void MPU6050::calibrate() {
-	calibAccel.x = 0;
-	calibAccel.y = 0;
-	calibAccel.z = 0;
-	calibGyro.x = 0;
-	calibGyro.y = 0;
-	calibGyro.z = 0;
+	mu_accel_ = {0};
+	var_accel_ = {0};
+	mu_gyro_ = {0};
+	var_gyro_ = {0};
 
-	for (uint16_t i = 0; i < 100; i++) {
-		AccelData accel = readAccel();
-		AccelData gyro = readGyro();
+	for (uint16_t i = 1; i < 100; i++) {
+		Coord accel = readAccel();
+		Coord gyro = readGyro();
 
-		calibAccel.x = calibAccel.x + (accel.x - calibAccel.x) / i;
-		calibAccel.y = calibAccel.y + (accel.y - calibAccel.y) / i;
-		calibAccel.z = calibAccel.z + (accel.z - calibAccel.z) / i;
+		recMeanVar(&mu_accel_.x, &var_accel_.x, accel.x, i);
+		recMeanVar(&mu_accel_.y, &var_accel_.y, accel.y, i);
+		recMeanVar(&mu_accel_.z, &var_accel_.z, accel.z, i);
 
-		calibGyro.x = calibGyro.x + (gyro.x - calibGyro.x) / i;
-		calibGyro.y = calibGyro.y + (gyro.y - calibGyro.y) / i;
-		calibGyro.z = calibGyro.z + (gyro.z - calibGyro.z) / i;
+		recMeanVar(&mu_gyro_.x, &var_gyro_.x, gyro.x, i);
+		recMeanVar(&mu_gyro_.y, &var_gyro_.y, gyro.y, i);
+		recMeanVar(&mu_gyro_.z, &var_gyro_.z, gyro.z, i);
 
 		HAL_Delay(2);
 	}

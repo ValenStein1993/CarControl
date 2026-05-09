@@ -10,7 +10,7 @@
 /*
  *
  * PID Controller für Motoren
- *
+ * Kalibrierung von Odometrie für x richtung (gerade aus)
  *
  */
 
@@ -46,9 +46,9 @@ static Scheduler scheduler;
 // initialize drive motor control
 static MotorControl driveControl(&htim10);
 // initialize accelerometer and gyroscope
-//static MPU6050 mpu6050(&hi2c1);
+static MPU6050 accelerometer(&hi2c1);
 // initialize wheel encoder
-//static WheelEncoder wheelEncoder(&htim2);
+static WheelEncoder wheelEncoder(&htim2);
 // initialize localizer
 //static Localizer localizer(mpu6050, wheelEncoder);
 // initialize logger
@@ -76,7 +76,7 @@ void main_init() {
 	// since constructors of static objects are called before main() and HAL_init,
 	// calibration and initialization of sensors have to be executed from separate functions
 
-	//mpu6050.init();
+	accelerometer.init();
 	powerSensor.init();
 	angleSensor.init();
 

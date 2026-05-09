@@ -13,7 +13,7 @@
 
 #define MPU6050_ADDR 0x68 << 1
 
-struct AccelData {
+struct Coord {
 	float x;
 	float y;
 	float z;
@@ -24,15 +24,16 @@ public:
 	MPU6050(I2C_HandleTypeDef* handle);
 
 	void init();
-	AccelData readAccel();
-	AccelData readGyro();
+	Coord readAccel();
+	Coord readGyro();
 
 
 private:
-	I2C_HandleTypeDef* m_handle;
-	AccelData calibAccel;
-	AccelData calibGyro;
-
+	I2C_HandleTypeDef* handle_;
+	Coord mu_accel_;
+	Coord mu_gyro_;
+	Coord var_accel_;
+	Coord var_gyro_;
 
 	void calibrate();
 	float convAccel(int16_t val_raw);
