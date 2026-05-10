@@ -10,6 +10,7 @@
 
 #include "stm32f4xx_hal.h"
 #include "datatypes.hpp"
+#include "sensor.hpp"
 
 #define MPU6050_ADDR 0x68 << 1
 
@@ -19,25 +20,24 @@ struct Coord {
 	float z;
 };
 
-class MPU6050 {
+class MPU6050: public Sensor {
 public:
-	MPU6050(I2C_HandleTypeDef* handle);
+	Coord mu_accel_{0};
+	Coord mu_gyro_{0};
+	Coord var_accel_{0};
+	Coord var_gyro_{0};
 
-	void init();
+	MPU6050(I2C_HandleTypeDef* handle);
 	Coord readAccel();
 	Coord readGyro();
+	float convAccel(int16_t val_raw);
+	float convGyro(int16_t val_raw);
 
 
 private:
 	I2C_HandleTypeDef* handle_;
-	Coord mu_accel_;
-	Coord mu_gyro_;
-	Coord var_accel_;
-	Coord var_gyro_;
+	void _calibrate();
 
-	void calibrate();
-	float convAccel(int16_t val_raw);
-	float convGyro(int16_t val_raw);
 
 };
 

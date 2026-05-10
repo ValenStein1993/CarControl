@@ -19,8 +19,24 @@ void MPU6050::init() {
 	HAL_I2C_Mem_Write(handle_, MPU6050_ADDR, 0x6B, 1, &data, 1, HAL_MAX_DELAY); // wake up
 	HAL_I2C_Mem_Write(handle_, MPU6050_ADDR, 0x1C, 1, &data, 1, HAL_MAX_DELAY); // accel ±2g
 	HAL_I2C_Mem_Write(handle_, MPU6050_ADDR, 0x1B, 1, &data, 1, HAL_MAX_DELAY); // gyro ±250 dps
+}
 
-	calibrate();
+void MPU6050::_calibrate() {
+	for (uint16_t i = 1; i < 100; i++) {
+		Coord accel = readAccel();
+		Coord gyro = readGyro();
+
+		recMeanVar(&mu_accel_.x, &var_accel_.x, accel.x, i);
+		recMeanVar(&mu_accel_.y, &var_accel_.y, accel.y, i);
+		recMeanVar(&mu_accel_.z, &var_accel_.z, accel.z, i);
+
+		recMeanVar(&mu_gyro_.x, &var_gyro_.x, gyro.x, i);
+		recMeanVar(&mu_gyro_.y, &var_gyro_.y, gyro.y, i);
+		recMeanVar(&mu_gyro_.z, &var_gyro_.z, gyro.z, i);
+
+		HAL_Delay(2);
+	}
+	isReady_ = true;
 }
 
 Coord MPU6050::readAccel() {
@@ -59,24 +75,4 @@ float MPU6050::convGyro(int16_t val_raw) {
 	return val_conv / 180 * 250 * val_raw  / 131;
 }
 
-void MPU6050::calibrate() {
-	mu_accel_ = {0};
-	var_accel_ = {0};
-	mu_gyro_ = {0};
-	var_gyro_ = {0};
 
-	for (uint16_t i = 1; i < 100; i++) {
-		Coord accel = readAccel();
-		Coord gyro = readGyro();
-
-		recMeanVar(&mu_accel_.x, &var_accel_.x, accel.x, i);
-		recMeanVar(&mu_accel_.y, &var_accel_.y, accel.y, i);
-		recMeanVar(&mu_accel_.z, &var_accel_.z, accel.z, i);
-
-		recMeanVar(&mu_gyro_.x, &var_gyro_.x, gyro.x, i);
-		recMeanVar(&mu_gyro_.y, &var_gyro_.y, gyro.y, i);
-		recMeanVar(&mu_gyro_.z, &var_gyro_.z, gyro.z, i);
-
-		HAL_Delay(2);
-	}
-}

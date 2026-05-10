@@ -26,6 +26,7 @@
 #include "ina219.hpp"
 #include "steer_control.hpp"
 #include "cjmcu103.hpp"
+#include "sensor_handler.hpp"
 
 extern "C" {
     extern UART_HandleTypeDef huart2;
@@ -39,26 +40,23 @@ extern "C" {
 
 // global task time
 float dt = 0;
-// initialize uart object
-static 	Uart uart(&huart2);
-// initialize task scheduler
+
+static Uart uart(&huart2);
 static Scheduler scheduler;
-// initialize drive motor control
-static MotorControl driveControl(&htim10);
-// initialize accelerometer and gyroscope
-static MPU6050 accelerometer(&hi2c1);
-// initialize wheel encoder
-static WheelEncoder wheelEncoder(&htim2);
-// initialize localizer
-//static Localizer localizer(mpu6050, wheelEncoder);
-// initialize logger
 static DataLogger datalogger{uart};
-// initialize power sensing
+
+// initialize sensors
+static MPU6050 accelerometer(&hi2c1);
+static WheelEncoder wheelEncoder(&htim2);
 static INA219 powerSensor(&hi2c1);
-// initialize power sensing
 static CJMCU103 angleSensor(&hadc1);
-// initialize steering control
+static SensorHandler sensorHandler(accelerometer, wheelEncoder, powerSensor, angleSensor);
+
+// initialize controllers
+static MotorControl driveControl(&htim10);
+static Localizer localizer(mpu6050, wheelEncoder);
 static SteerControl steerControl(&htim12, powerSensor, angleSensor);
+
 // define logging variables
 float curr, angle, angleSpeed;
 
@@ -72,13 +70,7 @@ void main_init() {
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
 
 	// driveControl.setDutyCycle(0.9);
-
-	// since constructors of static objects are called before main() and HAL_init,
-	// calibration and initialization of sensors have to be executed from separate functions
-
-	accelerometer.init();
-	powerSensor.init();
-	angleSensor.init();
+	sensorHandler.initSensors();
 
 	// add logger variables
 	datalogger.addVariable<float>("current", &curr);
@@ -91,7 +83,14 @@ void main_loop() {
 	}
 
 	if (scheduler.run100ms()) {
+		accelerometer.init();
+		powerSensor.init();
+		angleSensor.init();
+		wheelEncoder.init();
+
 		steerControl.calibrate();
+
+		wheelEncoder.calcSpeed();
 
 		curr = powerSensor.readPower();
 		angle = angleSensor.readAngle();
@@ -101,7 +100,6 @@ void main_loop() {
 
 	if (scheduler.run1000ms()) {
 		datalogger.sendConfig();
-		//localizer.update();
 	}
 };
 

@@ -11,14 +11,11 @@
 
 extern float dt;
 
-CJMCU103::CJMCU103(ADC_HandleTypeDef* handle)
-	: m_angleRawLeft{0},
-	  m_angleRawRight{0},
-	  m_handle {handle},
-	  m_anglePrev{0} {};
+CJMCU103::CJMCU103(ADC_HandleTypeDef* handle): m_handle {handle} {};
 
-void CJMCU103::init() {
+void CJMCU103::_init() {
 	HAL_ADC_Start_DMA(m_handle, (uint32_t*) m_angleRaw, NUM_ANGLE);
+	isReady_ = true;
 }
 
 uint16_t CJMCU103::readAngleRaw() {

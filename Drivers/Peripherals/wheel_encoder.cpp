@@ -10,24 +10,34 @@
 
 extern float dt;
 
-WheelEncoder::WheelEncoder(TIM_HandleTypeDef* handle) {
-	m_handle = handle;
-	cnt_last = 0;
+WheelEncoder::WheelEncoder(TIM_HandleTypeDef* handle):
+		handle_{handle} {}
+
+void WheelEncoder::_init() {
+	calcVariance();
+	isReady_ = true;
+}
+
+void WheelEncoder::calcVariance() {
+	float varTicks = 1/12; // variance uniform distribution
+	var_ = (pi * wheelDmtr / (N_TICKS * dt)) ^2 * varTicks;
+}
+
+void WheelEncoder::calcSpeed() {
+	uint16_t cnt = __HAL_TIM_GET_COUNTER(handle_);
+	int16_t diff = cnt - cntLast_;
+
+	cntLast_ = cnt;
+	rotSpeed_ = diff / (N_TICKS * dt);
+	translSpeed_ = pi * wheelDmtr * rotSpeed_;
 }
 
 float WheelEncoder::getRotSpeed() {
-	uint16_t cnt = __HAL_TIM_GET_COUNTER(m_handle);
-	int16_t diff = cnt - cnt_last;
-
-	cnt_last = cnt;
-	float rps = diff / (100 * dt);
-	return rps;
+	return rotSpeed_;
 }
 
 float WheelEncoder::getTranslSpeed() {
-	float rotSpeed = getRotSpeed();
-	float translSpeed = 2 * pi * wheelDmtr * rotSpeed;
-	return translSpeed;
+	return translSpeed_;
 }
 
 

@@ -10,12 +10,11 @@
 #include "ina219.hpp"
 
 
-INA219::INA219(I2C_HandleTypeDef* handle) {
-	m_handle = handle;
-}
+INA219::INA219(I2C_HandleTypeDef* handle): m_handle{handle} {}
 
-void INA219::init() {
+void INA219::_init() {
 	calibrate();
+	isReady_ = true;
 }
 
 void INA219::calibrate() {

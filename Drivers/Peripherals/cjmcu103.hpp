@@ -10,12 +10,13 @@
 
 #include "stm32f4xx_hal.h"
 #include "datatypes.hpp"
+#include "sensor.hpp"
 
 #define MAX_ANGLE 32.4f
 #define NUM_ANGLE 10u
 #define FREQ_TIM3 0.01f
 
-class CJMCU103 {
+class CJMCU103: public Sensor {
 public:
 	CJMCU103(ADC_HandleTypeDef* handle);
 	void init();
@@ -25,13 +26,13 @@ public:
 	float readAngleSpeed();
 	float convAngleRaw(float angleRaw);
 
-	uint16_t m_angleRawLeft;
-	uint16_t m_angleRawRight;
+	uint16_t m_angleRawLeft = 0;
+	uint16_t m_angleRawRight = 0;
 
 private:
 	ADC_HandleTypeDef* m_handle;
-	uint16_t m_angleRaw[NUM_ANGLE];
-	float m_anglePrev;
+	uint16_t m_angleRaw[NUM_ANGLE]{0};
+	float m_anglePrev = 0;
 };
 
 
