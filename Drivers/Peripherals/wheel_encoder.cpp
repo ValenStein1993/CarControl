@@ -5,6 +5,7 @@
  *      Author: valen
  */
 
+#include <cmath>
 #include "wheel_encoder.hpp"
 #include "constants.hpp"
 
@@ -13,14 +14,14 @@ extern float dt;
 WheelEncoder::WheelEncoder(TIM_HandleTypeDef* handle):
 		handle_{handle} {}
 
-void WheelEncoder::_init() {
+void WheelEncoder::_calibrate() {
 	calcVariance();
 	isReady_ = true;
 }
 
 void WheelEncoder::calcVariance() {
 	float varTicks = 1/12; // variance uniform distribution
-	var_ = (pi * wheelDmtr / (N_TICKS * dt)) ^2 * varTicks;
+	var_ = std::pow(pi * wheelDmtr / (N_TICKS * dt), 2) * varTicks;
 }
 
 void WheelEncoder::calcSpeed() {

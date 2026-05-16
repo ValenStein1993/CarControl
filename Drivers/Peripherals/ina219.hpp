@@ -20,16 +20,13 @@ class INA219: public Sensor {
 public:
 	INA219(I2C_HandleTypeDef* handle);
 
-	void init();
+	void init() override;
 	float readCurrent();
 	float readPower();
 
 
-
 private:
-	I2C_HandleTypeDef* m_handle;
-
-	void calibrate();
+	I2C_HandleTypeDef* handle_;
 
 };
 

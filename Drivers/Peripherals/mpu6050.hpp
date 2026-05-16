@@ -28,6 +28,8 @@ public:
 	Coord var_gyro_{0};
 
 	MPU6050(I2C_HandleTypeDef* handle);
+
+	void init() override;
 	Coord readAccel();
 	Coord readGyro();
 	float convAccel(int16_t val_raw);
@@ -36,7 +38,7 @@ public:
 
 private:
 	I2C_HandleTypeDef* handle_;
-	void _calibrate();
+	void _calibrate() override;
 
 
 };

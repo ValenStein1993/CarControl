@@ -19,6 +19,9 @@
 class CJMCU103: public Sensor {
 public:
 	CJMCU103(ADC_HandleTypeDef* handle);
+	uint16_t angleRawLeft_{0};
+	uint16_t angleRawRight_{0};
+
 	void init();
 	uint16_t readAngleRaw();
 	float readAngle();
@@ -26,13 +29,11 @@ public:
 	float readAngleSpeed();
 	float convAngleRaw(float angleRaw);
 
-	uint16_t m_angleRawLeft = 0;
-	uint16_t m_angleRawRight = 0;
-
 private:
-	ADC_HandleTypeDef* m_handle;
-	uint16_t m_angleRaw[NUM_ANGLE]{0};
-	float m_anglePrev = 0;
+	ADC_HandleTypeDef* handle_;
+	uint16_t angleRaw_[NUM_ANGLE]{0};
+
+	void _calibrate() override;
 };
 
 

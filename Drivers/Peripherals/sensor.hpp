@@ -11,14 +11,14 @@
 class Sensor {
 public:
 	bool isReady_ = false;
-	void init();
+	virtual void init() {};
 	void calibrate() {
 		if (!isReady_) {
 			_calibrate();
 		}
 	};
 private:
-	void _calibrate() {isReady_ = true;}
+	virtual void _calibrate() {isReady_ = true;}
 };
 
 

@@ -31,6 +31,8 @@ private:
 	float translSpeed_ = 0;
 	float rotSpeed_ = 0;
 
+	void _calibrate() override;
+
 };
 
 #endif /* INC_WHEEL_ENCODER_HPP_ */

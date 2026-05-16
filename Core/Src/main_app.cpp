@@ -54,7 +54,7 @@ static SensorHandler sensorHandler(accelerometer, wheelEncoder, powerSensor, ang
 
 // initialize controllers
 static MotorControl driveControl(&htim10);
-static Localizer localizer(mpu6050, wheelEncoder);
+static Localizer localizer(accelerometer, wheelEncoder, angleSensor);
 static SteerControl steerControl(&htim12, powerSensor, angleSensor);
 
 // define logging variables
@@ -83,12 +83,9 @@ void main_loop() {
 	}
 
 	if (scheduler.run100ms()) {
-		accelerometer.init();
-		powerSensor.init();
-		angleSensor.init();
-		wheelEncoder.init();
 
-		steerControl.calibrate();
+
+		sensorHandler.calibrateSensors(driveControl, steerControl);
 
 		wheelEncoder.calcSpeed();
 

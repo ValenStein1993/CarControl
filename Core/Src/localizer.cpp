@@ -26,23 +26,22 @@ Localizer::Localizer(
 	stateSpace_ = {};
 
 	initStateSpace();
-
 }
 
 void Localizer::initStateSpace() {
-    ekf_initialize(&stateSpace_.ekf, {0, 0, 0, 0});
-
+	const float pdiag[4] = {0, 0, 0, 0};
+    ekf_initialize(&stateSpace_.ekf, pdiag);
 }
 
 void Localizer::updateStateSpace() {
 	// x = {x, y, v, phi};
 	_float_t* x = stateSpace_.ekf.x;
 
-	stateSpace_.u[0] = accelerometer_.readAccel().x;
-	stateSpace_.u[1] = angleSensor_.readAngle();
+	stateSpace_.u[0] = accelerometer_.readAccel().x; // umrechnung von x/y in a notwendig
+	stateSpace_.u[1] = angleSensor_.readAngle(); // angular speed!, einheiten überprüfen
 
 	stateSpace_.z[0] = wheelEncoder_.getTranslSpeed();
-	stateSpace_.z[1] = accelerometer_.readGyro();
+	stateSpace_.z[1] = accelerometer_.readGyro().x; // umrechnung von x/y in a notwendig
 
 	// ---- model equations ----
 	// x_k = x_k-1 + v_k-1 * cos(phi_k-1) * dt
@@ -74,6 +73,11 @@ void Localizer::updateStateSpace() {
 	stateSpace_.H[6] = 1 / wheelWidth * std::tan(stateSpace_.u[1]);
 
 	// prediction step
+	const float Q[2*2] = {
+	    0, 0,
+	    0, 0,
+	};
+
 	ekf_predict(&stateSpace_.ekf, stateSpace_.fx, stateSpace_.F, Q);
 }
 
