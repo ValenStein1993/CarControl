@@ -84,7 +84,6 @@ void main_loop() {
 
 	if (scheduler.run100ms()) {
 
-
 		sensorHandler.calibrateSensors(driveControl, steerControl);
 
 		wheelEncoder.calcSpeed();

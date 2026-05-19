@@ -27,6 +27,19 @@ void SteerControl::stopSteer() {
 		setDutyCycle(0, TIM_CHANNEL_1);
 }
 
+void SteerControl::steer(float angle) {
+	float angleCurr = m_angSense.readAngle();
+	if (angleCurr < angle) {
+		steerRight();
+	}
+	else if (angleCurr > angle) {
+		steerLeft();
+	}
+	else {
+		stopSteer();
+	}
+}
+
 
 
 

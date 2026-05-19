@@ -8,6 +8,8 @@
 #include <numeric>
 #include "cjmcu103.hpp"
 #include "stm32f4xx_hal.h"
+#include "utils.hpp"
+
 
 extern float dt;
 
@@ -22,11 +24,21 @@ void CJMCU103::_calibrate() {
 		angleRawLeft_ = readAngleRaw();
 	} else if (angleRawRight_ == 0) {
 		angleRawRight_ = readAngleRaw();
+	} else if ((mu_angle_ == 0) | (var_angle_== 0) | (mu_angleSpeed_ == 0) | (var_angleSpeed_ == 0)) {
+		for (uint16_t i = 1; i < 100; i++) {
+			float angle = readAngle();
+			float angleSpeed = readAngleSpeed();
+
+			recMeanVar(&mu_angle_, &var_angle_, angle, i);
+			recMeanVar(&mu_angleSpeed_, &var_angleSpeed_, angleSpeed, i);
+
+			HAL_Delay(2);
+		}
 		isReady_ = true;
-	} else {}
+	}
 }
 
-uint16_t CJMCU103::readAngleRaw() {
+float CJMCU103::readAngleRaw() {
 	// calculate mean of DMA buffer to reduce noise
 	float avg_angleRaw = std::accumulate(angleRaw_, angleRaw_ + NUM_ANGLE, 0.0f) / NUM_ANGLE;
 	return avg_angleRaw;

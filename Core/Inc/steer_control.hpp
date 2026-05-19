@@ -22,6 +22,7 @@ public:
 	void steerLeft();
 	void steerRight();
 	void stopSteer();
+	void steer(float angle);
 
 private:
 	INA219& m_powSense;

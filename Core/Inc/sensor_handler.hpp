@@ -44,7 +44,7 @@ public:
 	void calibrateSensors(MotorControl& driveControl, SteerControl& steerControl);
 	void calibrateAccelerometer(MotorControl& driveControl);
 	void calibrateWheelEncoder(MotorControl& driveControl);
-	void calibrateAngleSensor(SteerControl& steerControl);
+	void calibrateAngleSensor(MotorControl& driveControl, SteerControl& steerControl);
 };
 
 

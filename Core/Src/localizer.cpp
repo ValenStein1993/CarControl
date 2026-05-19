@@ -11,7 +11,6 @@
 #include "mpu6050.hpp"
 #include "wheel_encoder.hpp"
 
-
 extern float dt;
 
 Localizer::Localizer(
@@ -37,11 +36,18 @@ void Localizer::updateStateSpace() {
 	// x = {x, y, v, phi};
 	_float_t* x = stateSpace_.ekf.x;
 
-	stateSpace_.u[0] = accelerometer_.readAccel().x; // umrechnung von x/y in a notwendig
-	stateSpace_.u[1] = angleSensor_.readAngle(); // angular speed!, einheiten überprüfen
+	Coord accel = accelerometer_.readAccel();
+	float a = std::sqrt(std::pow(accel.x, 2) + std::pow(accel.y, 2));
+	float var_a = std::pow(accel.x, 2) / std::pow(a, 2) * accelerometer_.var_accel_.x +
+			std::pow(accel.y, 2) / std::pow(a, 2) * accelerometer_.var_accel_.y;
+
+	float theta = angleSensor_.readAngle(); // einheiten überprüfen
+
+	stateSpace_.u[0] = a;
+	stateSpace_.u[1] = theta;
 
 	stateSpace_.z[0] = wheelEncoder_.getTranslSpeed();
-	stateSpace_.z[1] = accelerometer_.readGyro().x; // umrechnung von x/y in a notwendig
+	stateSpace_.z[1] = accelerometer_.readGyro().z;
 
 	// ---- model equations ----
 	// x_k = x_k-1 + v_k-1 * cos(phi_k-1) * dt
@@ -72,13 +78,20 @@ void Localizer::updateStateSpace() {
 	stateSpace_.H[2] = 1;
 	stateSpace_.H[6] = 1 / wheelWidth * std::tan(stateSpace_.u[1]);
 
-	// prediction step
-	const float Q[2*2] = {
-	    0, 0,
-	    0, 0,
-	};
+	// ---- state covariance ----
+	// calculate Q from measurement noise W as Q = GWG with G as input jacobian
+	stateSpace_.Q[9] = weightCovModel * std::pow(dt, 2) * var_a;
+	// cov = (v/L/cos(theta)^2*dt)^2*var_theta
+	stateSpace_.Q[15] = weightCovModel * std::pow(1 / wheelWidth * stateSpace_.fx[2] / std::pow(std::cos(theta), 2) * dt, 2) * angleSensor_.var_angle_;
 
-	ekf_predict(&stateSpace_.ekf, stateSpace_.fx, stateSpace_.F, Q);
+	// ---- measurement covariance ----
+	stateSpace_.R[0] = weightCovMeasurement * wheelEncoder_.var_;
+	stateSpace_.R[3] = weightCovMeasurement * accelerometer_.var_gyro_.z;
+
+	// prediction step with model and inputs
+	ekf_predict(&stateSpace_.ekf, stateSpace_.fx, stateSpace_.F, stateSpace_.Q);
+	// update step with measurements
+	ekf_update(&stateSpace_.ekf, stateSpace_.z, stateSpace_.hx, stateSpace_.H, stateSpace_.R);
 }
 
 

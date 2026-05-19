@@ -21,9 +21,13 @@ public:
 	CJMCU103(ADC_HandleTypeDef* handle);
 	uint16_t angleRawLeft_{0};
 	uint16_t angleRawRight_{0};
+	float mu_angle_{0};
+	float var_angle_{0};
+	float mu_angleSpeed_{0};
+	float var_angleSpeed_{0};
 
 	void init();
-	uint16_t readAngleRaw();
+	float readAngleRaw();
 	float readAngle();
 	float readAngleSpeedRaw();
 	float readAngleSpeed();

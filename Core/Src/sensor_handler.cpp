@@ -41,7 +41,7 @@ void SensorHandler::calibrateSensors(MotorControl& driveControl, SteerControl& s
 	}
 
 	if (!angleSensor_.isReady_) {
-		calibrateAngleSensor(steerControl);
+		calibrateAngleSensor(driveControl, steerControl);
 	}
 }
 
@@ -56,7 +56,8 @@ void SensorHandler::calibrateWheelEncoder(MotorControl& driveControl) {
 }
 
 
-void SensorHandler::calibrateAngleSensor(SteerControl& steerControl) {
+void SensorHandler::calibrateAngleSensor(MotorControl& driveControl, SteerControl& steerControl) {
+	driveControl.setDutyCycle(0);
 	float pow = powerSensor_.readPower();
 	float angleSpeedRaw = angleSensor_.readAngleSpeedRaw();
 
@@ -94,7 +95,8 @@ void SensorHandler::calibrateAngleSensor(SteerControl& steerControl) {
 
 			if (cntDebCal_ > NUM_DEB) {
 				angleSensor_.calibrate();
-				steerControl.stopSteer();
+				steerControl.steer(0);
+				angleSensor_.calibrate();
 				calState_ = SteerCalState::READY;
 			}
 			break;

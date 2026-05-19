@@ -9,7 +9,7 @@
 #define INC_UTILS_HPP_
 
 
-void recMeanVar(float* mu, float* var, float x, int i) {
+inline void recMeanVar(float* mu, float* var, float x, int i) {
 	i++;
 	float deltaOld = x - *mu;
 	*mu = *mu + deltaOld / i;
