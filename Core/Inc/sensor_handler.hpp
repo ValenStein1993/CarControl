@@ -41,7 +41,7 @@ public:
 	uint8_t cntDebCal_;
 
 	void initSensors();
-	void calibrateSensors(MotorControl& driveControl, SteerControl& steerControl);
+	bool calibrateSensors(MotorControl& driveControl, SteerControl& steerControl);
 	void calibrateAccelerometer(MotorControl& driveControl);
 	void calibrateWheelEncoder(MotorControl& driveControl);
 	void calibrateAngleSensor(MotorControl& driveControl, SteerControl& steerControl);

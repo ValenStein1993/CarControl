@@ -69,8 +69,8 @@ void main_init() {
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
 
-	// driveControl.setDutyCycle(0.9);
 	sensorHandler.initSensors();
+	localizer.initStateSpace();
 
 	// add logger variables
 	datalogger.addVariable<float>("current", &curr);
@@ -84,13 +84,18 @@ void main_loop() {
 
 	if (scheduler.run100ms()) {
 
-		sensorHandler.calibrateSensors(driveControl, steerControl);
-
-		wheelEncoder.calcSpeed();
+		bool sensorsReady = sensorHandler.calibrateSensors(driveControl, steerControl);
+		wheelEncoder.calcSpeed(); // sollte auf interrupts geändert werden
 
 		curr = powerSensor.readPower();
 		angle = angleSensor.readAngle();
 		angleSpeed = angleSensor.readAngleSpeed();
+
+		if (sensorsReady) {
+			localizer.updateStateSpace();
+		}
+
+
 		datalogger.log();
 	}
 

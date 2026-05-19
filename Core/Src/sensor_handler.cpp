@@ -31,7 +31,7 @@ void SensorHandler::initSensors() {
 	angleSensor_.init();
 }
 
-void SensorHandler::calibrateSensors(MotorControl& driveControl, SteerControl& steerControl) {
+bool SensorHandler::calibrateSensors(MotorControl& driveControl, SteerControl& steerControl) {
 	if (!accelerometer_.isReady_) {
 		calibrateAccelerometer(driveControl);
 	}
@@ -43,6 +43,8 @@ void SensorHandler::calibrateSensors(MotorControl& driveControl, SteerControl& s
 	if (!angleSensor_.isReady_) {
 		calibrateAngleSensor(driveControl, steerControl);
 	}
+
+	return (accelerometer_.isReady_ & wheelEncoder_.isReady_ & angleSensor_.isReady_);
 }
 
 void SensorHandler::calibrateAccelerometer(MotorControl& driveControl) {
