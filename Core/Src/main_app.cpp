@@ -46,16 +46,16 @@ static Scheduler scheduler;
 static DataLogger datalogger{uart};
 
 // initialize sensors
-static MPU6050 accelerometer(&hi2c1);
-static WheelEncoder wheelEncoder(&htim2);
-static INA219 powerSensor(&hi2c1);
-static CJMCU103 angleSensor(&hadc1);
-static SensorHandler sensorHandler(accelerometer, wheelEncoder, powerSensor, angleSensor);
+//static MPU6050 accelerometer(&hi2c1);
+//static WheelEncoder wheelEncoder(&htim2);
+//static INA219 powerSensor(&hi2c1);
+//static CJMCU103 angleSensor(&hadc1);
+//static SensorHandler sensorHandler(accelerometer, wheelEncoder, powerSensor, angleSensor);
 
 // initialize controllers
-static MotorControl driveControl(&htim10);
-static Localizer localizer(accelerometer, wheelEncoder, angleSensor);
-static SteerControl steerControl(&htim12, powerSensor, angleSensor);
+//static MotorControl driveControl(&htim10);
+//static Localizer localizer(accelerometer, wheelEncoder, angleSensor);
+//static SteerControl steerControl(&htim12, powerSensor, angleSensor);
 
 // define logging variables
 float curr, angle, angleSpeed;
@@ -69,13 +69,14 @@ void main_init() {
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
 
-	sensorHandler.initSensors();
-	localizer.initStateSpace();
+	//sensorHandler.initSensors();
+	//localizer.initStateSpace();
 
 	// add logger variables
 	datalogger.addVariable<float>("current", &curr);
 	datalogger.addVariable<float>("angle", &angle);
 	datalogger.addVariable<float>("angleSpeed", &angleSpeed);
+
 };
 
 void main_loop() {
@@ -84,16 +85,16 @@ void main_loop() {
 
 	if (scheduler.run100ms()) {
 
-		bool sensorsReady = sensorHandler.calibrateSensors(driveControl, steerControl);
-		wheelEncoder.calcSpeed(); // sollte auf interrupts geändert werden
+		//bool sensorsReady = sensorHandler.calibrateSensors(driveControl, steerControl);
+		//wheelEncoder.calcSpeed(); // sollte auf interrupts geändert werden
 
-		curr = powerSensor.readPower();
-		angle = angleSensor.readAngle();
-		angleSpeed = angleSensor.readAngleSpeed();
+		//curr = powerSensor.readPower();
+		//angle = angleSensor.readAngle();
+		//angleSpeed = angleSensor.readAngleSpeed();
 
-		if (sensorsReady) {
-			localizer.updateStateSpace();
-		}
+		//if (sensorsReady) {
+		//	localizer.updateStateSpace();
+		//}
 
 
 		datalogger.log();

@@ -12,7 +12,8 @@ class UartMonitor:
         self.subplots = []
         self.payload_size = 0
 
-        self.ser = serial.Serial(port, baud)
+        #self.ser = serial.Serial(port, baud)
+        self.ser = serial.serial_for_url("socket://127.0.0.1:12345")
         self.read_uart() # get config
 
     def parse_config(self, payload):

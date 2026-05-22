@@ -1,3 +1,8 @@
 mach create
 include @mpu6050.cs
 machine LoadPlatformDescription @stm32f446re.repl
+
+sysbus LoadELF @../Debug/CarControl.elf
+
+emulation CreateServerSocketTerminal 12345 "uart"
+connector Connect sysbus.usart2 uart
