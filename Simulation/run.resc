@@ -1,0 +1,3 @@
+mach create
+include @mpu6050.cs
+machine LoadPlatformDescription @stm32f446re.repl
