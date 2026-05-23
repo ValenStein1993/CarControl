@@ -11,6 +11,7 @@
 #include "stm32f4xx_hal.h"
 #include "datatypes.hpp"
 #include "sensor.hpp"
+#include "simulator.hpp"
 
 #define MAX_ANGLE 32.4f
 #define NUM_ANGLE 10u
@@ -28,9 +29,9 @@ public:
 
 	void init();
 	float readAngleRaw();
-	float readAngle();
+	virtual float readAngle();
 	float readAngleSpeedRaw();
-	float readAngleSpeed();
+	virtual float readAngleSpeed();
 	float convAngleRaw(float angleRaw);
 
 private:
@@ -39,6 +40,22 @@ private:
 
 	void _calibrate() override;
 };
+
+class SimCJMCU103: public CJMCU103 {
+public:
+	SimCJMCU103(ADC_HandleTypeDef* handle): CJMCU103(nullptr) {};
+	void init() override {};
+	float readAngle() override {return sim->angle;}
+	float readAngleSpeed() override { return sim->angleSpeed;}
+};
+
+
+#ifdef SIMULATION
+using CJMCU103_ = SimCJMCU103;
+#else
+using CJMCU103_ = CJMCU103;
+#endif
+
 
 
 

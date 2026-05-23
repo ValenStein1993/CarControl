@@ -85,8 +85,8 @@ all: main-build
 main-build: CarControl.elf secondary-outputs
 
 # Tool invocations
-CarControl.elf CarControl.map: $(OBJS) $(USER_OBJS) C:\Users\valen\Workspace\CarControl\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "CarControl.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\valen\Workspace\CarControl\STM32F446RETX_FLASH.ld" -Wl,-Map="CarControl.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+CarControl.elf CarControl.map: $(OBJS) $(USER_OBJS) C:\Users\valen\Workspace\CarControl\App\STM32F446RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "CarControl.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\valen\Workspace\CarControl\App\STM32F446RETX_FLASH.ld" -Wl,-Map="CarControl.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

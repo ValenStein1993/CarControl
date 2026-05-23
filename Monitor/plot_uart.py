@@ -6,14 +6,13 @@ from collections import deque
 
 
 class UartMonitor:
-    def __init__(self, port, baud):
+    def __init__(self, ser):
         self.variables = []
         self.data = []
         self.subplots = []
         self.payload_size = 0
 
-        #self.ser = serial.Serial(port, baud)
-        self.ser = serial.serial_for_url("socket://127.0.0.1:12345")
+        self.ser = ser
         self.read_uart() # get config
 
     def parse_config(self, payload):
@@ -106,5 +105,7 @@ class UartMonitor:
 
 
 if __name__ == "__main__":
-    um = UartMonitor("COM3", 115200)
+    #ser = serial.Serial("COM3", 115200)
+    ser = serial.serial_for_url("socket://127.0.0.1:12345")
+    um = UartMonitor(ser)
     um.run()
