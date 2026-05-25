@@ -8,5 +8,7 @@
 *.su
 *.launch
 *.mk
-Libs
-External/.vscode
+App/Libs
+External
+.vscode
+__pycache__

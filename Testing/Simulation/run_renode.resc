@@ -1,10 +1,11 @@
-mach create
+mach create "stm32"
 include @simulation_data.cs
 
 machine LoadPlatformDescription @stm32f446re.repl
 
-sysbus LoadELF @../App/Simulation/CarControl.elf
-showAnalyzer sysbus.usart2
+sysbus LoadELF @../../App/Simulation/CarControl.elf
+#showAnalyzer sysbus.usart2
 emulation CreateServerSocketTerminal 12345 "uart"
 connector Connect sysbus.usart2 uart
 
+#cpu LogFunctionNames true

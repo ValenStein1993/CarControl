@@ -1,8 +1,19 @@
 import struct
 import serial
+import time
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtWidgets
 from collections import deque
+
+def wait_connect_for_url(url, timeout=10):
+    start = time.time()
+    while time.time() - start < timeout:
+        try:
+            ser = serial.serial_for_url(url)
+            return ser
+        except serial.serialutil.SerialException:
+            time.sleep(0.1)
+    raise TimeoutError(f"Could not connect to {url} within {timeout} seconds")
 
 
 class UartMonitor:
