@@ -14,34 +14,25 @@ class StmSimulation:
         self.sim_thread = None
 
         self.m.execute(f"path add @{SCRIPT_DIR}")
-        out, err = self.m.execute_script("run_renode.resc")
-        if err:
-            raise RuntimeError(f"Renode script failed:\n{out}\n{err}")
-        if out:
-            print("Renode script output:", out)
-
-        out, err = self.m.execute("start")
-        if err:
-            raise RuntimeError(f"Renode start failed:\n{out}\n{err}")
-        if out:
-            print("Renode start output:", out)
+        self.m.execute_script("run_renode.resc")
+        self.m.execute("start")
 
         self.simdata = self.e.stm32.sysbus.sim
     
     def run_simulation(self, input):
         def run_simulation_():
-            start = time.time()
             for timestamp, values in input:
-                # Wait until the right time
-                elapsed = time.time() - start
-                wait = timestamp - elapsed
-                if wait > 0:
-                    time.sleep(wait)
-
-                print(f"t={timestamp:.1f}s -> {values}")
+                # Wait until Renode's virtual time reaches the timestamp
+                while True:
+                    elapsed = self.e.stm32.ElapsedVirtualTime.TimeElapsed.TotalSeconds
+                    if elapsed >= timestamp:
+                        break
+                    time.sleep(0.05)  # Sleep briefly to avoid busy waiting
+                
+                print(f"Virtual t={elapsed:.2f}s → {values}")
                 for key, value in values.items():
                     setattr(self.simdata, key, value)
-
+                    
         self.sim_thread = threading.Thread(target=run_simulation_, daemon=True)
         self.sim_thread.start()
 

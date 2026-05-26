@@ -62,7 +62,6 @@ static SteerControl steerControl(&htim12, powerSensor, angleSensor);
 // define logging variables
 float curr, angle, angleSpeed;
 
-
 void main_init() {
 	// setup interrupts on overflow of timer3
 	HAL_TIM_Base_Start_IT(&htim3);
@@ -78,8 +77,6 @@ void main_init() {
 	datalogger.addVariable<float>("current", &curr);
 	datalogger.addVariable<float>("angle", &angle);
 	datalogger.addVariable<float>("angleSpeed", &angleSpeed);
-	datalogger.log();
-
 };
 
 void main_loop() {

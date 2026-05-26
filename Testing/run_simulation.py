@@ -1,5 +1,6 @@
+import serial
 from Simulation.stm_simulation import StmSimulation
-from Monitor.uart_monitor import UartMonitor, wait_connect_for_url
+from Monitor.uart_monitor import UartMonitor
 
 timeline = [
     (0.0,  {'Angle': 0.0,  'AngleSpeed': 0.0,  'Current': 0.5}),
@@ -11,7 +12,7 @@ timeline = [
 ]
 
 sim = StmSimulation()
-ser = wait_connect_for_url("socket://127.0.0.1:12345")
+ser = serial.serial_for_url("socket://127.0.0.1:12345", timeout=10)
 um = UartMonitor(ser)
 sim.run_simulation(timeline)
 um.run()

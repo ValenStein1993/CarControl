@@ -5,17 +5,6 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtWidgets
 from collections import deque
 
-def wait_connect_for_url(url, timeout=10):
-    start = time.time()
-    while time.time() - start < timeout:
-        try:
-            ser = serial.serial_for_url(url)
-            return ser
-        except serial.serialutil.SerialException:
-            time.sleep(0.1)
-    raise TimeoutError(f"Could not connect to {url} within {timeout} seconds")
-
-
 class UartMonitor:
     def __init__(self, ser):
         self.variables = []
@@ -61,18 +50,33 @@ class UartMonitor:
         for idx, var in enumerate(self.variables):
             raw = payload[i:i+var["size"]]
 
-            if var["type"] == 0:
+            if var["type"] == 0:          # e_bool
                 value = struct.unpack("<?", raw)[0]
-            elif var["type"] == 1:
+
+            elif var["type"] == 1:        # e_uint8
                 value = struct.unpack("<B", raw)[0]
-            elif var["type"] == 2:
+
+            elif var["type"] == 2:        # e_int8
+                value = struct.unpack("<b", raw)[0]
+
+            elif var["type"] == 3:        # e_uint16
+                value = struct.unpack("<H", raw)[0]
+
+            elif var["type"] == 4:        # e_int16
                 value = struct.unpack("<h", raw)[0]
-            elif var["type"] == 3:
+
+            elif var["type"] == 5:        # e_uint32
+                value = struct.unpack("<I", raw)[0]
+
+            elif var["type"] == 6:        # e_int32
+                value = struct.unpack("<i", raw)[0]
+
+            elif var["type"] == 7:        # e_float
                 value = struct.unpack("<f", raw)[0]
-            elif var["type"] == 4:
-                value = struct.unpack("<h", raw)[0] >> 12
+
             else:
-                value = 0
+                raise ValueError(f"Unknown type: {var['type']}")
+            
 
             self.data[idx].append(value)
             i += var["size"]

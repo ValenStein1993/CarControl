@@ -17,9 +17,12 @@
 enum class DataType: uint8_t {
 	e_bool,
 	e_uint8,
+	e_int8,
+	e_uint16,
     e_int16,
+	e_uint32,
+	e_int32,
     e_float,
-    e_q4_12
 };
 
 struct LogVariable {
@@ -35,13 +38,38 @@ struct TypeMap {
 };
 
 template<>
+struct TypeMap<uint8_t> {
+    static constexpr DataType value = DataType::e_uint8;
+};
+
+template<>
+struct TypeMap<int8_t> {
+    static constexpr DataType value = DataType::e_int8;
+};
+
+template<>
+struct TypeMap<uint16_t> {
+    static constexpr DataType value = DataType::e_uint16;
+};
+
+template<>
 struct TypeMap<int16_t> {
     static constexpr DataType value = DataType::e_int16;
 };
 
 template<>
-struct TypeMap<uint8_t> {
-    static constexpr DataType value = DataType::e_uint8;
+struct TypeMap<uint32_t> {
+    static constexpr DataType value = DataType::e_uint32;
+};
+
+template<>
+struct TypeMap<int32_t> {
+    static constexpr DataType value = DataType::e_int32;
+};
+
+template<>
+struct TypeMap<int> {
+    static constexpr DataType value = DataType::e_int32;
 };
 
 template<>
@@ -49,10 +77,6 @@ struct TypeMap<float> {
     static constexpr DataType value = DataType::e_float;
 };
 
-template<>
-struct TypeMap<q4_12_t> {
-    static constexpr DataType value = DataType::e_q4_12;
-};
 
 class DataLogger {
 public:
