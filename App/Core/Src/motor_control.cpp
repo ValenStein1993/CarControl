@@ -7,7 +7,6 @@
 
 #include "motor_control.hpp"
 #include "datatypes.hpp"
-#include "cnl/all.h"
 
 MotorControl::MotorControl(TIM_HandleTypeDef* handle) : m_handle(handle) {};
 

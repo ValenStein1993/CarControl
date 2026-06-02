@@ -1,0 +1,245 @@
+<?xml version="1.0" ?>
+<sdf version="1.8">
+<world name="simworld">
+    <physics name="1ms" type="ignored">
+        <max_step_size>0.001</max_step_size>
+        <real_time_factor>1.0</real_time_factor>
+    </physics>
+    <plugin
+        filename="gz-sim-physics-system"
+        name="gz::sim::systems::Physics">
+    </plugin>
+    <plugin
+        filename="gz-sim-user-commands-system"
+        name="gz::sim::systems::UserCommands">
+    </plugin>
+    <plugin
+        filename="gz-sim-scene-broadcaster-system"
+        name="gz::sim::systems::SceneBroadcaster">
+    </plugin>
+
+    <model name="ground_plane">
+        <static>true</static>
+        <link name="link">
+            <collision name="collision">
+            <geometry>
+                <plane>
+                <normal>0 0 1</normal>
+                </plane>
+            </geometry>
+            </collision>
+            <visual name="visual">
+            <geometry>
+                <plane>
+                <normal>0 0 1</normal>
+                <size>10 10</size>
+                </plane>
+            </geometry>
+            <material>
+                <diffuse>0.9 0.5 0.9 0.7</diffuse>
+            </material>
+            </visual>
+        </link>
+    </model>
+
+    <model name='car' canonical_link='chassis'>
+        <pose relative_to='world'>0 0 0 0 0 0</pose>
+        <link name='chassis'>
+            <pose relative_to='__model__'>0 0 0.25 0 0 0</pose>
+            <inertial> 
+                <mass>1.14395</mass>
+                <inertia>
+                    <ixx>0.095329</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>0.381317</iyy>
+                    <iyz>0</iyz>
+                    <izz>0.476646</izz>
+                </inertia>
+            </inertial>
+            <visual name='visual'>
+                <geometry>
+                    <box>
+                        <size>2.0 1.0 0.5</size>
+                    </box>
+                </geometry>
+                <material>
+                    <diffuse>0.0 0.0 1.0 1</diffuse>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <geometry>
+                    <box>
+                        <size>2.0 1.0 0.5</size>
+                    </box>
+                </geometry>
+        </collision>
+        </link>
+        <link name='left_frontwheel'>
+            <pose relative_to="chassis">0.8 0.6 0 -1.5707 0 0</pose>
+            <inertial>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>0.043333</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>0.043333</iyy>
+                    <iyz>0</iyz>
+                    <izz>0.08</izz>
+                </inertia>
+            </inertial>
+            <visual name='visual'>
+                <geometry>
+                    <cylinder>
+                        <radius>0.4</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <diffuse>1.0 0.0 0.0 1</diffuse>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <geometry>
+                    <cylinder>
+                        <radius>0.4</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+            </collision>
+        </link>
+        <link name='right_frontwheel'>
+            <pose relative_to="chassis">0.8 -0.6 0 -1.5707 0 0</pose>
+            <inertial>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>0.043333</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>0.043333</iyy>
+                    <iyz>0</iyz>
+                    <izz>0.08</izz>
+                </inertia>
+            </inertial>
+            <visual name='visual'>
+                <geometry>
+                    <cylinder>
+                        <radius>0.4</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <diffuse>1.0 0.0 0.0 1</diffuse>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <geometry>
+                    <cylinder>
+                        <radius>0.4</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+            </collision>
+        </link>
+        <link name='left_backwheel'>
+            <pose relative_to="chassis">-0.8 0.6 0 -1.5707 0 0</pose>
+            <inertial>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>0.043333</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>0.043333</iyy>
+                    <iyz>0</iyz>
+                    <izz>0.08</izz>
+                </inertia>
+            </inertial>
+            <visual name='visual'>
+                <geometry>
+                    <cylinder>
+                        <radius>0.4</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <diffuse>1.0 0.0 0.0 1</diffuse>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <geometry>
+                    <cylinder>
+                        <radius>0.4</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+            </collision>
+        </link>
+        <link name='right_backwheel'>
+            <pose relative_to="chassis">-0.8 -0.6 0 -1.5707 0 0</pose>
+            <inertial>
+                <mass>1</mass>
+                <inertia>
+                    <ixx>0.043333</ixx>
+                    <ixy>0</ixy>
+                    <ixz>0</ixz>
+                    <iyy>0.043333</iyy>
+                    <iyz>0</iyz>
+                    <izz>0.08</izz>
+                </inertia>
+            </inertial>
+            <visual name='visual'>
+                <geometry>
+                    <cylinder>
+                        <radius>0.4</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+                <material>
+                    <diffuse>1.0 0.0 0.0 1</diffuse>
+                </material>
+            </visual>
+            <collision name='collision'>
+                <geometry>
+                    <cylinder>
+                        <radius>0.4</radius>
+                        <length>0.2</length>
+                    </cylinder>
+                </geometry>
+            </collision>
+        </link>
+        <joint name='left_frontwheel_joint' type='revolute'>
+            <pose relative_to='left_frontwheel'/>
+            <parent>chassis</parent>
+            <child>left_frontwheel</child>
+            <axis>
+                <xyz expressed_in='__model__'>0 1 0</xyz>
+            </axis>
+        </joint>
+        <joint name='right_frontwheel_joint' type='revolute'>
+            <pose relative_to='right_frontwheel'/>
+            <parent>chassis</parent>
+            <child>right_frontwheel</child>
+            <axis>
+                <xyz expressed_in='__model__'>0 1 0</xyz>
+            </axis>
+        </joint>
+        <joint name='left_backwheel_joint' type='revolute'>
+            <pose relative_to='left_backwheel'/>
+            <parent>chassis</parent>
+            <child>left_backwheel</child>
+            <axis>
+                <xyz expressed_in='__model__'>0 1 0</xyz>
+            </axis>
+        </joint>
+        <joint name='right_backwheel_joint' type='revolute'>
+            <pose relative_to='right_backwheel'/>
+            <parent>chassis</parent>
+            <child>right_backwheel</child>
+            <axis>
+                <xyz expressed_in='__model__'>0 1 0</xyz>
+            </axis>
+        </joint>
+    </model>
+    
+</world>
+</sdf>
