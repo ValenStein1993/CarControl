@@ -17,6 +17,9 @@
         filename="gz-sim-scene-broadcaster-system"
         name="gz::sim::systems::SceneBroadcaster">
     </plugin>
+    <plugin filename="gz-sim-imu-system"
+        name="gz::sim::systems::Imu">
+    </plugin>
 
     <model name="ground_plane">
         <static>true</static>
@@ -73,7 +76,13 @@
                         <size>2.0 1.0 0.5</size>
                     </box>
                 </geometry>
-        </collision>
+            </collision>
+            <sensor name="imu_sensor" type="imu">
+                <always_on>1</always_on>
+                <update_rate>1</update_rate>
+                <visualize>true</visualize>
+                <topic>imu</topic>
+            </sensor>
         </link>
         <link name='left_steering_link'>
             <pose relative_to="chassis">0.8 0.9 0 0 0 0</pose>
@@ -277,10 +286,10 @@
             <right_joint>right_backwheel_joint</right_joint>
             <left_steering_joint>left_steering_joint</left_steering_joint>
             <right_steering_joint>right_steering_joint</right_steering_joint>
-            <kingpin_width>1.2</kingpin_width>       <!-- matches wheel_separation -->
+            <kingpin_width>1.8</kingpin_width>       <!-- matches wheel_separation -->
             <steering_limit>0.6</steering_limit>     <!-- must match joint limits -->
             <wheel_base>1.6</wheel_base>             <!-- distance front to rear axle -->
-            <wheel_separation>1.2</wheel_separation>
+            <wheel_separation>1.8</wheel_separation>
             <wheel_radius>0.4</wheel_radius>
             <odom_publish_frequency>1</odom_publish_frequency>
             <topic>cmd_vel</topic>

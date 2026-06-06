@@ -7,61 +7,55 @@
 
 
 #include "sensor_handler.hpp"
+#include "sensor_collection.hpp"
 #include "cjmcu103.hpp"
 #include "ina219.hpp"
 #include "mpu6050.hpp"
 #include "wheel_encoder.hpp"
-#include "motor_control.hpp"
+#include "drive_control.hpp"
 #include "steer_control.hpp"
 
-SensorHandler::SensorHandler(
-		MPU6050& accelerometer,
-		WheelEncoder& wheelEncoder,
-		INA219& powerSensor,
-		CJMCU103& angleSensor):
-		accelerometer_{accelerometer},
-		wheelEncoder_{wheelEncoder},
-		powerSensor_{powerSensor},
-		angleSensor_{angleSensor} {}
+SensorHandler::SensorHandler(SensorCollection& sensorCollection):
+		sensorCollection_{sensorCollection} {}
 
 void SensorHandler::initSensors() {
-	accelerometer_.init();
-	wheelEncoder_.init();
-	powerSensor_.init();
-	angleSensor_.init();
+	sensorCollection_.accelerometer.init();
+	sensorCollection_.wheelEncoder.init();
+	sensorCollection_.powerSensor.init();
+	sensorCollection_.angleSensor.init();
 }
 
-bool SensorHandler::calibrateSensors(MotorControl& driveControl, SteerControl& steerControl) {
-	if (!accelerometer_.isReady_) {
+bool SensorHandler::calibrateSensors(DriveControl& driveControl, SteerControl& steerControl) {
+	if (!sensorCollection_.accelerometer.isReady_) {
 		calibrateAccelerometer(driveControl);
 	}
 
-	if (!wheelEncoder_.isReady_) {
+	if (!sensorCollection_.wheelEncoder.isReady_) {
 		calibrateWheelEncoder(driveControl);
 	}
 
-	if (!angleSensor_.isReady_) {
+	if (!sensorCollection_.angleSensor.isReady_) {
 		calibrateAngleSensor(driveControl, steerControl);
 	}
 
-	return (accelerometer_.isReady_ & wheelEncoder_.isReady_ & angleSensor_.isReady_);
+	return (sensorCollection_.accelerometer.isReady_ & sensorCollection_.wheelEncoder.isReady_ & sensorCollection_.angleSensor.isReady_);
 }
 
-void SensorHandler::calibrateAccelerometer(MotorControl& driveControl) {
+void SensorHandler::calibrateAccelerometer(DriveControl& driveControl) {
 	driveControl.setDutyCycle(0);
-	accelerometer_.calibrate();
+	sensorCollection_.accelerometer.calibrate();
 }
 
-void SensorHandler::calibrateWheelEncoder(MotorControl& driveControl) {
+void SensorHandler::calibrateWheelEncoder(DriveControl& driveControl) {
 	driveControl.setDutyCycle(0);
-	wheelEncoder_.calibrate();
+	sensorCollection_.wheelEncoder.calibrate();
 }
 
 
-void SensorHandler::calibrateAngleSensor(MotorControl& driveControl, SteerControl& steerControl) {
+void SensorHandler::calibrateAngleSensor(DriveControl& driveControl, SteerControl& steerControl) {
 	driveControl.setDutyCycle(0);
-	float pow = powerSensor_.readPower();
-	float angleSpeedRaw = angleSensor_.readAngleSpeedRaw();
+	float pow = sensorCollection_.powerSensor.readPower();
+	float angleSpeedRaw = sensorCollection_.angleSensor.readAngleSpeedRaw();
 
 	 switch(calState_) {
 		case SteerCalState::INIT:
@@ -80,7 +74,7 @@ void SensorHandler::calibrateAngleSensor(MotorControl& driveControl, SteerContro
 			};
 
 			if (cntDebCal_ > NUM_DEB) {
-				angleSensor_.calibrate();
+				sensorCollection_.angleSensor.calibrate();
 				steerControl.steerRight();
 				calState_ = SteerCalState::STEER_RIGHT;
 				cntDebCal_ = 0;
@@ -96,9 +90,9 @@ void SensorHandler::calibrateAngleSensor(MotorControl& driveControl, SteerContro
 			};
 
 			if (cntDebCal_ > NUM_DEB) {
-				angleSensor_.calibrate();
-				steerControl.steer(0);
-				angleSensor_.calibrate();
+				sensorCollection_.angleSensor.calibrate();
+				//steerControl.setTarget(0);
+				sensorCollection_.angleSensor.calibrate();
 				calState_ = SteerCalState::READY;
 			}
 			break;

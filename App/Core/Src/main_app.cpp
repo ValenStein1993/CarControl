@@ -9,15 +9,15 @@
 
 /*
  *
- * PID Controller für Motoren
- * Kalibrierung von Odometrie für x richtung (gerade aus)
+ * PID Bedatung festlegen!
+ * Encoder Berechnung auf interrupts umstellen
  *
  */
 
 #include "main_app.hpp"
 #include "uart.hpp"
 #include "scheduler.hpp"
-#include "motor_control.hpp"
+#include "drive_control.hpp"
 #include "mpu6050.hpp"
 #include "wheel_encoder.hpp"
 #include "datatypes.hpp"
@@ -26,6 +26,7 @@
 #include "ina219.hpp"
 #include "steer_control.hpp"
 #include "cjmcu103.hpp"
+#include "sensor_collection.hpp"
 #include "sensor_handler.hpp"
 
 
@@ -52,12 +53,13 @@ static MPU6050_ accelerometer(&hi2c1);
 static WheelEncoder wheelEncoder(&htim2);
 static INA219_ powerSensor(&hi2c1);
 static CJMCU103_ angleSensor(&hadc1);
-static SensorHandler sensorHandler(accelerometer, wheelEncoder, powerSensor, angleSensor);
+static SensorCollection sensorCollection{accelerometer, wheelEncoder, powerSensor, angleSensor};
+static SensorHandler sensorHandler(sensorCollection);
 
 // initialize controllers
-static MotorControl driveControl(&htim10);
-static Localizer localizer(accelerometer, wheelEncoder, angleSensor);
-static SteerControl steerControl(&htim12, powerSensor, angleSensor);
+static DriveControl driveControl(&htim10, sensorCollection);
+static SteerControl steerControl(&htim12, sensorCollection);
+static Localizer localizer(sensorCollection);
 
 // define logging variables
 float curr, angle, angleSpeed;
@@ -93,6 +95,12 @@ void main_loop() {
 		angleSpeed = angleSensor.readAngleSpeed();
 
 		if (sensorsReady) {
+			driveControl.setTarget(0.5);
+			steerControl.setTarget(20);
+
+			driveControl.controlSpeed();
+			steerControl.controlAngle();
+
 			localizer.updateStateSpace();
 		}
 

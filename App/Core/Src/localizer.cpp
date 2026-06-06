@@ -8,18 +8,11 @@
 #include <cmath>
 
 #include "localizer.hpp"
-#include "mpu6050.hpp"
-#include "wheel_encoder.hpp"
 
 extern float dt;
 
-Localizer::Localizer(
-		MPU6050& accelerometer,
-		WheelEncoder& wheelEncoder,
-		CJMCU103& angleSensor):
-				accelerometer_{accelerometer},
-				wheelEncoder_{wheelEncoder},
-				angleSensor_{angleSensor} {
+Localizer::Localizer(SensorCollection& sensorCollection):
+				sensorCollection_{sensorCollection} {
 
 	pos_ = {};
 	stateSpace_ = {};
@@ -36,18 +29,18 @@ void Localizer::updateStateSpace() {
 	// x = {x, y, v, phi};
 	_float_t* x = stateSpace_.ekf.x;
 
-	Coord accel = accelerometer_.readAccel();
+	Coord accel = sensorCollection_.accelerometer.readAccel();
 	float a = std::sqrt(std::pow(accel.x, 2) + std::pow(accel.y, 2));
-	float var_a = std::pow(accel.x, 2) / std::pow(a, 2) * accelerometer_.var_accel_.x +
-			std::pow(accel.y, 2) / std::pow(a, 2) * accelerometer_.var_accel_.y;
+	float var_a = std::pow(accel.x, 2) / std::pow(a, 2) * sensorCollection_.accelerometer.var_accel_.x +
+			std::pow(accel.y, 2) / std::pow(a, 2) * sensorCollection_.accelerometer.var_accel_.y;
 
-	float theta = angleSensor_.readAngle(); // einheiten überprüfen
+	float theta = sensorCollection_.angleSensor.readAngle(); // einheiten überprüfen
 
 	stateSpace_.u[0] = a;
 	stateSpace_.u[1] = theta;
 
-	stateSpace_.z[0] = wheelEncoder_.getTranslSpeed();
-	stateSpace_.z[1] = accelerometer_.readGyro().z;
+	stateSpace_.z[0] = sensorCollection_.wheelEncoder.getTranslSpeed();
+	stateSpace_.z[1] = sensorCollection_.accelerometer.readGyro().z;
 
 	// ---- model equations ----
 	// x_k = x_k-1 + v_k-1 * cos(phi_k-1) * dt
@@ -82,11 +75,11 @@ void Localizer::updateStateSpace() {
 	// calculate Q from measurement noise W as Q = GWG with G as input jacobian
 	stateSpace_.Q[9] = weightCovModel * std::pow(dt, 2) * var_a;
 	// cov = (v/L/cos(theta)^2*dt)^2*var_theta
-	stateSpace_.Q[15] = weightCovModel * std::pow(1 / wheelWidth * stateSpace_.fx[2] / std::pow(std::cos(theta), 2) * dt, 2) * angleSensor_.var_angle_;
+	stateSpace_.Q[15] = weightCovModel * std::pow(1 / wheelWidth * stateSpace_.fx[2] / std::pow(std::cos(theta), 2) * dt, 2) * sensorCollection_.angleSensor.var_angle_;
 
 	// ---- measurement covariance ----
-	stateSpace_.R[0] = weightCovMeasurement * wheelEncoder_.var_;
-	stateSpace_.R[3] = weightCovMeasurement * accelerometer_.var_gyro_.z;
+	stateSpace_.R[0] = weightCovMeasurement * sensorCollection_.wheelEncoder.var_;
+	stateSpace_.R[3] = weightCovMeasurement * sensorCollection_.accelerometer.var_gyro_.z;
 
 	// prediction step with model and inputs
 	ekf_predict(&stateSpace_.ekf, stateSpace_.fx, stateSpace_.F, stateSpace_.Q);

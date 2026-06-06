@@ -11,22 +11,19 @@
 #include "datatypes.hpp"
 #include "stm32f4xx_hal.h"
 #include "motor_control.hpp"
-#include "ina219.hpp"
-#include "cjmcu103.hpp"
+#include "sensor_collection.hpp"
 
 class SteerControl: public MotorControl {
 public:
 
-	SteerControl(TIM_HandleTypeDef* handle, INA219& powSense, CJMCU103& angSense);
+	SteerControl(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection);
 
 	void steerLeft();
 	void steerRight();
-	void stopSteer();
-	void steer(float angle);
+	void controlAngle();
 
 private:
-	INA219& m_powSense;
-	CJMCU103& m_angSense;
+
 };
 
 

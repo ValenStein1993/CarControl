@@ -11,9 +11,8 @@
 #define EKF_N 4 // state dimension, x = {x, y, v, phi};
 #define EKF_M 2 // measurement dimension, z = {v, phi_dot};
 #define EKF_U 2 // input dimension, u = {a, theta};
-#include "mpu6050.hpp"
-#include "wheel_encoder.hpp"
-#include "cjmcu103.hpp"
+
+#include "sensor_collection.hpp"
 #include "tinyekf.h"
 
 constexpr float wheelWidth = 3;
@@ -40,11 +39,9 @@ struct VehicleStateSpace {
 
 class Localizer {
 public:
-	Localizer(MPU6050& accelerometer, WheelEncoder& wheelEncoder, CJMCU103& angleSensor);
+	Localizer(SensorCollection& sensorCollection);
 
-	MPU6050& accelerometer_;
-	WheelEncoder& wheelEncoder_;
-	CJMCU103& angleSensor_;
+	SensorCollection& sensorCollection_;
 	Position pos_;
 	VehicleStateSpace stateSpace_;
 

@@ -5,40 +5,33 @@
  *      Author: valen
  */
 
+#include <cmath>
 #include "steer_control.hpp"
 
-SteerControl::SteerControl(TIM_HandleTypeDef* handle, INA219& powSense, CJMCU103& angSense)
-	: MotorControl{handle},
-	  m_powSense{powSense},
-	  m_angSense{angSense} {}
+SteerControl::SteerControl(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
+	: MotorControl{handle, sensorCollection} {}
 
 void SteerControl::steerLeft() {
-	setDutyCycle(0, TIM_CHANNEL_1);
-	setDutyCycle(0.7, TIM_CHANNEL_2);
+	setActiveChannel(TIM_CHANNEL_2);
 }
 
 void SteerControl::steerRight() {
-	setDutyCycle(0, TIM_CHANNEL_2);
-	setDutyCycle(0.7, TIM_CHANNEL_1);
+	setActiveChannel(TIM_CHANNEL_1);
 }
 
-void SteerControl::stopSteer() {
-		setDutyCycle(0, TIM_CHANNEL_2);
-		setDutyCycle(0, TIM_CHANNEL_1);
-}
-
-void SteerControl::steer(float angle) {
-	float angleCurr = m_angSense.readAngle();
-	if (angleCurr < angle) {
+void SteerControl::controlAngle() {
+	if (err_ < 0) {
 		steerRight();
 	}
-	else if (angleCurr > angle) {
+	else if (err_ > 0) {
 		steerLeft();
 	}
-	else {
-		stopSteer();
-	}
+
+	float angleCurr = sensorCollection_.angleSensor.readAngle();
+	controlTarget(angleCurr);
 }
+
+
 
 
 
