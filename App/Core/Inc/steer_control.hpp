@@ -14,10 +14,10 @@
 #include "sensor_collection.hpp"
 #include "simulator.hpp"
 
-class SteerControlAktr: public MotorControl {
+class SteerControlActr: public MotorControl {
 public:
 
-	SteerControlAktr(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection);
+	SteerControlActr(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection);
 
 	void steerLeft();
 	void steerRight();
@@ -28,11 +28,11 @@ private:
 
 };
 
-class SteerControlSim: public SteerControlAktr {
+class SteerControlSim: public SteerControlActr {
 public:
 
 	SteerControlSim(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
-		: SteerControlAktr{handle, sensorCollection} {};
+		: SteerControlActr{handle, sensorCollection} {};
 
 	void setAngle(float target) {
 		sim->SetAngle = target;
@@ -43,7 +43,7 @@ public:
 #ifdef SIMULATION
 using SteerControl = SteerControlSim;
 #else
-using SteerControl = SteerControlAktr;
+using SteerControl = SteerControlActr;
 #endif
 
 

@@ -15,10 +15,10 @@
 
 
 
-class DriveControlAktr: public MotorControl {
+class DriveControlActr: public MotorControl {
 public:
 
-	DriveControlAktr(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection);
+	DriveControlActr(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection);
 
 	void setSpeed(float target);
 	void controlSpeed();
@@ -27,11 +27,11 @@ private:
 
 };
 
-class DriveControlSim: public DriveControlAktr {
+class DriveControlSim: public DriveControlActr {
 public:
 
 	DriveControlSim(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
-		: DriveControlAktr{handle, sensorCollection} {};
+		: DriveControlActr{handle, sensorCollection} {};
 
 	void setSpeed(float target) {
 		sim->SetSpeed = target;
@@ -42,7 +42,7 @@ public:
 #ifdef SIMULATION
 using DriveControl = DriveControlSim;
 #else
-using DriveControl = DriveControlAktr;
+using DriveControl = DriveControlActr;
 #endif
 
 #endif /* INC_DRIVE_CONTROL_HPP_ */

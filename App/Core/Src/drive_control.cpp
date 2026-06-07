@@ -9,13 +9,13 @@
 #include "drive_control.hpp"
 
 
-DriveControlAktr::DriveControlAktr(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
+DriveControlActr::DriveControlActr(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
 	: MotorControl{handle, sensorCollection} {}
 
-void DriveControlAktr::setSpeed(float target) {
+void DriveControlActr::setSpeed(float target) {
 	setTarget(target);
 }
-void DriveControlAktr::controlSpeed() {
+void DriveControlActr::controlSpeed() {
 	float speed = sensorCollection_.wheelEncoder.getTranslSpeed();
 	controlTarget(speed);
 }
