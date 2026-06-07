@@ -14,65 +14,89 @@ namespace Antmicro.Renode.Peripherals.Simulation
 
         private void DefineRegisters()
         {
-            Registers.AccelX.Define(this)
+            Registers.MPU6050_AccelX.Define(this)
                 .WithValueField(0, 32,
-                    writeCallback: (_, v) => AccelX = ToFloat(v),
-                    valueProviderCallback: _ => FromFloat(AccelX),
-                    name: "ACCEL_X");
+                    writeCallback: (_, v) => MPU6050_AccelX = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(MPU6050_AccelX),
+                    name: "MPU6050_AccelX");
 
-            Registers.AccelY.Define(this)
+            Registers.MPU6050_AccelY.Define(this)
                 .WithValueField(0, 32,
-                    writeCallback: (_, v) => AccelY = ToFloat(v),
-                    valueProviderCallback: _ => FromFloat(AccelY),
-                    name: "ACCEL_Y");
+                    writeCallback: (_, v) => MPU6050_AccelY = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(MPU6050_AccelY),
+                    name: "MPU6050_AccelY");
 
-            Registers.AccelZ.Define(this)
+            Registers.MPU6050_AccelZ.Define(this)
                 .WithValueField(0, 32,
-                    writeCallback: (_, v) => AccelZ = ToFloat(v),
-                    valueProviderCallback: _ => FromFloat(AccelZ),
-                    name: "ACCEL_Z");
+                    writeCallback: (_, v) => MPU6050_AccelZ = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(MPU6050_AccelZ),
+                    name: "MPU6050_AccelZ");
 
-            Registers.GyroX.Define(this)
+            Registers.MPU6050_GyroX.Define(this)
                 .WithValueField(0, 32,
-                    writeCallback: (_, v) => GyroX = ToFloat(v),
-                    valueProviderCallback: _ => FromFloat(GyroX),
-                    name: "GYRO_X");
+                    writeCallback: (_, v) => MPU6050_GyroX = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(MPU6050_GyroX),
+                    name: "MPU6050_GyroX");
 
-            Registers.GyroY.Define(this)
+            Registers.MPU6050_GyroY.Define(this)
                 .WithValueField(0, 32,
-                    writeCallback: (_, v) => GyroY = ToFloat(v),
-                    valueProviderCallback: _ => FromFloat(GyroY),
-                    name: "GYRO_Y");
+                    writeCallback: (_, v) => MPU6050_GyroY = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(MPU6050_GyroY),
+                    name: "MPU6050_GyroY");
 
-            Registers.GyroZ.Define(this)
+            Registers.MPU6050_GyroZ.Define(this)
                 .WithValueField(0, 32,
-                    writeCallback: (_, v) => GyroZ = ToFloat(v),
-                    valueProviderCallback: _ => FromFloat(GyroZ),
-                    name: "GYRO_Z");
+                    writeCallback: (_, v) => MPU6050_GyroZ = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(MPU6050_GyroZ),
+                    name: "MPU6050_GyroZ");
 
-            Registers.Current.Define(this)
+            Registers.INA219_Current.Define(this)
                 .WithValueField(0, 32,
-                    writeCallback: (_, v) => Current = ToFloat(v),
-                    valueProviderCallback: _ => FromFloat(Current),
-                    name: "CURRENT");
+                    writeCallback: (_, v) => INA219_Current = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(INA219_Current),
+                    name: "INA219_Current");
 
-            Registers.Power.Define(this)
+            Registers.INA219_Power.Define(this)
                 .WithValueField(0, 32,
-                    writeCallback: (_, v) => Power = ToFloat(v),
-                    valueProviderCallback: _ => FromFloat(Power),
-                    name: "POWER");
+                    writeCallback: (_, v) => INA219_Power = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(INA219_Power),
+                    name: "INA219_Power");
 
-            Registers.Angle.Define(this)
+            Registers.CJMCU103_Angle.Define(this)
                 .WithValueField(0, 32,
-                    writeCallback: (_, v) => Angle = ToFloat(v),
-                    valueProviderCallback: _ => FromFloat(Angle),
-                    name: "ANGLE");
+                    writeCallback: (_, v) => CJMCU103_Angle = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(CJMCU103_Angle),
+                    name: "CJMCU103_Angle");
 
-            Registers.AngleSpeed.Define(this)
+            Registers.CJMCU103_AngleSpeed.Define(this)
                 .WithValueField(0, 32,
-                    writeCallback: (_, v) => AngleSpeed = ToFloat(v),
-                    valueProviderCallback: _ => FromFloat(AngleSpeed),
-                    name: "ANGLESPEED");
+                    writeCallback: (_, v) => CJMCU103_AngleSpeed = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(CJMCU103_AngleSpeed),
+                    name: "CJMCU103_AngleSpeed");
+            
+            Registers.WheelEncoder_RotSpeed.Define(this)
+                .WithValueField(0, 32,
+                    writeCallback: (_, v) => WheelEncoder_RotSpeed = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(WheelEncoder_RotSpeed),
+                    name: "WheelEncoder_RotSpeed");
+
+            Registers.WheelEncoder_TranslSpeed.Define(this)
+                .WithValueField(0, 32,
+                    writeCallback: (_, v) => WheelEncoder_TranslSpeed = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(WheelEncoder_TranslSpeed),
+                    name: "WheelEncoder_TranslSpeed");
+
+            Registers.SetSpeed.Define(this)
+                .WithValueField(0, 32,
+                    writeCallback: (_, v) => SetSpeed = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(SetSpeed),
+                    name: "SetSpeed");
+
+            Registers.SetAngle.Define(this)
+                .WithValueField(0, 32,
+                    writeCallback: (_, v) => SetAngle = ToFloat(v),
+                    valueProviderCallback: _ => FromFloat(SetAngle),
+                    name: "SetAngle");
         }
 
         // Reinterpret uint bits as float
@@ -89,29 +113,37 @@ namespace Antmicro.Renode.Peripherals.Simulation
 
         public long Size => 0x1000;
 
-        public float AccelX { get; set; }
-        public float AccelY { get; set; }
-        public float AccelZ { get; set; }
-        public float GyroX { get; set; }
-        public float GyroY { get; set; }
-        public float GyroZ { get; set; }
-        public float Current { get; set; }
-        public float Power { get; set; }
-        public float Angle { get; set; }
-        public float AngleSpeed { get; set; }
+        public float MPU6050_AccelX { get; set; }
+        public float MPU6050_AccelY { get; set; }
+        public float MPU6050_AccelZ { get; set; }
+        public float MPU6050_GyroX { get; set; }
+        public float MPU6050_GyroY { get; set; }
+        public float MPU6050_GyroZ { get; set; }
+        public float INA219_Current { get; set; }
+        public float INA219_Power { get; set; }
+        public float CJMCU103_Angle { get; set; }
+        public float CJMCU103_AngleSpeed { get; set; }
+        public float WheelEncoder_RotSpeed { get; set; }
+        public float WheelEncoder_TranslSpeed { get; set; }
+        public float SetSpeed { get; set; }
+        public float SetAngle { get; set; }
 
         private enum Registers : long
         {
-            AccelX     = 0x00,
-            AccelY     = 0x04,
-            AccelZ     = 0x08,
-            GyroX      = 0x0C,
-            GyroY      = 0x10,
-            GyroZ      = 0x14,
-            Current    = 0x18,
-            Power      = 0x1C,
-            Angle      = 0x20,
-            AngleSpeed = 0x24
+            MPU6050_AccelX     = 0x00,
+            MPU6050_AccelY     = 0x04,
+            MPU6050_AccelZ     = 0x08,
+            MPU6050_GyroX      = 0x0C,
+            MPU6050_GyroY      = 0x10,
+            MPU6050_GyroZ      = 0x14,
+            INA219_Current    = 0x18,
+            INA219_Power      = 0x1C,
+            CJMCU103_Angle      = 0x20,
+            CJMCU103_AngleSpeed = 0x24,
+            WheelEncoder_RotSpeed = 0x28,
+            WheelEncoder_TranslSpeed = 0x2C,
+            SetSpeed   = 0x30,
+            SetAngle   = 0x34
         }
     }
 }

@@ -17,9 +17,9 @@
 #define NUM_ANGLE 10u
 #define FREQ_TIM3 0.01f
 
-class CJMCU103: public Sensor {
+class CJMCU103Snsr: public Sensor {
 public:
-	CJMCU103(ADC_HandleTypeDef* handle);
+	CJMCU103Snsr(ADC_HandleTypeDef* handle);
 	uint16_t angleRawLeft_{0};
 	uint16_t angleRawRight_{0};
 	float mu_angle_{0};
@@ -41,19 +41,19 @@ private:
 	void _calibrate() override;
 };
 
-class SimCJMCU103: public CJMCU103 {
+class CJMCU103Sim: public CJMCU103Snsr {
 public:
-	SimCJMCU103(ADC_HandleTypeDef* handle): CJMCU103(nullptr) {};
+	CJMCU103Sim(ADC_HandleTypeDef* handle): CJMCU103Snsr(nullptr) {};
 	void init() override {};
-	float readAngle() override {return sim->angle;}
-	float readAngleSpeed() override { return sim->angleSpeed;}
+	float readAngle() override {return sim->CJMCU103_Angle;}
+	float readAngleSpeed() override { return sim->CJMCU103_AngleSpeed;}
 };
 
 
 #ifdef SIMULATION
-using CJMCU103_ = SimCJMCU103;
+using CJMCU103 = CJMCU103Sim;
 #else
-using CJMCU103_ = CJMCU103;
+using CJMCU103 = CJMCU103Snsr;
 #endif
 
 

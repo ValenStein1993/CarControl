@@ -49,10 +49,10 @@ static DataLogger datalogger{uart};
 
 // initialize sensors
 
-static MPU6050_ accelerometer(&hi2c1);
+static MPU6050 accelerometer(&hi2c1);
 static WheelEncoder wheelEncoder(&htim2);
-static INA219_ powerSensor(&hi2c1);
-static CJMCU103_ angleSensor(&hadc1);
+static INA219 powerSensor(&hi2c1);
+static CJMCU103 angleSensor(&hadc1);
 static SensorCollection sensorCollection{accelerometer, wheelEncoder, powerSensor, angleSensor};
 static SensorHandler sensorHandler(sensorCollection);
 
@@ -95,8 +95,8 @@ void main_loop() {
 		angleSpeed = angleSensor.readAngleSpeed();
 
 		if (sensorsReady) {
-			driveControl.setTarget(0.5);
-			steerControl.setTarget(20);
+			driveControl.setSpeed(0.5);
+			steerControl.setAngle(20);
 
 			driveControl.controlSpeed();
 			steerControl.controlAngle();

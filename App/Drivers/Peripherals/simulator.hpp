@@ -10,16 +10,20 @@
 
 struct SimData
 {
-	float accelX;
-	float accelY;
-	float accelZ;
-	float gyroX;
-    float gyroY;
-    float gyroZ;
-    float current;
-    float power;
-    float angle;
-    float angleSpeed;
+	float MPU6050_AccelX;
+	float MPU6050_AccelY;
+	float MPU6050_AccelZ;
+	float MPU6050_GyroX;
+	float MPU6050_GyroY;
+	float MPU6050_GyroZ;
+	float INA219_Current;
+	float INA219_Power;
+	float CJMCU103_Angle;
+	float CJMCU103_AngleSpeed;
+	float WheelEncoder_RotSpeed;
+	float WheelEncoder_TranslSpeed;
+	float SetSpeed;
+	float SetAngle;
 };
 
 inline volatile SimData* sim =

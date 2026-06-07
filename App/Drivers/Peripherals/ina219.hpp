@@ -17,9 +17,9 @@
 #define CURR_LSB  0.0001f   // 100 uA per bit
 #define INA219_CAL  (0.04096f / (R_SHUNT * CURR_LSB))
 
-class INA219: public Sensor {
+class INA219Snsr: public Sensor {
 public:
-	INA219(I2C_HandleTypeDef* handle);
+	INA219Snsr(I2C_HandleTypeDef* handle);
 
 	void init() override;
 	virtual float readCurrent();
@@ -31,19 +31,19 @@ private:
 
 };
 
-class SimINA219: public INA219 {
+class INA219Sim: public INA219Snsr {
 public:
-	SimINA219(I2C_HandleTypeDef* handle): INA219(nullptr) {};
+	INA219Sim(I2C_HandleTypeDef* handle): INA219Snsr(nullptr) {};
 	void init() override {};
-	float readCurrent() override {return sim->current;}
-	float readPower() override { return sim->power;}
+	float readCurrent() override {return sim->INA219_Current;}
+	float readPower() override { return sim->INA219_Power;}
 };
 
 
 #ifdef SIMULATION
-using INA219_ = SimINA219;
+using INA219 = INA219Sim;
 #else
-using INA219_ = INA219;
+using INA219 = INA219Snsr;
 #endif
 
 

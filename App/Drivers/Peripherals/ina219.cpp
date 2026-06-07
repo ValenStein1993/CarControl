@@ -10,9 +10,9 @@
 #include "ina219.hpp"
 
 
-INA219::INA219(I2C_HandleTypeDef* handle): handle_{handle} {}
+INA219Snsr::INA219Snsr(I2C_HandleTypeDef* handle): handle_{handle} {}
 
-void INA219::init() {
+void INA219Snsr::init() {
 	uint16_t cal = (uint16_t)INA219_CAL;
 
     uint8_t data[2];
@@ -23,7 +23,7 @@ void INA219::init() {
 }
 
 
-float INA219::readCurrent() {
+float INA219Snsr::readCurrent() {
     uint8_t data[2];
     int16_t raw;
 
@@ -34,7 +34,7 @@ float INA219::readCurrent() {
     return current;
 }
 
-float INA219::readPower() {
+float INA219Snsr::readPower() {
     uint8_t data[2];
     int16_t raw;
 

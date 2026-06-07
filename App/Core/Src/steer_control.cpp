@@ -8,18 +8,22 @@
 #include <cmath>
 #include "steer_control.hpp"
 
-SteerControl::SteerControl(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
+SteerControlAktr::SteerControlAktr(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
 	: MotorControl{handle, sensorCollection} {}
 
-void SteerControl::steerLeft() {
+void SteerControlAktr::steerLeft() {
 	setActiveChannel(TIM_CHANNEL_2);
 }
 
-void SteerControl::steerRight() {
+void SteerControlAktr::steerRight() {
 	setActiveChannel(TIM_CHANNEL_1);
 }
 
-void SteerControl::controlAngle() {
+void SteerControlAktr::setAngle(float target) {
+	setTarget(target);
+}
+
+void SteerControlAktr::controlAngle() {
 	if (err_ < 0) {
 		steerRight();
 	}

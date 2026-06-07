@@ -11,20 +11,20 @@
 
 extern float dt;
 
-WheelEncoder::WheelEncoder(TIM_HandleTypeDef* handle):
+WheelEncoderSnsr::WheelEncoderSnsr(TIM_HandleTypeDef* handle):
 		handle_{handle} {}
 
-void WheelEncoder::_calibrate() {
+void WheelEncoderSnsr::_calibrate() {
 	calcVariance();
 	isReady_ = true;
 }
 
-void WheelEncoder::calcVariance() {
+void WheelEncoderSnsr::calcVariance() {
 	float varTicks = 1/12; // variance uniform distribution
 	var_ = std::pow(pi * wheelDmtr / (N_TICKS * dt), 2) * varTicks;
 }
 
-void WheelEncoder::calcSpeed() {
+void WheelEncoderSnsr::calcSpeed() {
 	uint16_t cnt = __HAL_TIM_GET_COUNTER(handle_);
 	int16_t diff = cnt - cntLast_;
 
@@ -33,11 +33,11 @@ void WheelEncoder::calcSpeed() {
 	translSpeed_ = pi * wheelDmtr * rotSpeed_;
 }
 
-float WheelEncoder::getRotSpeed() {
+float WheelEncoderSnsr::getRotSpeed() {
 	return rotSpeed_;
 }
 
-float WheelEncoder::getTranslSpeed() {
+float WheelEncoderSnsr::getTranslSpeed() {
 	return translSpeed_;
 }
 

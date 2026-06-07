@@ -13,11 +13,12 @@
 
 #include "stm32f4xx_hal.h"
 #include "sensor.hpp"
+#include "simulator.hpp"
 
 
-class WheelEncoder: public Sensor {
+class WheelEncoderSnsr: public Sensor {
 public:
-	WheelEncoder(TIM_HandleTypeDef* handle);
+	WheelEncoderSnsr(TIM_HandleTypeDef* handle);
 	float var_ = 0;
 
 	void calcSpeed();
@@ -34,5 +35,20 @@ private:
 	void _calibrate() override;
 
 };
+
+class WheelEncoderSim: public WheelEncoderSnsr {
+public:
+	WheelEncoderSim(TIM_HandleTypeDef* handle): WheelEncoderSnsr(nullptr) {};
+	float getRotSpeed() {return sim->WheelEncoder_RotSpeed;}
+	float getTranslSpeed() { return sim->WheelEncoder_TranslSpeed;}
+};
+
+
+#ifdef SIMULATION
+using WheelEncoder = WheelEncoderSim;
+#else
+using WheelEncoder = WheelEncoderSnsr;
+#endif
+
 
 #endif /* INC_WHEEL_ENCODER_HPP_ */

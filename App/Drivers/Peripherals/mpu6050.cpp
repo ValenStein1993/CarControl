@@ -1,5 +1,5 @@
 /*
- * mpu6050.cpp
+ * MPU6050Snsr.cpp
  *
  *  Created on: 10.03.2026
  *      Author: valen
@@ -10,18 +10,18 @@
 #include "utils.hpp"
 
 
-MPU6050::MPU6050(I2C_HandleTypeDef* handle) {
+MPU6050Snsr::MPU6050Snsr(I2C_HandleTypeDef* handle) {
 	handle_ = handle;
 }
 
-void MPU6050::init() {
+void MPU6050Snsr::init() {
 	uint8_t data = 0;
 	HAL_I2C_Mem_Write(handle_, MPU6050_ADDR, 0x6B, 1, &data, 1, HAL_MAX_DELAY); // wake up
 	HAL_I2C_Mem_Write(handle_, MPU6050_ADDR, 0x1C, 1, &data, 1, HAL_MAX_DELAY); // accel ±2g
 	HAL_I2C_Mem_Write(handle_, MPU6050_ADDR, 0x1B, 1, &data, 1, HAL_MAX_DELAY); // gyro ±250 dps
 }
 
-void MPU6050::_calibrate() {
+void MPU6050Snsr::_calibrate() {
 	for (uint16_t i = 1; i < 100; i++) {
 		Coord accel = readAccel();
 		Coord gyro = readGyro();
@@ -39,7 +39,7 @@ void MPU6050::_calibrate() {
 	isReady_ = true;
 }
 
-Coord MPU6050::readAccel() {
+Coord MPU6050Snsr::readAccel() {
 	uint8_t buffer[6];
 	HAL_I2C_Mem_Read(handle_, MPU6050_ADDR, 0x3B, 1, buffer, 6, HAL_MAX_DELAY);
 
@@ -50,7 +50,7 @@ Coord MPU6050::readAccel() {
 	return accel;
 }
 
-Coord MPU6050::readGyro() {
+Coord MPU6050Snsr::readGyro() {
 	uint8_t buffer[6];
 	HAL_I2C_Mem_Read(handle_, MPU6050_ADDR, 0x43, 1, buffer, 6, HAL_MAX_DELAY);
 
@@ -61,14 +61,14 @@ Coord MPU6050::readGyro() {
 	return accel;
 }
 
-float MPU6050::convAccel(int16_t val_raw) {
+float MPU6050Snsr::convAccel(int16_t val_raw) {
 	// scaling for +- 2g resolution: 16384
 	// g = 9.81 m/s^2
 	float val_conv = 9.81;
 	return val_conv * val_raw  / 16384;
 }
 
-float MPU6050::convGyro(int16_t val_raw) {
+float MPU6050Snsr::convGyro(int16_t val_raw) {
 	// scaling for +- 250°/s resolution: 131
 	// rad = pi / 180 * 250
 	float val_conv = 3.141592;

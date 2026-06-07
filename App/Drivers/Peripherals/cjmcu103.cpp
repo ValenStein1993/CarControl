@@ -13,13 +13,13 @@
 
 extern float dt;
 
-CJMCU103::CJMCU103(ADC_HandleTypeDef* handle): handle_ {handle} {};
+CJMCU103Snsr::CJMCU103Snsr(ADC_HandleTypeDef* handle): handle_ {handle} {};
 
-void CJMCU103::init() {
+void CJMCU103Snsr::init() {
 	HAL_ADC_Start_DMA(handle_, (uint32_t*) angleRaw_, NUM_ANGLE);
 }
 
-void CJMCU103::_calibrate() {
+void CJMCU103Snsr::_calibrate() {
 	if (angleRawLeft_ == 0) {
 		angleRawLeft_ = readAngleRaw();
 	} else if (angleRawRight_ == 0) {
@@ -38,19 +38,19 @@ void CJMCU103::_calibrate() {
 	}
 }
 
-float CJMCU103::readAngleRaw() {
+float CJMCU103Snsr::readAngleRaw() {
 	// calculate mean of DMA buffer to reduce noise
 	float avg_angleRaw = std::accumulate(angleRaw_, angleRaw_ + NUM_ANGLE, 0.0f) / NUM_ANGLE;
 	return avg_angleRaw;
 };
 
-float CJMCU103::readAngle() {
+float CJMCU103Snsr::readAngle() {
 	// calculate mean of DMA buffer to reduce noise
 	float avg_angleRaw = readAngleRaw();
 	return convAngleRaw(avg_angleRaw);
 };
 
-float CJMCU103::readAngleSpeedRaw() {
+float CJMCU103Snsr::readAngleSpeedRaw() {
 	int idxNext = NUM_ANGLE - __HAL_DMA_GET_COUNTER(handle_->DMA_Handle);
 	int idxNewest = (idxNext - 1 + NUM_ANGLE) % NUM_ANGLE;
 	int idxOldest = idxNext % NUM_ANGLE;
@@ -59,7 +59,7 @@ float CJMCU103::readAngleSpeedRaw() {
 	return angleSpeed;
 };
 
-float CJMCU103::readAngleSpeed() {
+float CJMCU103Snsr::readAngleSpeed() {
 	int idxNext = NUM_ANGLE - __HAL_DMA_GET_COUNTER(handle_->DMA_Handle);
 	int idxNewest = (idxNext - 1 + NUM_ANGLE) % NUM_ANGLE;
 	int idxOldest = idxNext % NUM_ANGLE;
@@ -68,7 +68,7 @@ float CJMCU103::readAngleSpeed() {
 	return angleSpeed;
 };
 
-float CJMCU103::convAngleRaw(float angleRaw) {
+float CJMCU103Snsr::convAngleRaw(float angleRaw) {
 	// if calibration has not been finished, return 0
 	if (angleRawLeft_ == 0 && angleRawRight_ == 0) {
 		return 0.0;
