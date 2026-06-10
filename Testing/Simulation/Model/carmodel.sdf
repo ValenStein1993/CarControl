@@ -2,7 +2,7 @@
 <sdf version="1.8">
 <world name="simworld">
     <physics name="1ms" type="ignored">
-        <max_step_size>0.001</max_step_size>
+        <max_step_size>0.1</max_step_size>
         <real_time_factor>1.0</real_time_factor>
     </physics>
     <plugin
@@ -227,6 +227,7 @@
                 <limit>
                     <lower>-0.6</lower>  <!-- ~34 degrees -->
                     <upper>0.6</upper>
+                    <effort>1e6</effort> 
                 </limit>
             </axis>
         </joint>
@@ -240,6 +241,7 @@
                 <limit>
                     <lower>-0.6</lower>
                     <upper>0.6</upper>
+                    <effort>1e6</effort> 
                 </limit>
             </axis>
         </joint>

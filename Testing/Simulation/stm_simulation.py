@@ -15,10 +15,21 @@ class StmSimulation:
 
         self.m.execute(f"path add @{SCRIPT_DIR}")
         self.m.execute_script("run_renode.resc")
-        self.m.execute("start")
-
         self.simdata = self.e.stm32.sysbus.sim
     
+    def run(self):
+        self.m.execute("emulation RunFor '0.1'")
+
+    def set_sensor_data(self, sensor_data):
+        for key, value in sensor_data.items():
+            setattr(self.simdata, key, value)     
+
+    def get_actuator_data(self):
+        return {
+            'SetSpeed': self.simdata.SetSpeed,
+            'SetAngle': self.simdata.SetAngle,
+        }
+
     def run_simulation(self, input):
         def run_simulation_():
             for timestamp, values in input:
