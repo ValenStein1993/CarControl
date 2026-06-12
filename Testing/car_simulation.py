@@ -1,8 +1,8 @@
 import serial
 import math
+import subprocess
 
-from Simulation.stm_simulation import StmSimulation
-from Monitor.uart_monitor import UartMonitor
+from stm_simulation import StmSimulation
 
 from gz.sim import TestFixture
 from gz.transport import Node
@@ -31,7 +31,7 @@ class CarSimulation:
         }
 
         # setup Gazebo simulation
-        self.simmodel = TestFixture('./Simulation/Model/carmodel.sdf')
+        self.simmodel = TestFixture('./CarModel/carmodel.sdf')
         self.node = Node()
         self.node.subscribe(IMU, "/imu", self.get_imu_data)
         self.pub_actr = self.node.advertise("/cmd_vel", Twist)
@@ -43,7 +43,9 @@ class CarSimulation:
         # setup Renode simulation
         self.stmsim = StmSimulation()
 
-    def run(self):
+    def run(self, headless=True):
+        if not headless:
+            subprocess.Popen(["gz", "sim", "-g"])
         self.server.run(True, 1000, False)
 
     def on_pre_update_cb(self, info, ecm):

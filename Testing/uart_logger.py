@@ -1,16 +1,17 @@
 import struct
 import serial
-import time
+import argparse
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtWidgets
 from collections import deque
 
-class UartMonitor:
+class UartLogger:
     def __init__(self, ser):
         self.variables = []
         self.data = []
         self.subplots = []
         self.payload_size = 0
+        self.win = None
 
         self.ser = ser
         self.read_uart() # get config
@@ -99,18 +100,19 @@ class UartMonitor:
     def update_plot(self):
         self.read_uart()
 
+        if not self.win:
+            self.win = pg.GraphicsLayoutWidget(show=True)
+            for idx, var in enumerate(self.variables):
+                plot = self.win.addPlot(row=idx, col=0)
+                plot.setLabel("left", var["name"])
+                curve = plot.plot()
+                self.subplots.append(curve)
+
         for idx in range(len(self.variables)):
             self.subplots[idx].setData(list(self.data[idx]))
 
-    def run(self):
+    def monitor(self):
         app = QtWidgets.QApplication([])
-        win = pg.GraphicsLayoutWidget(show=True)
-
-        for idx, var in enumerate(self.variables):
-            plot = win.addPlot(row=idx, col=0)
-            plot.setLabel("left", var["name"])
-            curve = plot.plot()
-            self.subplots.append(curve)
 
         timer = QtCore.QTimer()
         timer.timeout.connect(self.update_plot)
@@ -120,7 +122,18 @@ class UartMonitor:
 
 
 if __name__ == "__main__":
-    #ser = serial.Serial("COM3", 115200)
-    ser = serial.serial_for_url("socket://127.0.0.1:12345")
-    um = UartMonitor(ser)
-    um.run()
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("type", type=str)
+    parser.add_argument("port", type=int)
+    args = parser.parse_args()
+
+    if args.type == "socket":
+        ser = serial.serial_for_url(f"socket://127.0.0.1:{args.port}")
+    elif args.type == "serial":
+        ser = serial.Serial(f"COM{args.port}", 115200)
+    else:
+        raise ValueError("Unknown type. Use 'socket' or 'serial'.") 
+    
+    um = UartLogger(ser)
+    um.monitor()

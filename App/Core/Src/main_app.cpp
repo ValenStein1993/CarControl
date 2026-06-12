@@ -10,7 +10,7 @@
 /*
  *
  * PID Bedatung festlegen!
- * Encoder Berechnung auf interrupts umstellen
+ * Encoder Berechnung auf interrupts außerhalb der main loop umstellen
  *
  */
 
