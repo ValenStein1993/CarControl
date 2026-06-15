@@ -1,20 +1,32 @@
+import os
 import struct
 import serial
 import argparse
 import pyqtgraph as pg
 from pyqtgraph.Qt import QtCore, QtWidgets
 from collections import deque
+from datetime import datetime
+
 
 class UartLogger:
-    def __init__(self, ser):
+    def __init__(self, ser, plot=False, log=False):
         self.variables = []
         self.data = []
         self.subplots = []
         self.payload_size = 0
         self.win = None
 
+        self.plot_data = plot
+        self.log_data = log
         self.ser = ser
+        self.filename = os.path.join("./logs", datetime.now().strftime(r"uart_log_%Y%m%d_%H%M%S.csv"))
         self.read_uart() # get config
+
+        if self.plot_data:
+            self.init_plot()
+        
+        if self.log_data:
+            self.init_log()
 
     def parse_config(self, payload):
         if self.variables:
@@ -97,26 +109,45 @@ class UartLogger:
                         payload = self.ser.read(self.payload_size)
                         self.parse_data(payload)
 
-    def update_plot(self):
+    def update(self):
         self.read_uart()
 
-        if not self.win:
-            self.win = pg.GraphicsLayoutWidget(show=True)
-            for idx, var in enumerate(self.variables):
-                plot = self.win.addPlot(row=idx, col=0)
-                plot.setLabel("left", var["name"])
-                curve = plot.plot()
-                self.subplots.append(curve)
+        if self.plot_data:
+            self.update_plot()
 
+        if self.log_data:
+            self.update_log()
+
+    def init_plot(self):
+        self.win = pg.GraphicsLayoutWidget(show=True)
+        for idx, var in enumerate(self.variables):
+            plot = self.win.addPlot(row=idx, col=0)
+            plot.setLabel("left", var["name"])
+            curve = plot.plot()
+            self.subplots.append(curve)
+
+    def init_log(self):
+        os.makedirs(os.path.dirname(self.filename), exist_ok=True)
+        with open(self.filename, "w") as f:
+            f.write(",".join(v["name"] for v in self.variables) + "\n")
+
+    def update_plot(self):
         for idx in range(len(self.variables)):
             self.subplots[idx].setData(list(self.data[idx]))
+
+    def update_log(self):
+        with open(self.filename, "a") as f:
+            row = []
+            for var_data in self.data:
+                row.append(str(var_data[-1]))
+            f.write(",".join(row) + "\n")
 
     def monitor(self):
         app = QtWidgets.QApplication([])
 
         timer = QtCore.QTimer()
-        timer.timeout.connect(self.update_plot)
-        timer.start(20)
+        timer.timeout.connect(self.update)
+        timer.start(100)
 
         app.exec()
 
@@ -124,8 +155,10 @@ class UartLogger:
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("type", type=str)
-    parser.add_argument("port", type=int)
+    parser.add_argument("type", type=str, default="serial", choices=["socket", "serial"])
+    parser.add_argument("port", type=int, default=3)
+    parser.add_argument("--plot", action="store_true")
+    parser.add_argument("--log", action="store_true")
     args = parser.parse_args()
 
     if args.type == "socket":
@@ -135,5 +168,5 @@ if __name__ == "__main__":
     else:
         raise ValueError("Unknown type. Use 'socket' or 'serial'.") 
     
-    um = UartLogger(ser)
+    um = UartLogger(ser, args.plot, args.log)
     um.monitor()
