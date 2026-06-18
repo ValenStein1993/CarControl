@@ -12,3 +12,5 @@ App/Libs
 External
 .vscode
 __pycache__
+Testing/logs
+

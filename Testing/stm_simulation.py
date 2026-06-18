@@ -4,6 +4,7 @@ import subprocess
 import os
 import sys
 from pyrenode3.wrappers import Emulation, Monitor
+import serial
 
 from uart_logger import UartLogger
 
@@ -18,16 +19,12 @@ class StmSimulation:
         self.m.execute_script("run_renode.resc")
         self.simdata = self.e.stm32.sysbus.sim
         
-        self.uart_proc = subprocess.Popen(
-                [sys.executable, "uart_logger.py", "socket", "12345"],
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-                text=True
-            )
+        ser = serial.serial_for_url("socket://127.0.0.1:12345")
+        self.uart_logger = UartLogger(ser, plot=True, log=True)
 
-    
-    def run(self):
+    def update(self):
         self.m.execute("emulation RunFor '0.1'")
+        self.uart_logger.update()
 
     def set_sensor_data(self, sensor_data):
         for key, value in sensor_data.items():

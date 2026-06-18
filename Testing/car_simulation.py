@@ -50,7 +50,7 @@ class CarSimulation:
 
     def on_pre_update_cb(self, info, ecm):
         self.stmsim.set_sensor_data(self.sensor_data)
-        self.stmsim.run()
+        self.stmsim.update()
         actr_data = self.stmsim.get_actuator_data()
         self.set_actr_data(actr_data)
 

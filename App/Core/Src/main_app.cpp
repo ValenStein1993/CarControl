@@ -63,6 +63,7 @@ static Localizer localizer(sensorCollection);
 
 // define logging variables
 float curr, angle, angleSpeed;
+bool sensorsReady;
 
 void main_init() {
 	// setup interrupts on overflow of timer3
@@ -79,6 +80,8 @@ void main_init() {
 	datalogger.addVariable<float>("current", &curr);
 	datalogger.addVariable<float>("angle", &angle);
 	datalogger.addVariable<float>("angleSpeed", &angleSpeed);
+	datalogger.addVariable<bool>("sensorsReady", &sensorsReady);
+
 };
 
 void main_loop() {
@@ -87,7 +90,7 @@ void main_loop() {
 
 	if (scheduler.run100ms()) {
 
-		bool sensorsReady = sensorHandler.calibrateSensors(driveControl, steerControl);
+		sensorsReady = sensorHandler.calibrateSensors(driveControl, steerControl);
 		wheelEncoder.calcSpeed(); // sollte auf interrupts geändert werden
 
 		curr = powerSensor.readPower();

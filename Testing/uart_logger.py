@@ -18,15 +18,11 @@ class UartLogger:
 
         self.plot_data = plot
         self.log_data = log
+        self.plot_ready = False
+        self.log_ready = False
         self.ser = ser
+        self.app = QtWidgets.QApplication([])
         self.filename = os.path.join("./logs", datetime.now().strftime(r"uart_log_%Y%m%d_%H%M%S.csv"))
-        self.read_uart() # get config
-
-        if self.plot_data:
-            self.init_plot()
-        
-        if self.log_data:
-            self.init_log()
 
     def parse_config(self, payload):
         if self.variables:
@@ -94,8 +90,9 @@ class UartLogger:
             self.data[idx].append(value)
             i += var["size"]
 
-    def read_uart(self):
-        while self.ser.in_waiting > 0 or not self.variables:
+    def read_bytes(self):
+        success = False
+        while self.ser.in_waiting > 0:
             if self.ser.read() == b'\xAA':
                 if self.ser.read() == b'\x55':
                     packet_type = self.ser.read()[0]
@@ -104,27 +101,41 @@ class UartLogger:
                         length = self.ser.read()[0]
                         payload = self.ser.read(length)
                         self.parse_config(payload)
+                        success = True
 
                     elif packet_type == 0x02 and self.payload_size:
                         payload = self.ser.read(self.payload_size)
                         self.parse_data(payload)
+                        success = True
+        return success
 
     def update(self):
-        self.read_uart()
+        self.read_bytes()
+        hasData = all(len(d) != 0 for d in self.data)
 
         if self.plot_data:
-            self.update_plot()
-
+            if (not self.plot_ready) and self.variables:
+                self.init_plot()
+                self.plot_ready = True
+            elif self.plot_ready and hasData:
+                self.update_plot()
+                self.app.processEvents()
+        
         if self.log_data:
-            self.update_log()
+            if (not self.log_ready) and self.variables:
+                self.init_log()
+                self.log_ready = True
+            elif self.log_ready and hasData:
+                self.update_log()
 
     def init_plot(self):
-        self.win = pg.GraphicsLayoutWidget(show=True)
+        self.win = pg.GraphicsLayoutWidget()
         for idx, var in enumerate(self.variables):
             plot = self.win.addPlot(row=idx, col=0)
             plot.setLabel("left", var["name"])
             curve = plot.plot()
             self.subplots.append(curve)
+        self.win.show()
 
     def init_log(self):
         os.makedirs(os.path.dirname(self.filename), exist_ok=True)
@@ -143,13 +154,11 @@ class UartLogger:
             f.write(",".join(row) + "\n")
 
     def monitor(self):
-        app = QtWidgets.QApplication([])
-
         timer = QtCore.QTimer()
         timer.timeout.connect(self.update)
         timer.start(100)
 
-        app.exec()
+        self.app.exec()
 
 
 if __name__ == "__main__":
