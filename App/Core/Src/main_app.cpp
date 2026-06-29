@@ -78,18 +78,27 @@ void main_init() {
 
 }
 
-uint32_t setCycleTime(uint32_t lastTime) {
-	uint32_t currentTime = osKernelGetTickCount();
-	uint32_t tickFreq = osKernelGetTickFreq();
+void run_periodic_task(void (*task_fn)(void *), void *arg, uint32_t period_ms) {
+    uint32_t tickFreq = osKernelGetTickFreq();
+    uint32_t periodTicks = (tickFreq * period_ms) / 1000u;
+    uint32_t nextWake = osKernelGetTickCount();
 
-	dt = ((currentTime - lastTime) * 1000) / tickFreq;
-	return currentTime;
+    for (;;)
+    {
+		dt = (float)period_ms / 1000.0f;
+        task_fn(arg);
+
+        nextWake += periodTicks;
+        int32_t delayTicks = (int32_t)(nextWake - osKernelGetTickCount());
+        if (delayTicks > 0) {
+            osDelay(delayTicks);
+        } else {
+            nextWake = osKernelGetTickCount();
+        }
+    }
 }
 
 void RunControlTask_(void *argument) {
-	static uint32_t lastTime = 0;
-	lastTime = setCycleTime(lastTime);
-
 	switch (appState) {
 		case AppState::RUNNING:
 			driveControl.setSpeed(0.5);
@@ -106,8 +115,6 @@ void RunControlTask_(void *argument) {
 }
 
 void RunSensorTask_(void *argument) {
-	static uint32_t lastTime = 0;
-
 	sensorHandler.updateSensorValues();
 	switch (appState) {
 		case AppState::INIT:

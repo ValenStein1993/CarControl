@@ -671,12 +671,8 @@ void RunDefaultTask(void *argument)
 void RunControlTask(void *argument)
 {
   /* USER CODE BEGIN RunControlTask */
-  /* Infinite loop */
-  for(;;)
-  {
-    RunControlTask_(argument);
-    osDelay(1);
-  }
+  run_periodic_task(RunSensorTask_, argument, 100);
+  
   /* USER CODE END RunControlTask */
 }
 
@@ -690,12 +686,7 @@ void RunControlTask(void *argument)
 void RunSensorTask(void *argument)
 {
   /* USER CODE BEGIN RunSensorTask */
-  /* Infinite loop */
-  for(;;)
-  {
-    RunSensorTask_(argument);
-    osDelay(1);
-  }
+  run_periodic_task(RunSensorTask_, argument, 100);
   /* USER CODE END RunSensorTask */
 }
 
@@ -710,11 +701,7 @@ void RunStatusTask(void *argument)
 {
   /* USER CODE BEGIN RunStatusTask */
   /* Infinite loop */
-  for(;;)
-  {
-    RunStatusTask_(argument);
-    osDelay(1);
-  }
+  run_periodic_task(RunStatusTask_, argument, 1000);
   /* USER CODE END RunStatusTask */
 }
 
@@ -729,11 +716,7 @@ void RunMicroROSTask(void *argument)
 {
   /* USER CODE BEGIN RunMicroROSTask */
   /* Infinite loop */
-  for(;;)
-  {
-    RunMicroROSTask_(argument);
-    osDelay(1);
-  }
+  run_periodic_task(RunMicroROSTask_, argument, 100);
   /* USER CODE END RunMicroROSTask */
 }
 
