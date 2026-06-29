@@ -32,6 +32,12 @@ struct LogVariable {
 	DataType varType;
 };
 
+struct AddVariable {
+	const char* varName;
+	void* ptrVal;
+	DataType varType;
+};
+
 template<typename T>
 struct TypeMap {
     static constexpr DataType value = DataType::e_bool;
@@ -85,15 +91,16 @@ public:
     void serialize(uint8_t* buffer, size_t& size);
     void log();
     void sendConfig();
+    void registerLogVariables(const std::vector<AddVariable>& vars);
 
     template<typename T>
     void addVariable(const char* name, T* ptr) {
-    	m_variables.push_back({name, ptr, sizeof(T), TypeMap<T>::value});
+    	variables_.push_back({name, ptr, sizeof(T), TypeMap<T>::value});
     }
 
 private:
-    std::vector<LogVariable> m_variables;
-    Uart& m_uart;
+    std::vector<LogVariable> variables_;
+    Uart& uart_;
 };
 
 

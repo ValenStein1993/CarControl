@@ -20,5 +20,14 @@ struct SensorCollection {
 	CJMCU103& angleSensor;
 };
 
+struct SensorValues {
+	Coord accel;
+	Coord gyro;
+	float power;
+	float angle;
+	float angleSpeed;
+	float translSpeed;
+};
+
 
 #endif /* INC_SENSOR_COLLECTION_HPP_ */

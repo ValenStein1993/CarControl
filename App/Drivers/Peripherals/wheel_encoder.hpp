@@ -41,6 +41,9 @@ public:
 	WheelEncoderSim(TIM_HandleTypeDef* handle): WheelEncoderSnsr(nullptr) {};
 	float getRotSpeed() {return sim->WheelEncoder_RotSpeed;}
 	float getTranslSpeed() { return sim->WheelEncoder_TranslSpeed;}
+
+private: 
+	void _calibrate() override {isReady_ = true;};
 };
 
 

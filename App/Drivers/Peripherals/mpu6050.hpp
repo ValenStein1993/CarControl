@@ -60,6 +60,8 @@ public:
 			sim->MPU6050_GyroZ
 		};
 	}
+private: 
+	void _calibrate() override {isReady_ = true;};
 
 };
 

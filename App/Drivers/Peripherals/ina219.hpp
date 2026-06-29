@@ -37,6 +37,10 @@ public:
 	void init() override {};
 	float readCurrent() override {return sim->INA219_Current;}
 	float readPower() override { return sim->INA219_Power;}
+
+private: 
+	void _calibrate() override {isReady_ = true;};
+
 };
 
 

@@ -102,3 +102,14 @@ void SensorHandler::calibrateAngleSensor(DriveControl& driveControl, SteerContro
 	 }
 
 }
+
+void SensorHandler::updateSensorValues() {
+	sensorCollection_.wheelEncoder.calcSpeed();
+	
+	sensorValues_.accel = sensorCollection_.accelerometer.readAccel();
+	sensorValues_.gyro = sensorCollection_.accelerometer.readGyro();
+	sensorValues_.power = sensorCollection_.powerSensor.readPower();
+	sensorValues_.angle = sensorCollection_.angleSensor.readAngle();
+	sensorValues_.angleSpeed = sensorCollection_.angleSensor.readAngleSpeed();
+	sensorValues_.translSpeed = sensorCollection_.wheelEncoder.getTranslSpeed();
+}

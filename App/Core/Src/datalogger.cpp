@@ -8,11 +8,18 @@
 #include "datalogger.hpp"
 #include <cstring>
 
-DataLogger::DataLogger(Uart& uart): m_uart{uart} {}
+DataLogger::DataLogger(Uart& uart): uart_{uart} {}
+
+
+void DataLogger::registerLogVariables(const std::vector<AddVariable>& vars) {
+    for (const auto& v : vars) {
+        variables_.push_back({v.varName, v.ptrVal, sizeof(v.ptrVal), v.varType});
+    }
+}
 
 void DataLogger::serialize(uint8_t* buffer, size_t& size) {
     size_t offset = 0;
-    for (auto& var : m_variables) {
+    for (auto& var : variables_) {
         memcpy(buffer + offset, var.ptrVal, var.size);
         offset += var.size;
     }
@@ -27,7 +34,7 @@ void DataLogger::log() {
     buffer[0] = 0xAA;
     buffer[1] = 0x55;
     buffer[2] = 0x02;
-    m_uart.send(buffer, size);
+    uart_.send(buffer, size);
 }
 
 void DataLogger::sendConfig() {
@@ -40,7 +47,7 @@ void DataLogger::sendConfig() {
 
     size_t len_index = offset++;
 
-    for (auto& var : m_variables) {
+    for (auto& var : variables_) {
         uint8_t name_len = strlen(var.varName);
 
         buffer[offset++] = name_len;
@@ -54,6 +61,6 @@ void DataLogger::sendConfig() {
 
     buffer[len_index] = offset - (len_index + 1);
 
-    m_uart.send(buffer, offset);
+    uart_.send(buffer, offset);
 }
 

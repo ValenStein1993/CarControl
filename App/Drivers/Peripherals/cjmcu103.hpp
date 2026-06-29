@@ -47,6 +47,10 @@ public:
 	void init() override {};
 	float readAngle() override {return sim->CJMCU103_Angle;}
 	float readAngleSpeed() override { return sim->CJMCU103_AngleSpeed;}
+
+private: 
+	void _calibrate() override {isReady_ = true;};
+
 };
 
 

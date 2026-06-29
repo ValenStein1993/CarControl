@@ -13,10 +13,11 @@
  * Encoder Berechnung auf interrupts außerhalb der main loop umstellen
  *
  */
+#include <cstdint>
+#include "cmsis_os2.h"
 
 #include "main_app.hpp"
 #include "uart.hpp"
-#include "scheduler.hpp"
 #include "drive_control.hpp"
 #include "mpu6050.hpp"
 #include "wheel_encoder.hpp"
@@ -28,6 +29,7 @@
 #include "cjmcu103.hpp"
 #include "sensor_collection.hpp"
 #include "sensor_handler.hpp"
+#include "logging_vars.hpp"
 
 
 extern "C" {
@@ -43,27 +45,23 @@ extern "C" {
 // global task time
 float dt = 0;
 
-static Uart uart(&huart2);
-static Scheduler scheduler;
-static DataLogger datalogger{uart};
+AppState appState = AppState::INIT;
+
+Uart uart(&huart2);
+DataLogger datalogger{uart};
 
 // initialize sensors
-
-static MPU6050 accelerometer(&hi2c1);
-static WheelEncoder wheelEncoder(&htim2);
-static INA219 powerSensor(&hi2c1);
-static CJMCU103 angleSensor(&hadc1);
-static SensorCollection sensorCollection{accelerometer, wheelEncoder, powerSensor, angleSensor};
-static SensorHandler sensorHandler(sensorCollection);
+MPU6050 accelerometer(&hi2c1);
+WheelEncoder wheelEncoder(&htim2);
+INA219 powerSensor(&hi2c1);
+CJMCU103 angleSensor(&hadc1);
+SensorCollection sensorCollection{accelerometer, wheelEncoder, powerSensor, angleSensor};
+SensorHandler sensorHandler(sensorCollection);
 
 // initialize controllers
-static DriveControl driveControl(&htim10, sensorCollection);
-static SteerControl steerControl(&htim12, sensorCollection);
-static Localizer localizer(sensorCollection);
-
-// define logging variables
-float curr, angle, angleSpeed;
-bool sensorsReady;
+DriveControl driveControl(&htim10, sensorCollection);
+SteerControl steerControl(&htim12, sensorCollection);
+Localizer localizer(sensorCollection);
 
 void main_init() {
 	// setup interrupts on overflow of timer3
@@ -73,31 +71,27 @@ void main_init() {
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
 
+	appState = AppState::INIT;
+	datalogger.registerLogVariables(logVars);
 	sensorHandler.initSensors();
 	localizer.initStateSpace();
 
-	// add logger variables
-	datalogger.addVariable<float>("current", &curr);
-	datalogger.addVariable<float>("angle", &angle);
-	datalogger.addVariable<float>("angleSpeed", &angleSpeed);
-	datalogger.addVariable<bool>("sensorsReady", &sensorsReady);
+}
 
-};
+uint32_t setCycleTime(uint32_t lastTime) {
+	uint32_t currentTime = osKernelGetTickCount();
+	uint32_t tickFreq = osKernelGetTickFreq();
 
-void main_loop() {
-	if (scheduler.run10ms()) {
-	}
+	dt = ((currentTime - lastTime) * 1000) / tickFreq;
+	return currentTime;
+}
 
-	if (scheduler.run100ms()) {
+void RunControlTask_(void *argument) {
+	static uint32_t lastTime = 0;
+	lastTime = setCycleTime(lastTime);
 
-		sensorsReady = sensorHandler.calibrateSensors(driveControl, steerControl);
-		wheelEncoder.calcSpeed(); // sollte auf interrupts geändert werden
-
-		curr = powerSensor.readPower();
-		angle = angleSensor.readAngle();
-		angleSpeed = angleSensor.readAngleSpeed();
-
-		if (sensorsReady) {
+	switch (appState) {
+		case AppState::RUNNING:
 			driveControl.setSpeed(0.5);
 			steerControl.setAngle(20);
 
@@ -105,22 +99,41 @@ void main_loop() {
 			steerControl.controlAngle();
 
 			localizer.updateStateSpace();
+			break;
+		case AppState::ERROR:
+			break;
+	}
+}
+
+void RunSensorTask_(void *argument) {
+	static uint32_t lastTime = 0;
+
+	sensorHandler.updateSensorValues();
+	switch (appState) {
+		case AppState::INIT:
+			appState = AppState::CALIBRATION;
+		case AppState::CALIBRATION: {
+			bool sensorsReady = sensorHandler.calibrateSensors(driveControl, steerControl);
+			if (sensorsReady) {
+				appState = AppState::RUNNING;
+			}
+			break;
 		}
-
-
-		datalogger.log();
+		case AppState::RUNNING:
+			break;
+		case AppState::ERROR:
+			break;
 	}
+}
 
-	if (scheduler.run1000ms()) {
-		datalogger.sendConfig();
-	}
-};
+void RunStatusTask_(void *argument) {
+	datalogger.log();
+	datalogger.sendConfig();
 
-extern "C" void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
-    if (htim->Instance == TIM3)
-    {
-        scheduler.update();
-    }
+}
+
+void RunMicroROSTask_(void *argument) {
+	
 }
 
 

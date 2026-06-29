@@ -7,12 +7,27 @@
 
 #ifndef APP_MAIN_APP_HPP_
 #define APP_MAIN_APP_HPP_
+
 #ifdef __cplusplus
+enum class AppState {
+    INIT,
+    CALIBRATION,
+    RUNNING,
+    ERROR
+};
+
 extern "C" {
 #endif
 
+
+
 void main_init();
-void main_loop();
+
+void RunControlTask_(void *argument);
+void RunSensorTask_(void *argument);
+void RunStatusTask_(void *argument);
+void RunMicroROSTask_(void *argument);
+
 
 #ifdef __cplusplus
 }

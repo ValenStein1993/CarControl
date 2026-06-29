@@ -30,6 +30,7 @@ public:
 	SensorHandler(SensorCollection& sensorCollection);
 
 	SensorCollection& sensorCollection_;
+	SensorValues sensorValues_;
 	SteerCalState calState_;
 	float angleSpeedRawIdle_;
 	uint8_t cntDebCal_;
@@ -39,6 +40,7 @@ public:
 	void calibrateAccelerometer(DriveControl& driveControl);
 	void calibrateWheelEncoder(DriveControl& driveControl);
 	void calibrateAngleSensor(DriveControl& driveControl, SteerControl& steerControl);
+	void updateSensorValues();
 };
 
 
