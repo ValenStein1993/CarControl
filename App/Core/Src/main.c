@@ -671,7 +671,7 @@ void RunDefaultTask(void *argument)
 void RunControlTask(void *argument)
 {
   /* USER CODE BEGIN RunControlTask */
-  run_periodic_task(RunSensorTask_, argument, 100);
+  runPeriodicTask(controlTask, argument, 100);
   
   /* USER CODE END RunControlTask */
 }
@@ -686,7 +686,7 @@ void RunControlTask(void *argument)
 void RunSensorTask(void *argument)
 {
   /* USER CODE BEGIN RunSensorTask */
-  run_periodic_task(RunSensorTask_, argument, 100);
+  runPeriodicTask(sensorTask, argument, 100);
   /* USER CODE END RunSensorTask */
 }
 
@@ -701,7 +701,7 @@ void RunStatusTask(void *argument)
 {
   /* USER CODE BEGIN RunStatusTask */
   /* Infinite loop */
-  run_periodic_task(RunStatusTask_, argument, 1000);
+  runPeriodicTask(statusTask, argument, 1000);
   /* USER CODE END RunStatusTask */
 }
 
@@ -716,7 +716,7 @@ void RunMicroROSTask(void *argument)
 {
   /* USER CODE BEGIN RunMicroROSTask */
   /* Infinite loop */
-  run_periodic_task(RunMicroROSTask_, argument, 100);
+  runPeriodicTask(microROSTask, argument, 100);
   /* USER CODE END RunMicroROSTask */
 }
 

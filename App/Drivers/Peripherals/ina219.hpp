@@ -33,14 +33,10 @@ private:
 
 class INA219Sim: public INA219Snsr {
 public:
-	INA219Sim(I2C_HandleTypeDef* handle): INA219Snsr(nullptr) {};
+	INA219Sim(I2C_HandleTypeDef* handle): INA219Snsr(nullptr) {isReady_ = true;};
 	void init() override {};
 	float readCurrent() override {return sim->INA219_Current;}
 	float readPower() override { return sim->INA219_Power;}
-
-private: 
-	void _calibrate() override {isReady_ = true;};
-
 };
 
 

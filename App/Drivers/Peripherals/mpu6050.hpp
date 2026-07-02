@@ -44,7 +44,7 @@ private:
 
 class MPU6050Sim: public MPU6050Snsr {
 public:
-	MPU6050Sim(I2C_HandleTypeDef* handle): MPU6050Snsr(nullptr) {};
+	MPU6050Sim(I2C_HandleTypeDef* handle): MPU6050Snsr(nullptr) {isReady_ = true;};
 	void init() override {};
 	Coord readAccel() override {
 		return {
@@ -60,9 +60,6 @@ public:
 			sim->MPU6050_GyroZ
 		};
 	}
-private: 
-	void _calibrate() override {isReady_ = true;};
-
 };
 
 #ifdef SIMULATION

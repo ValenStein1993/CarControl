@@ -97,12 +97,14 @@ class UartLogger:
                 if self.ser.read() == b'\x55':
                     packet_type = self.ser.read()[0]
 
-                    if packet_type == 0x01:
+                    # if package is config and no variables have been received yet, read the config
+                    if packet_type == 0x01 and not self.payload_size:
                         length = self.ser.read()[0]
                         payload = self.ser.read(length)
                         self.parse_config(payload)
                         success = True
 
+                    # if package is data and variables have been received, read the data
                     elif packet_type == 0x02 and self.payload_size:
                         payload = self.ser.read(self.payload_size)
                         self.parse_data(payload)
@@ -130,8 +132,11 @@ class UartLogger:
 
     def init_plot(self):
         self.win = pg.GraphicsLayoutWidget()
+        cols = 1 if len(self.variables) < 4 else 2
         for idx, var in enumerate(self.variables):
-            plot = self.win.addPlot(row=idx, col=0)
+            row = idx // cols
+            col = idx % cols
+            plot = self.win.addPlot(row=row, col=col)
             plot.setLabel("left", var["name"])
             curve = plot.plot()
             self.subplots.append(curve)

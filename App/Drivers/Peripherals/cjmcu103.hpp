@@ -43,14 +43,10 @@ private:
 
 class CJMCU103Sim: public CJMCU103Snsr {
 public:
-	CJMCU103Sim(ADC_HandleTypeDef* handle): CJMCU103Snsr(nullptr) {};
+	CJMCU103Sim(ADC_HandleTypeDef* handle): CJMCU103Snsr(nullptr) {isReady_ = true;};
 	void init() override {};
 	float readAngle() override {return sim->CJMCU103_Angle;}
 	float readAngleSpeed() override { return sim->CJMCU103_AngleSpeed;}
-
-private: 
-	void _calibrate() override {isReady_ = true;};
-
 };
 
 

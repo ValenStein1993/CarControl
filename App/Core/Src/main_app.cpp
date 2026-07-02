@@ -10,7 +10,6 @@
 /*
  *
  * PID Bedatung festlegen!
- * Encoder Berechnung auf interrupts außerhalb der main loop umstellen
  *
  */
 #include <cstdint>
@@ -29,7 +28,6 @@
 #include "cjmcu103.hpp"
 #include "sensor_collection.hpp"
 #include "sensor_handler.hpp"
-#include "logging_vars.hpp"
 
 
 extern "C" {
@@ -63,6 +61,8 @@ DriveControl driveControl(&htim10, sensorCollection);
 SteerControl steerControl(&htim12, sensorCollection);
 Localizer localizer(sensorCollection);
 
+
+
 void main_init() {
 	// setup interrupts on overflow of timer3
 	HAL_TIM_Base_Start_IT(&htim3);
@@ -71,20 +71,29 @@ void main_init() {
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
 
+	// add logging variables
+	datalogger.addVariable<float>("angle", &sensorHandler.sensorValues_.angle);
+	datalogger.addVariable<float>("angleSpeed", &sensorHandler.sensorValues_.angleSpeed);
+	datalogger.addVariable<float>("translSpeed", &sensorHandler.sensorValues_.translSpeed);
+	datalogger.addVariable<float>("accelX", &sensorHandler.sensorValues_.accel.x);
+	datalogger.addVariable<float>("accelY", &sensorHandler.sensorValues_.accel.y);
+	datalogger.addVariable<float>("accelZ", &sensorHandler.sensorValues_.accel.z);
+	datalogger.addVariable<bool>("accelIsReady", &sensorHandler.sensorCollection_.accelerometer.isReady_);
+	datalogger.addVariable<bool>("wheelEncoderIsReady", &sensorHandler.sensorCollection_.wheelEncoder.isReady_);
+	datalogger.addVariable<bool>("angleSensorIsReady", &sensorHandler.sensorCollection_.angleSensor.isReady_);
+
 	appState = AppState::INIT;
-	datalogger.registerLogVariables(logVars);
 	sensorHandler.initSensors();
 	localizer.initStateSpace();
 
 }
 
-void run_periodic_task(void (*task_fn)(void *), void *arg, uint32_t period_ms) {
+void runPeriodicTask(void (*task_fn)(void *), void *arg, uint32_t period_ms) {
     uint32_t tickFreq = osKernelGetTickFreq();
     uint32_t periodTicks = (tickFreq * period_ms) / 1000u;
     uint32_t nextWake = osKernelGetTickCount();
 
-    for (;;)
-    {
+    for (;;) {
 		dt = (float)period_ms / 1000.0f;
         task_fn(arg);
 
@@ -98,7 +107,7 @@ void run_periodic_task(void (*task_fn)(void *), void *arg, uint32_t period_ms) {
     }
 }
 
-void RunControlTask_(void *argument) {
+void controlTask(void *argument) {
 	switch (appState) {
 		case AppState::RUNNING:
 			driveControl.setSpeed(0.5);
@@ -114,7 +123,7 @@ void RunControlTask_(void *argument) {
 	}
 }
 
-void RunSensorTask_(void *argument) {
+void sensorTask(void *argument) {
 	sensorHandler.updateSensorValues();
 	switch (appState) {
 		case AppState::INIT:
@@ -133,13 +142,13 @@ void RunSensorTask_(void *argument) {
 	}
 }
 
-void RunStatusTask_(void *argument) {
+void statusTask(void *argument) {
 	datalogger.log();
 	datalogger.sendConfig();
 
 }
 
-void RunMicroROSTask_(void *argument) {
+void microROSTask(void *argument) {
 	
 }
 
