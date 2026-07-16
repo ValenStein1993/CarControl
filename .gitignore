@@ -9,6 +9,7 @@
 *.launch
 *.mk
 App/Libs
+App/Build
 External
 .vscode
 __pycache__
