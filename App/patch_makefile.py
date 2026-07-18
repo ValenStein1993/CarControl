@@ -184,7 +184,7 @@ if __name__ == "__main__":
         remove_text(Path("Makefile"), "BUILD_DIR = build\n")
 
         insert_at_begin_section(Path("Makefile"), "target", "-include make_args.mk\n")
-        insert_at_end_section(Path("Makefile"), "CFLAGS", "-include make_mros.mk\n")
+        insert_at_end_section(Path("Makefile"), "LDFLAGS", "-include make_mros.mk\n")
         insert_at_end_section(Path("Makefile"), "build the application", "-include make_cpp.mk\n")
 
 	

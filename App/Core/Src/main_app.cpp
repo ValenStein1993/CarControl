@@ -13,6 +13,7 @@
  *
  */
 #include <cstdint>
+#include "stm32f4xx_hal.h"
 #include "cmsis_os2.h"
 
 #include "main_app.hpp"
@@ -28,6 +29,8 @@
 #include "cjmcu103.hpp"
 #include "sensor_collection.hpp"
 #include "sensor_handler.hpp"
+#include "mros.h"
+
 
 
 extern "C" {
@@ -70,6 +73,9 @@ void main_init() {
 	HAL_TIM_PWM_Start(&htim10, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
+
+	// start micro ROS
+	init_mros();
 
 	// add logging variables
 	datalogger.addVariable<float>("angle", &sensorHandler.sensorValues_.angle);
@@ -149,7 +155,7 @@ void statusTask(void *argument) {
 }
 
 void microROSTask(void *argument) {
-	
+	mros_publish();
 }
 
 
