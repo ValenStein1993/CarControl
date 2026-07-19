@@ -1,0 +1,9 @@
+include @run_renode.resc
+
+#cpu LogFunctionNames true true
+logFile @/home/valenstein/Workspace/CarControl/Testing/Emulation/log_renode.txt
+logLevel 3 sysbus
+showAnalyzer sysbus.usart1
+showAnalyzer sysbus.usart2
+
+start

@@ -74,9 +74,6 @@ void main_init() {
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_1);
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
 
-	// start micro ROS
-	init_mros();
-
 	// add logging variables
 	datalogger.addVariable<float>("angle", &sensorHandler.sensorValues_.angle);
 	datalogger.addVariable<float>("angleSpeed", &sensorHandler.sensorValues_.angleSpeed);

@@ -49,6 +49,11 @@ void init_mros() {
 		cubemx_transport_read
 	);
 
+	rmw_ret_t ret;
+	do {
+		ret = rmw_uros_ping_agent(100, 1);   // 100ms timeout per attempt
+	} while (ret != RMW_RET_OK);
+
 	allocator = rcl_get_default_allocator();
 	rclc_support_init(&support, 0, NULL, &allocator);
 	rclc_node_init_default(&node, "car_controller", "", &support);
@@ -60,8 +65,8 @@ void init_mros() {
 }
 
 void mros_publish() {
-	pub_msg.data++;
+//pub_msg.data++;
 
-	rcl_publish(&publisher, &pub_msg, NULL);
+	//rcl_publish(&publisher, &pub_msg, NULL);
 }
 
