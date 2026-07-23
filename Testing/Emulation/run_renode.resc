@@ -3,7 +3,7 @@ include @simulation_data.cs
 
 machine LoadPlatformDescription @stm32f446re.repl
 
-sysbus LoadELF @../../App/Build/simulation/CarControl.elf
+sysbus LoadELF @../../Controller/Build/simulation/CarControl.elf
 #showAnalyzer sysbus.usart2
 emulation CreateServerSocketTerminal 12345 "uart_logging"
 connector Connect sysbus.usart2 uart_logging

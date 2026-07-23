@@ -8,11 +8,11 @@
 *.su
 *.launch
 *.mk
-App/Libs
-App/Build
+Controller/Libs
+Controller/Build
 External
 .vscode
 __pycache__
 Testing/logs
-Testing/Emulation/*.txt
+Testing/Emulation/*.txt.*
 
