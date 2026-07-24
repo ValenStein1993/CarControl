@@ -30,7 +30,7 @@
 #include "sensor_collection.hpp"
 #include "sensor_handler.hpp"
 #include "mros.h"
-
+#include <car_msgs/msg/car_message.h>
 
 
 extern "C" {
@@ -41,6 +41,7 @@ extern "C" {
     extern TIM_HandleTypeDef htim12;
     extern I2C_HandleTypeDef hi2c1;
     extern ADC_HandleTypeDef hadc1;
+    extern car_msgs__msg__CarMessage pub_msg;
 };
 
 // global task time
@@ -89,6 +90,15 @@ void main_init() {
 	sensorHandler.initSensors();
 	localizer.initStateSpace();
 
+}
+
+void updateControllerMessage() {
+	pub_msg.angle = sensorHandler.sensorValues_.angle;
+	pub_msg.angle_speed = sensorHandler.sensorValues_.angleSpeed;
+	pub_msg.transl_speed = sensorHandler.sensorValues_.translSpeed;
+	pub_msg.accel_x = sensorHandler.sensorValues_.accel.x;
+	pub_msg.accel_y = sensorHandler.sensorValues_.accel.y;
+	pub_msg.accel_z = sensorHandler.sensorValues_.accel.z;
 }
 
 void runPeriodicTask(void (*task_fn)(void *), void *arg, uint32_t period_ms) {
@@ -152,6 +162,7 @@ void statusTask(void *argument) {
 }
 
 void microROSTask(void *argument) {
+	updateControllerMessage();
 	mros_publish();
 }
 

@@ -8,7 +8,6 @@
 *.su
 *.launch
 *.mk
-Controller/Libs
 Controller/Build
 External
 .vscode

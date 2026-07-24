@@ -27,6 +27,7 @@ void controlTask(void *argument);
 void sensorTask(void *argument);
 void statusTask(void *argument);
 void microROSTask(void *argument);
+void updateControllerMessage();
 
 
 #ifdef __cplusplus
