@@ -18,7 +18,7 @@
 
 #include <std_msgs/msg/int32.h>
 #include <std_msgs/msg/float32.h>
-#include <car_msgs/msg/car_message.h>
+#include <car_msgs/msg/sensor_data.h>
 
 extern UART_HandleTypeDef huart1;
 
@@ -33,7 +33,7 @@ rcl_subscription_t subscriber;
 
 rclc_executor_t executor;
 
-car_msgs__msg__CarMessage pub_msg;
+car_msgs__msg__SensorData pub_msg;
 std_msgs__msg__Int32 sub_msg;
 
 bool cubemx_transport_open(struct uxrCustomTransport * transport);
@@ -57,7 +57,6 @@ void init_mros() {
 		ret = rmw_uros_ping_agent(100, 1);   // 100ms timeout per attempt
 	} while (ret != RMW_RET_OK);
 
-
 	allocator = rcl_get_default_allocator();
 	rclc_support_init(&support, 0, NULL, &allocator);
 	rclc_node_init_default(&node, "car_controller", "", &support);
@@ -65,8 +64,8 @@ void init_mros() {
 	rclc_publisher_init_default(
 	    &publisher,
 	    &node,
-	    ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-	    "/counter");
+	    ROSIDL_GET_MSG_TYPE_SUPPORT(car_msgs, msg, SensorData),
+	    "/sensor_data");
 }
 
 void mros_publish() {

@@ -15,14 +15,6 @@ extern "C" {
 void init_mros();
 void mros_publish();
 
-typedef struct {
-    float angle;
-    float angleSpeed;
-    float translSpeed;
-    float accelX, accelY, accelZ;
-} msg_data_t;
-
-
 #ifdef __cplusplus
 }
 #endif

@@ -14,4 +14,7 @@ External
 __pycache__
 Testing/logs
 Testing/Emulation/*.txt.*
+App/build
+App/install
+App/log
 

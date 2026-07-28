@@ -7,7 +7,7 @@ EXTRA_PKGS=$UTILS_DIR/library_generation/extra_packages
 
 mkdir -p "$EXTRA_PKGS"
 rm -rf "$EXTRA_PKGS/car_msgs"
-cp -r ./Interfaces/CarMessage "$EXTRA_PKGS/car_msgs"
+cp -r ../App/src/messages "$EXTRA_PKGS/car_msgs"
 
 sudo docker pull microros/micro_ros_static_library_builder:jazzy
 sudo docker run -it --rm -v "$(pwd)":/project \

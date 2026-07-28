@@ -12,6 +12,7 @@
  * PID Bedatung festlegen!
  *
  */
+
 #include <cstdint>
 #include "stm32f4xx_hal.h"
 #include "cmsis_os2.h"
@@ -30,7 +31,7 @@
 #include "sensor_collection.hpp"
 #include "sensor_handler.hpp"
 #include "mros.h"
-#include <car_msgs/msg/car_message.h>
+#include <car_msgs/msg/sensor_data.h>
 
 
 extern "C" {
@@ -41,7 +42,7 @@ extern "C" {
     extern TIM_HandleTypeDef htim12;
     extern I2C_HandleTypeDef hi2c1;
     extern ADC_HandleTypeDef hadc1;
-    extern car_msgs__msg__CarMessage pub_msg;
+    extern car_msgs__msg__SensorData pub_msg;
 };
 
 // global task time
@@ -89,7 +90,6 @@ void main_init() {
 	appState = AppState::INIT;
 	sensorHandler.initSensors();
 	localizer.initStateSpace();
-
 }
 
 void updateControllerMessage() {
