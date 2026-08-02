@@ -30,6 +30,8 @@
 #include "sensor_handler.hpp"
 #include "mros.h"
 #include <car_msgs/msg/sensor_measurements.h>
+#include <car_msgs/msg/sensor_calibration.h>
+
 
 
 extern "C" {
@@ -41,6 +43,8 @@ extern "C" {
     extern I2C_HandleTypeDef hi2c1;
     extern ADC_HandleTypeDef hadc1;
     extern car_msgs__msg__SensorMeasurements pub_msg_meas;
+    extern car_msgs__msg__SensorCalibration pub_msg_cal;
+
 };
 
 // global task time
@@ -107,6 +111,24 @@ void updateControllerMessage() {
 	pub_msg_meas.cjmcu103_anglespeed = sensorHandler.sensorVars_.angleSpeed.val;
 	pub_msg_meas.wheelencoder_rotspeed = sensorHandler.sensorVars_.rotSpeed.val;
 	pub_msg_meas.wheelencoder_translspeed = sensorHandler.sensorVars_.translSpeed.val;
+
+	pub_msg_cal.mpu6050_mean_accel_x = sensorHandler.sensorVars_.accel.mean.x;
+	pub_msg_cal.mpu6050_mean_accel_y = sensorHandler.sensorVars_.accel.mean.y;
+	pub_msg_cal.mpu6050_mean_accel_z = sensorHandler.sensorVars_.accel.mean.z;
+	pub_msg_cal.mpu6050_var_accel_x = sensorHandler.sensorVars_.accel.var.x;
+	pub_msg_cal.mpu6050_var_accel_y = sensorHandler.sensorVars_.accel.var.y;
+	pub_msg_cal.mpu6050_var_accel_z = sensorHandler.sensorVars_.accel.var.z;
+	pub_msg_cal.mpu6050_mean_gyro_x = sensorHandler.sensorVars_.gyro.mean.x;
+	pub_msg_cal.mpu6050_mean_gyro_y = sensorHandler.sensorVars_.gyro.mean.y;
+	pub_msg_cal.mpu6050_mean_gyro_z = sensorHandler.sensorVars_.gyro.mean.z;
+	pub_msg_cal.mpu6050_var_gyro_x = sensorHandler.sensorVars_.gyro.var.x;
+	pub_msg_cal.mpu6050_var_gyro_y = sensorHandler.sensorVars_.gyro.var.y;
+	pub_msg_cal.mpu6050_var_gyro_z = sensorHandler.sensorVars_.gyro.var.z;
+	pub_msg_cal.cjmcu103_mean_angle = sensorHandler.sensorVars_.angle.mean;
+	pub_msg_cal.cjmcu103_var_angle = sensorHandler.sensorVars_.angle.var;
+	pub_msg_cal.cjmcu103_mean_anglespeed = sensorHandler.sensorVars_.angleSpeed.mean;
+	pub_msg_cal.cjmcu103_var_anglespeed = sensorHandler.sensorVars_.angleSpeed.var;
+	pub_msg_cal.wheelencoder_var_rotspeed = sensorHandler.sensorVars_.rotSpeed.var;
 }
 
 void runPeriodicTask(void (*task_fn)(void *), void *arg, uint32_t period_ms) {
