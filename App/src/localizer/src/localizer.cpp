@@ -1,21 +1,57 @@
 #include <memory>
+#include <cmath>
 
 #include "rclcpp/rclcpp.hpp"
-#include "car_msgs/msg/sensor_data.hpp"
+#include "car_msgs/msg/sensor_measurements.hpp"
+#include "car_msgs/msg/sensor_calibration.hpp"
+
 #include "localizer.hpp"
 
 using std::placeholders::_1;
 
 Localizer::Localizer()
   : Node("localizer") {
-    subscription_ = create_subscription<car_msgs::msg::SensorData>(
-      "/sensor_data", 10, std::bind(&Localizer::topic_callback, this, _1));
+    sub_measurements_ = create_subscription<car_msgs::msg::SensorMeasurements>(
+      "/sensor/measurement", 10, std::bind(&Localizer::callback_measurements, this, _1));
+    sub_calibration_ = create_subscription<car_msgs::msg::SensorCalibration>(
+      "/sensor/calibration", 10, std::bind(&Localizer::callback_calibration, this, _1));
 
   initStateSpace();
 }
 
-void Localizer::topic_callback(const car_msgs::msg::SensorData::SharedPtr msg) {
-      RCLCPP_INFO(this->get_logger(), "I heard: '%f'", msg->angle);
+void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
+    static uint32_t lastTime{};  
+	uint32_t currentTime = msg->time;
+
+	if (!sensorConfig_.isCalibrated) {
+		return;
+	}
+	
+	if (lastTime == 0) {
+		lastTime = currentTime;
+		return;
+	}
+	
+    float dt = (currentTime - lastTime) / 1000.0f; 
+    lastTime = currentTime;
+
+    updateStateSpace(
+		dt,
+        msg->mpu6050_accel_x,
+        msg->mpu6050_accel_y,
+        msg->cjmcu103_angle,
+        msg->wheelencoder_translspeed,
+        msg->mpu6050_gyro_z
+    );
+}
+
+void Localizer::callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg) {
+	sensorConfig_.isCalibrated = msg->is_calibrated;
+	sensorConfig_.var_accel_x = msg->mpu6050_var_accel_x;
+	sensorConfig_.var_accel_y = msg->mpu6050_var_accel_y;
+	sensorConfig_.var_gyro_z = msg->mpu6050_var_gyro_z;
+	sensorConfig_.var_angle = msg->cjmcu103_var_angle;
+	sensorConfig_.var_rotspeed = msg->wheelencoder_var_rotspeed;
 }
 
 void Localizer::initStateSpace() {
@@ -23,22 +59,27 @@ void Localizer::initStateSpace() {
     ekf_initialize(&stateSpace_.ekf, pdiag);
 }
 
-void Localizer::updateStateSpace() {
+void Localizer::updateStateSpace(
+	float dt, 
+	float accel_x, 
+	float accel_y, 
+	float angle, 
+	float translSpeed, 
+	float gyro_z) {
 	// x = {x, y, v, phi};
 	_float_t* x = stateSpace_.ekf.x;
 
-	Coord accel = sensorCollection_.accelerometer.readAccel();
-	float a = std::sqrt(std::pow(accel.x, 2) + std::pow(accel.y, 2));
-	float var_a = std::pow(accel.x, 2) / std::pow(a, 2) * sensorCollection_.accelerometer.var_accel_.x +
-			std::pow(accel.y, 2) / std::pow(a, 2) * sensorCollection_.accelerometer.var_accel_.y;
+	float a = std::sqrt(std::pow(accel_x, 2) + std::pow(accel_y, 2));
+	float var_a = std::pow(accel_x, 2) / std::pow(a, 2) * sensorConfig_.var_accel_x +
+			std::pow(accel_y, 2) / std::pow(a, 2) * sensorConfig_.var_accel_y;
 
-	float theta = sensorCollection_.angleSensor.readAngle(); // einheiten überprüfen
+	float theta = angle; // einheiten überprüfen
 
 	stateSpace_.u[0] = a;
 	stateSpace_.u[1] = theta;
 
-	stateSpace_.z[0] = sensorCollection_.wheelEncoder.getTranslSpeed();
-	stateSpace_.z[1] = sensorCollection_.accelerometer.readGyro().z;
+	stateSpace_.z[0] = translSpeed;
+	stateSpace_.z[1] = gyro_z;
 
 	// ---- model equations ----
 	// x_k = x_k-1 + v_k-1 * cos(phi_k-1) * dt
@@ -73,11 +114,11 @@ void Localizer::updateStateSpace() {
 	// calculate Q from measurement noise W as Q = GWG with G as input jacobian
 	stateSpace_.Q[9] = weightCovModel * std::pow(dt, 2) * var_a;
 	// cov = (v/L/cos(theta)^2*dt)^2*var_theta
-	stateSpace_.Q[15] = weightCovModel * std::pow(1 / wheelWidth * stateSpace_.fx[2] / std::pow(std::cos(theta), 2) * dt, 2) * sensorCollection_.angleSensor.var_angle_;
+	stateSpace_.Q[15] = weightCovModel * std::pow(1 / wheelWidth * stateSpace_.fx[2] / std::pow(std::cos(theta), 2) * dt, 2) * sensorConfig_.var_angle;
 
 	// ---- measurement covariance ----
-	stateSpace_.R[0] = weightCovMeasurement * sensorCollection_.wheelEncoder.var_;
-	stateSpace_.R[3] = weightCovMeasurement * sensorCollection_.accelerometer.var_gyro_.z;
+	stateSpace_.R[0] = weightCovMeasurement * sensorConfig_.var_rotspeed;
+	stateSpace_.R[3] = weightCovMeasurement * sensorConfig_.var_gyro_z;
 
 	// prediction step with model and inputs
 	ekf_predict(&stateSpace_.ekf, stateSpace_.fx, stateSpace_.F, stateSpace_.Q);

@@ -41,10 +41,11 @@ public:
 	INA219& powerSensor_;
 	CJMCU103& angleSensor_;
 
+	bool sensorsReady_{};
 	SensorVars sensorVars_{};
 
 	void initSensors();
-	bool calibrateSensors(DriveControl& driveControl, SteerControl& steerControl);
+	void calibrateSensors(DriveControl& driveControl, SteerControl& steerControl);
 	void calibrateAccelerometer(DriveControl& driveControl);
 	void calibrateWheelEncoder(DriveControl& driveControl);
 	void calibrateAngleSensor(DriveControl& driveControl, SteerControl& steerControl);

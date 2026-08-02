@@ -1,3 +1,4 @@
+uint32 time
 float32 mpu6050_accel_x
 float32 mpu6050_accel_y
 float32 mpu6050_accel_z

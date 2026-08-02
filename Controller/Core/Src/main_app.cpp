@@ -74,7 +74,6 @@ DriveControl driveControl(&htim10, sensorHandler.sensorVars_);
 SteerControl steerControl(&htim12, sensorHandler.sensorVars_);
 
 
-
 void main_init() {
 	// setup interrupts on overflow of timer3
 	HAL_TIM_Base_Start_IT(&htim3);
@@ -99,6 +98,7 @@ void main_init() {
 }
 
 void updateControllerMessage() {
+	pub_msg_meas.time = HAL_GetTick();
 	pub_msg_meas.mpu6050_accel_x = sensorHandler.sensorVars_.accel.val.x;
 	pub_msg_meas.mpu6050_accel_y = sensorHandler.sensorVars_.accel.val.y;
 	pub_msg_meas.mpu6050_accel_z = sensorHandler.sensorVars_.accel.val.z;
@@ -112,6 +112,7 @@ void updateControllerMessage() {
 	pub_msg_meas.wheelencoder_rotspeed = sensorHandler.sensorVars_.rotSpeed.val;
 	pub_msg_meas.wheelencoder_translspeed = sensorHandler.sensorVars_.translSpeed.val;
 
+	pub_msg_cal.is_calibrated = sensorHandler.sensorsReady_;
 	pub_msg_cal.mpu6050_mean_accel_x = sensorHandler.sensorVars_.accel.mean.x;
 	pub_msg_cal.mpu6050_mean_accel_y = sensorHandler.sensorVars_.accel.mean.y;
 	pub_msg_cal.mpu6050_mean_accel_z = sensorHandler.sensorVars_.accel.mean.z;
@@ -171,8 +172,8 @@ void sensorTask(void *argument) {
 		case AppState::INIT:
 			appState = AppState::CALIBRATION;
 		case AppState::CALIBRATION: {
-			bool sensorsReady = sensorHandler.calibrateSensors(driveControl, steerControl);
-			if (sensorsReady) {
+			sensorHandler.calibrateSensors(driveControl, steerControl);
+			if (sensorHandler.sensorsReady_) {
 				appState = AppState::RUNNING;
 			}
 			break;

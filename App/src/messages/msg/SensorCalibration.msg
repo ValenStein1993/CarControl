@@ -1,3 +1,4 @@
+bool is_calibrated
 float32 mpu6050_mean_accel_x
 float32 mpu6050_mean_accel_y
 float32 mpu6050_mean_accel_z

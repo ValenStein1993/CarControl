@@ -17,7 +17,8 @@
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
-#include "car_msgs/msg/sensor_data.hpp"
+#include "car_msgs/msg/sensor_measurements.hpp"
+#include "car_msgs/msg/sensor_calibration.hpp"
 
 using std::placeholders::_1;
 
@@ -30,6 +31,15 @@ struct Position {
 	float x;
 	float y;
 	float phi;
+};
+
+struct SensorConfig {
+	bool isCalibrated;
+	float var_accel_x;
+	float var_accel_y;
+	float var_gyro_z;
+	float var_angle;
+	float var_rotspeed;
 };
 
 struct VehicleStateSpace {
@@ -48,16 +58,19 @@ struct VehicleStateSpace {
 class Localizer : public rclcpp::Node {
   public:
     Localizer();
-    Position pos_ = {};
-	VehicleStateSpace stateSpace_ = {};
+    Position pos_{};
+	VehicleStateSpace stateSpace_{};
+	SensorConfig sensorConfig_{};
 
 	void initStateSpace();
-	void updateStateSpace();
+	void updateStateSpace(float dt, float accel_x, float accel_y, float angle, float translSpeed, float gyro_z);
     
   private:
-    rclcpp::Subscription<car_msgs::msg::SensorData>::SharedPtr subscription_;
+    rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_{};
+    rclcpp::Subscription<car_msgs::msg::SensorCalibration>::SharedPtr sub_calibration_{};
 
-    void topic_callback(const car_msgs::msg::SensorData::SharedPtr msg);
+    void callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg);
+    void callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg);
 
 };
 
