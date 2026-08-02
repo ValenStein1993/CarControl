@@ -1,0 +1,12 @@
+float32 mpu6050_accel_x
+float32 mpu6050_accel_y
+float32 mpu6050_accel_z
+float32 mpu6050_gyro_x
+float32 mpu6050_gyro_y
+float32 mpu6050_gyro_z
+float32 ina219_current
+float32 ina219_power
+float32 cjmcu103_angle
+float32 cjmcu103_anglespeed
+float32 wheelencoder_rotspeed
+float32 wheelencoder_translspeed

@@ -19,24 +19,6 @@ void CJMCU103Snsr::init() {
 	HAL_ADC_Start_DMA(handle_, (uint32_t*) angleRaw_, NUM_ANGLE);
 }
 
-void CJMCU103Snsr::_calibrate() {
-	if (angleRawLeft_ == 0) {
-		angleRawLeft_ = readAngleRaw();
-	} else if (angleRawRight_ == 0) {
-		angleRawRight_ = readAngleRaw();
-	} else if ((mu_angle_ == 0) | (var_angle_== 0) | (mu_angleSpeed_ == 0) | (var_angleSpeed_ == 0)) {
-		for (uint16_t i = 1; i < 100; i++) {
-			float angle = readAngle();
-			float angleSpeed = readAngleSpeed();
-
-			recMeanVar(&mu_angle_, &var_angle_, angle, i);
-			recMeanVar(&mu_angleSpeed_, &var_angleSpeed_, angleSpeed, i);
-
-			HAL_Delay(2);
-		}
-		isReady_ = true;
-	}
-}
 
 float CJMCU103Snsr::readAngleRaw() {
 	// calculate mean of DMA buffer to reduce noise

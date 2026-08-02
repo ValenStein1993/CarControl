@@ -12,7 +12,12 @@ find_package(ament_cmake REQUIRED)
 # find_package(<dependency> REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(car_msgs REQUIRED)
+
 add_executable(localizer src/localizer.cpp)
+
+target_include_directories(localizer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/TinyEKF/src)
+target_include_directories(localizer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 ament_target_dependencies(localizer rclcpp car_msgs)
 
 install(TARGETS

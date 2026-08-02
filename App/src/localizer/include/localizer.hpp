@@ -1,7 +1,7 @@
 /*
  * localizer.hpp
  *
- *  Created on: 15.03.2026
+ *  Created on: 27.07.2026
  *      Author: valen
  */
 
@@ -12,8 +12,15 @@
 #define EKF_M 2 // measurement dimension, z = {v, phi_dot};
 #define EKF_U 2 // input dimension, u = {a, theta};
 
-#include "sensor_collection.hpp"
 #include "tinyekf.h"
+
+#include <memory>
+
+#include "rclcpp/rclcpp.hpp"
+#include "car_msgs/msg/sensor_data.hpp"
+
+using std::placeholders::_1;
+
 
 constexpr float wheelWidth = 3;
 constexpr float weightCovModel = 1.1;
@@ -37,19 +44,21 @@ struct VehicleStateSpace {
 	float R[EKF_M*EKF_M]; // measurement covariance
 };
 
-class Localizer {
-public:
-	Localizer(SensorCollection& sensorCollection);
 
-	SensorCollection& sensorCollection_;
-	Position pos_;
-	VehicleStateSpace stateSpace_;
+class Localizer : public rclcpp::Node {
+  public:
+    Localizer();
+    Position pos_ = {};
+	VehicleStateSpace stateSpace_ = {};
 
 	void initStateSpace();
 	void updateStateSpace();
+    
+  private:
+    rclcpp::Subscription<car_msgs::msg::SensorData>::SharedPtr subscription_;
+
+    void topic_callback(const car_msgs::msg::SensorData::SharedPtr msg);
 
 };
-
-
 
 #endif /* INC_LOCALIZER_HPP_ */

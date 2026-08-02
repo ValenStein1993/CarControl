@@ -12,8 +12,9 @@
 extern "C" {
 #endif
 
-void init_mros();
-void mros_publish();
+void mros_init();
+void mros_publish_sensor_meas();
+void mros_publish_sensor_cal();
 
 #ifdef __cplusplus
 }

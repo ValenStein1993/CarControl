@@ -1,6 +1,6 @@
 [submodule "Controller/Libs/micro_ros_stm32cubemx_utils"]
 	path = Controller/Libs/micro_ros_stm32cubemx_utils
 	url = https://github.com/micro-ROS/micro_ros_stm32cubemx_utils.git
-[submodule "Controller/Libs/TinyEKF"]
-	path = Controller/Libs/TinyEKF
+[submodule "App/src/localizer/include/TinyEKF"]
+	path = App/src/localizer/include/TinyEKF
 	url = https://github.com/simondlevy/TinyEKF.git

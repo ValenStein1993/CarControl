@@ -12,8 +12,8 @@
 
 extern float dt;
 
-MotorControl::MotorControl(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
-	: m_handle(handle), sensorCollection_{sensorCollection} {};
+MotorControl::MotorControl(TIM_HandleTypeDef* handle, SensorVars& sensorVars)
+	: m_handle(handle), sensorVars_{sensorVars} {};
 
 void MotorControl::setDutyCycle(float fac_dutyCycle) {
 	uint32_t arr = __HAL_TIM_GET_AUTORELOAD(m_handle);

@@ -12,13 +12,12 @@
 
 #include "datatypes.hpp"
 #include "stm32f4xx_hal.h"
-#include "sensor_collection.hpp"
 
 class MotorControl {
 public:
-	MotorControl(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection);
+	MotorControl(TIM_HandleTypeDef* handle, SensorVars& sensorVars);
 
-	SensorCollection& sensorCollection_;
+	SensorVars& sensorVars_;
 	float Kp_{0};
 	float Ki_{0};
 	float err_{0};

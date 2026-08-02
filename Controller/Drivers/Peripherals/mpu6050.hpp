@@ -10,27 +10,16 @@
 
 #include "stm32f4xx_hal.h"
 #include "datatypes.hpp"
-#include "sensor.hpp"
 #include "simulator.hpp"
+#include "sensor.hpp"
 
 #define MPU6050_ADDR 0x68 << 1
 
-struct Coord {
-	float x;
-	float y;
-	float z;
-};
-
-class MPU6050Snsr: public Sensor {
+class MPU6050Snsr: public Sensor{
 public:
-	Coord mu_accel_{0};
-	Coord mu_gyro_{0};
-	Coord var_accel_{0};
-	Coord var_gyro_{0};
-
 	MPU6050Snsr(I2C_HandleTypeDef* handle);
 
-	void init() override;
+	virtual void init();
 	virtual Coord readAccel();
 	virtual Coord readGyro();
 	float convAccel(int16_t val_raw);
@@ -38,8 +27,6 @@ public:
 
 private:
 	I2C_HandleTypeDef* handle_;
-	void _calibrate() override;
-
 };
 
 class MPU6050Sim: public MPU6050Snsr {

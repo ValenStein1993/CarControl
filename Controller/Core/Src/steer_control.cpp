@@ -8,8 +8,8 @@
 #include <cmath>
 #include "steer_control.hpp"
 
-SteerControlActr::SteerControlActr(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
-	: MotorControl{handle, sensorCollection} {}
+SteerControlActr::SteerControlActr(TIM_HandleTypeDef* handle, SensorVars& sensorVars)
+	: MotorControl{handle, sensorVars} {}
 
 void SteerControlActr::steerLeft() {
 	setActiveChannel(TIM_CHANNEL_2);
@@ -31,7 +31,7 @@ void SteerControlActr::controlAngle() {
 		steerLeft();
 	}
 
-	float angleCurr = sensorCollection_.angleSensor.readAngle();
+	float angleCurr = sensorVars_.angle.val;
 	controlTarget(angleCurr);
 }
 

@@ -18,7 +18,8 @@
 
 #include <std_msgs/msg/int32.h>
 #include <std_msgs/msg/float32.h>
-#include <car_msgs/msg/sensor_data.h>
+#include <car_msgs/msg/sensor_measurements.h>
+#include <car_msgs/msg/sensor_calibration.h>
 
 extern UART_HandleTypeDef huart1;
 
@@ -28,12 +29,14 @@ rclc_support_t support;
 
 rcl_node_t node;
 
-rcl_publisher_t publisher;
+rcl_publisher_t pub_snsr_meas, pub_snsr_cal;
 rcl_subscription_t subscriber;
 
 rclc_executor_t executor;
 
-car_msgs__msg__SensorData pub_msg;
+car_msgs__msg__SensorMeasurements pub_msg_meas;
+car_msgs__msg__SensorCalibration pub_msg_cal;
+
 std_msgs__msg__Int32 sub_msg;
 
 bool cubemx_transport_open(struct uxrCustomTransport * transport);
@@ -42,7 +45,7 @@ size_t cubemx_transport_write(struct uxrCustomTransport* transport, const uint8_
 size_t cubemx_transport_read(struct uxrCustomTransport* transport, uint8_t* buf, size_t len, int timeout, uint8_t* err);
 
 
-void init_mros() {
+void mros_init() {
 	rmw_uros_set_custom_transport(
 		true,
 		(void *)&huart1,
@@ -62,13 +65,23 @@ void init_mros() {
 	rclc_node_init_default(&node, "car_controller", "", &support);
 
 	rclc_publisher_init_default(
-	    &publisher,
+	    &pub_snsr_meas,
 	    &node,
-	    ROSIDL_GET_MSG_TYPE_SUPPORT(car_msgs, msg, SensorData),
-	    "/sensor_data");
+	    ROSIDL_GET_MSG_TYPE_SUPPORT(car_msgs, msg, SensorMeasurements),
+	    "/sensor/measurement");
+
+	rclc_publisher_init_default(
+		&pub_snsr_cal,
+		&node,
+		ROSIDL_GET_MSG_TYPE_SUPPORT(car_msgs, msg, SensorCalibration),
+		"/sensor/calibration");
 }
 
-void mros_publish() {
-    rcl_publish(&publisher, &pub_msg, NULL);
+void mros_publish_sensor_meas() {
+    rcl_publish(&pub_snsr_meas, &pub_msg_meas, NULL);
+}
+
+void mros_publish_sensor_cal() {
+    rcl_publish(&pub_snsr_cal, &pub_msg_cal, NULL);
 }
 

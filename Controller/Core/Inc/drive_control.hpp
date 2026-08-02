@@ -10,7 +10,7 @@
 
 #include "stm32f4xx_hal.h"
 #include "motor_control.hpp"
-#include "sensor_collection.hpp"
+#include "datatypes.hpp"
 #include "simulator.hpp"
 
 
@@ -18,7 +18,7 @@
 class DriveControlActr: public MotorControl {
 public:
 
-	DriveControlActr(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection);
+	DriveControlActr(TIM_HandleTypeDef* handle, SensorVars& sensorVars);
 
 	void setSpeed(float target);
 	void controlSpeed();
@@ -30,8 +30,8 @@ private:
 class DriveControlSim: public DriveControlActr {
 public:
 
-	DriveControlSim(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
-		: DriveControlActr{handle, sensorCollection} {};
+	DriveControlSim(TIM_HandleTypeDef* handle, SensorVars& sensorVars)
+		: DriveControlActr{handle, sensorVars} {};
 
 	void setSpeed(float target) {
 		sim->SetSpeed = target;

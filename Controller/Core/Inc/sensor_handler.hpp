@@ -8,7 +8,7 @@
 #ifndef INC_SENSOR_HANDLER_HPP_
 #define INC_SENSOR_HANDLER_HPP_
 
-#include "sensor_collection.hpp"
+#include "datatypes.hpp"
 #include "cjmcu103.hpp"
 #include "ina219.hpp"
 #include "mpu6050.hpp"
@@ -16,24 +16,36 @@
 #include "drive_control.hpp"
 #include "steer_control.hpp"
 
+
 #define NUM_DEB 5u
 
 enum class SteerCalState {
     INIT,
     STEER_LEFT,
     STEER_RIGHT,
+	CALIBRATE,
     READY
 };
 
 class SensorHandler {
 public:
-	SensorHandler(SensorCollection& sensorCollection);
+	SensorHandler(
+		SensorVars& sensorVars,
+		MPU6050& accelerometer,
+		WheelEncoder& wheelEncoder,
+		INA219& powerSensor,
+		CJMCU103& angleSensor
+	);
 
-	SensorCollection& sensorCollection_;
-	SensorValues sensorValues_;
-	SteerCalState calState_;
-	float angleSpeedRawIdle_;
-	uint8_t cntDebCal_;
+	SensorVars sensorVars_;
+	MPU6050 accelerometer_;
+	WheelEncoder wheelEncoder_;
+	INA219 powerSensor_;
+	CJMCU103 angleSensor_;
+
+	SteerCalState calState_{};
+	float angleSpeedRawIdle_{};
+	uint8_t cntDebCal_{};
 
 	void initSensors();
 	bool calibrateSensors(DriveControl& driveControl, SteerControl& steerControl);

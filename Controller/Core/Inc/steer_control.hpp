@@ -11,13 +11,12 @@
 #include "datatypes.hpp"
 #include "stm32f4xx_hal.h"
 #include "motor_control.hpp"
-#include "sensor_collection.hpp"
 #include "simulator.hpp"
 
 class SteerControlActr: public MotorControl {
 public:
 
-	SteerControlActr(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection);
+	SteerControlActr(TIM_HandleTypeDef* handle, SensorVars& sensorVars);
 
 	void steerLeft();
 	void steerRight();
@@ -31,8 +30,8 @@ private:
 class SteerControlSim: public SteerControlActr {
 public:
 
-	SteerControlSim(TIM_HandleTypeDef* handle, SensorCollection& sensorCollection)
-		: SteerControlActr{handle, sensorCollection} {};
+	SteerControlSim(TIM_HandleTypeDef* handle, SensorVars& sensorVars)
+		: SteerControlActr{handle, sensorVars} {};
 
 	void setAngle(float target) {
 		sim->SetAngle = target;

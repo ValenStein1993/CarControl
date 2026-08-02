@@ -761,7 +761,7 @@ void RunMicroROSTask(void *argument)
 {
   /* USER CODE BEGIN RunMicroROSTask */
   // start micro ROS
-  init_mros();
+  mros_init();
   /* Infinite loop */
   runPeriodicTask(microROSTask, argument, 100);
   /* USER CODE END RunMicroROSTask */

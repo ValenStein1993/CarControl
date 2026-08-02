@@ -8,18 +8,14 @@
 #ifndef INC_WHEEL_ENCODER_HPP_
 #define INC_WHEEL_ENCODER_HPP_
 
-
-#define N_TICKS 100u
-
 #include "stm32f4xx_hal.h"
-#include "sensor.hpp"
 #include "simulator.hpp"
+#include "sensor.hpp"
 
 
 class WheelEncoderSnsr: public Sensor {
 public:
 	WheelEncoderSnsr(TIM_HandleTypeDef* handle);
-	float var_ = 0;
 
 	void calcSpeed();
 	void calcVariance();
@@ -31,8 +27,6 @@ private:
 	int16_t cntLast_ = 0;
 	float translSpeed_ = 0;
 	float rotSpeed_ = 0;
-
-	void _calibrate() override;
 
 };
 

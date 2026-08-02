@@ -10,8 +10,8 @@
 
 #include "stm32f4xx_hal.h"
 #include "datatypes.hpp"
-#include "sensor.hpp"
 #include "simulator.hpp"
+#include "sensor.hpp"
 
 #define MAX_ANGLE 32.4f
 #define NUM_ANGLE 10u
@@ -22,12 +22,8 @@ public:
 	CJMCU103Snsr(ADC_HandleTypeDef* handle);
 	uint16_t angleRawLeft_{0};
 	uint16_t angleRawRight_{0};
-	float mu_angle_{0};
-	float var_angle_{0};
-	float mu_angleSpeed_{0};
-	float var_angleSpeed_{0};
 
-	void init();
+	virtual void init();
 	float readAngleRaw();
 	virtual float readAngle();
 	float readAngleSpeedRaw();
@@ -37,8 +33,6 @@ public:
 private:
 	ADC_HandleTypeDef* handle_;
 	uint16_t angleRaw_[NUM_ANGLE]{0};
-
-	void _calibrate() override;
 };
 
 class CJMCU103Sim: public CJMCU103Snsr {

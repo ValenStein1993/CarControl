@@ -1,0 +1,18 @@
+float32 mpu6050_mean_accel_x
+float32 mpu6050_mean_accel_y
+float32 mpu6050_mean_accel_z
+float32 mpu6050_var_accel_x
+float32 mpu6050_var_accel_y
+float32 mpu6050_var_accel_z
+float32 mpu6050_mean_gyro_x
+float32 mpu6050_mean_gyro_y
+float32 mpu6050_mean_gyro_z
+float32 mpu6050_var_gyro_x
+float32 mpu6050_var_gyro_y
+float32 mpu6050_var_gyro_z
+float32 cjmcu103_mean_angle
+float32 cjmcu103_var_angle
+float32 cjmcu103_mean_anglespeed
+float32 cjmcu103_var_anglespeed
+float32 wheelencoder_var_rotspeed
+

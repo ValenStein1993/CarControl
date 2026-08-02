@@ -24,14 +24,12 @@
 #include "wheel_encoder.hpp"
 #include "datatypes.hpp"
 #include "datalogger.hpp"
-#include "localizer.hpp"
 #include "ina219.hpp"
 #include "steer_control.hpp"
 #include "cjmcu103.hpp"
-#include "sensor_collection.hpp"
 #include "sensor_handler.hpp"
 #include "mros.h"
-#include <car_msgs/msg/sensor_data.h>
+#include <car_msgs/msg/sensor_measurements.h>
 
 
 extern "C" {
@@ -42,7 +40,7 @@ extern "C" {
     extern TIM_HandleTypeDef htim12;
     extern I2C_HandleTypeDef hi2c1;
     extern ADC_HandleTypeDef hadc1;
-    extern car_msgs__msg__SensorData pub_msg;
+    extern car_msgs__msg__SensorMeasurements pub_msg_meas;
 };
 
 // global task time
@@ -58,13 +56,20 @@ MPU6050 accelerometer(&hi2c1);
 WheelEncoder wheelEncoder(&htim2);
 INA219 powerSensor(&hi2c1);
 CJMCU103 angleSensor(&hadc1);
-SensorCollection sensorCollection{accelerometer, wheelEncoder, powerSensor, angleSensor};
-SensorHandler sensorHandler(sensorCollection);
+
+// initialize sensor variables
+SensorVars sensorVars;
+SensorHandler sensorHandler(
+	sensorVars,
+	accelerometer,
+	wheelEncoder,
+	powerSensor,
+	angleSensor
+);
 
 // initialize controllers
-DriveControl driveControl(&htim10, sensorCollection);
-SteerControl steerControl(&htim12, sensorCollection);
-Localizer localizer(sensorCollection);
+DriveControl driveControl(&htim10, sensorVars);
+SteerControl steerControl(&htim12, sensorVars);
 
 
 
@@ -77,28 +82,33 @@ void main_init() {
 	HAL_TIM_PWM_Start(&htim12, TIM_CHANNEL_2);
 
 	// add logging variables
-	datalogger.addVariable<float>("angle", &sensorHandler.sensorValues_.angle);
-	datalogger.addVariable<float>("angleSpeed", &sensorHandler.sensorValues_.angleSpeed);
-	datalogger.addVariable<float>("translSpeed", &sensorHandler.sensorValues_.translSpeed);
-	datalogger.addVariable<float>("accelX", &sensorHandler.sensorValues_.accel.x);
-	datalogger.addVariable<float>("accelY", &sensorHandler.sensorValues_.accel.y);
-	datalogger.addVariable<float>("accelZ", &sensorHandler.sensorValues_.accel.z);
-	datalogger.addVariable<bool>("accelIsReady", &sensorHandler.sensorCollection_.accelerometer.isReady_);
-	datalogger.addVariable<bool>("wheelEncoderIsReady", &sensorHandler.sensorCollection_.wheelEncoder.isReady_);
-	datalogger.addVariable<bool>("angleSensorIsReady", &sensorHandler.sensorCollection_.angleSensor.isReady_);
+	datalogger.addVariable<float>("angle", &sensorHandler.sensorVars_.angle.val);
+	datalogger.addVariable<float>("angleSpeed", &sensorHandler.sensorVars_.angleSpeed.val);
+	datalogger.addVariable<float>("translSpeed", &sensorHandler.sensorVars_.translSpeed.val);
+	datalogger.addVariable<float>("accelX", &sensorHandler.sensorVars_.accel.val.x);
+	datalogger.addVariable<float>("accelY", &sensorHandler.sensorVars_.accel.val.y);
+	datalogger.addVariable<float>("accelZ", &sensorHandler.sensorVars_.accel.val.z);
+	datalogger.addVariable<bool>("accelIsReady", &accelerometer.isReady_);
+	datalogger.addVariable<bool>("wheelEncoderIsReady", &wheelEncoder.isReady_);
+	datalogger.addVariable<bool>("angleSensorIsReady", &angleSensor.isReady_);
 
 	appState = AppState::INIT;
 	sensorHandler.initSensors();
-	localizer.initStateSpace();
 }
 
 void updateControllerMessage() {
-	pub_msg.angle = sensorHandler.sensorValues_.angle;
-	pub_msg.angle_speed = sensorHandler.sensorValues_.angleSpeed;
-	pub_msg.transl_speed = sensorHandler.sensorValues_.translSpeed;
-	pub_msg.accel_x = sensorHandler.sensorValues_.accel.x;
-	pub_msg.accel_y = sensorHandler.sensorValues_.accel.y;
-	pub_msg.accel_z = sensorHandler.sensorValues_.accel.z;
+	pub_msg_meas.mpu6050_accel_x = sensorHandler.sensorVars_.accel.val.x;
+	pub_msg_meas.mpu6050_accel_y = sensorHandler.sensorVars_.accel.val.y;
+	pub_msg_meas.mpu6050_accel_z = sensorHandler.sensorVars_.accel.val.z;
+	pub_msg_meas.mpu6050_gyro_x = sensorHandler.sensorVars_.gyro.val.x;
+	pub_msg_meas.mpu6050_gyro_y = sensorHandler.sensorVars_.gyro.val.y;
+	pub_msg_meas.mpu6050_gyro_z = sensorHandler.sensorVars_.gyro.val.z;
+	pub_msg_meas.ina219_current = sensorHandler.sensorVars_.current.val;
+	pub_msg_meas.ina219_power = sensorHandler.sensorVars_.power.val;
+	pub_msg_meas.cjmcu103_angle = sensorHandler.sensorVars_.angle.val;
+	pub_msg_meas.cjmcu103_anglespeed = sensorHandler.sensorVars_.angleSpeed.val;
+	pub_msg_meas.wheelencoder_rotspeed = sensorHandler.sensorVars_.rotSpeed.val;
+	pub_msg_meas.wheelencoder_translspeed = sensorHandler.sensorVars_.translSpeed.val;
 }
 
 void runPeriodicTask(void (*task_fn)(void *), void *arg, uint32_t period_ms) {
@@ -129,7 +139,6 @@ void controlTask(void *argument) {
 			driveControl.controlSpeed();
 			steerControl.controlAngle();
 
-			localizer.updateStateSpace();
 			break;
 		case AppState::ERROR:
 			break;
@@ -162,8 +171,15 @@ void statusTask(void *argument) {
 }
 
 void microROSTask(void *argument) {
+	static int cnt = 0;
+
 	updateControllerMessage();
-	mros_publish();
+	mros_publish_sensor_meas();
+
+	if (++cnt >= 10) {
+		cnt = 0;
+		mros_publish_sensor_cal();
+	}
 }
 
 

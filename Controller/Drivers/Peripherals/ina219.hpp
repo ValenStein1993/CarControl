@@ -9,8 +9,9 @@
 #define PERIPHERALS_INA219_HPP_
 
 #include "stm32f4xx_hal.h"
-#include "sensor.hpp"
 #include "simulator.hpp"
+#include "sensor.hpp"
+
 
 #define INA219_ADDR 0x40 << 1
 #define R_SHUNT   0.1f // 0.1 Ohm
@@ -21,10 +22,9 @@ class INA219Snsr: public Sensor {
 public:
 	INA219Snsr(I2C_HandleTypeDef* handle);
 
-	void init() override;
+	virtual void init();
 	virtual float readCurrent();
 	virtual float readPower();
-
 
 private:
 	I2C_HandleTypeDef* handle_;
