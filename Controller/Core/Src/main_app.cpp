@@ -57,10 +57,8 @@ WheelEncoder wheelEncoder(&htim2);
 INA219 powerSensor(&hi2c1);
 CJMCU103 angleSensor(&hadc1);
 
-// initialize sensor variables
-SensorVars sensorVars;
+// initialize sensor handler
 SensorHandler sensorHandler(
-	sensorVars,
 	accelerometer,
 	wheelEncoder,
 	powerSensor,
@@ -68,8 +66,8 @@ SensorHandler sensorHandler(
 );
 
 // initialize controllers
-DriveControl driveControl(&htim10, sensorVars);
-SteerControl steerControl(&htim12, sensorVars);
+DriveControl driveControl(&htim10, sensorHandler.sensorVars_);
+SteerControl steerControl(&htim12, sensorHandler.sensorVars_);
 
 
 

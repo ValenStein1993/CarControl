@@ -20,13 +20,11 @@
 extern float dt;
 
 SensorHandler::SensorHandler(
-	SensorVars& sensorVars,
 	MPU6050& accelerometer,
 	WheelEncoder& wheelEncoder,
 	INA219& powerSensor,
 	CJMCU103& angleSensor)
-	: sensorVars_{sensorVars},
-	  accelerometer_{accelerometer},
+	: accelerometer_{accelerometer},
 	  wheelEncoder_{wheelEncoder},
 	  powerSensor_{powerSensor},
 	  angleSensor_{angleSensor} {}
@@ -83,48 +81,52 @@ void SensorHandler::calibrateWheelEncoder(DriveControl& driveControl) {
 
 
 void SensorHandler::calibrateAngleSensor(DriveControl& driveControl, SteerControl& steerControl) {
+	static float angleSpeedRawIdle{};
+	static uint8_t cntDebCal{};
+	static SteerCalState calState{};
+
 	driveControl.setDutyCycle(0);
 	float pow = powerSensor_.readPower();
 	float angleSpeedRaw = angleSensor_.readAngleSpeedRaw();
 
-	 switch(calState_) {
+	 switch(calState) {
 		case SteerCalState::INIT:
-			angleSpeedRawIdle_ = angleSpeedRaw;
+			angleSpeedRawIdle = angleSpeedRaw;
 
 			steerControl.steerLeft();
-			calState_ = SteerCalState::STEER_LEFT;
+			calState = SteerCalState::STEER_LEFT;
 			break;
 
 		case SteerCalState::STEER_LEFT:
-			if ((pow > 0) & (angleSpeedRaw <= 3 * angleSpeedRawIdle_)) {
-				cntDebCal_++;
+			if ((pow > 0) & (angleSpeedRaw <= 3 * angleSpeedRawIdle)) {
+				cntDebCal++;
 			}
 			else {
-				cntDebCal_ = 0;
+				cntDebCal = 0;
 			};
 
-			if (cntDebCal_ > NUM_DEB) {
+			if (cntDebCal > NUM_DEB) {
 				// get max left raw steering angle
 				angleSensor_.angleRawLeft_ = angleSensor_.readAngleRaw();
 
 				steerControl.steerRight();
-				calState_ = SteerCalState::STEER_RIGHT;
-				cntDebCal_ = 0;
+				calState = SteerCalState::STEER_RIGHT;
+				cntDebCal = 0;
 			}
 			break;
 
 		case SteerCalState::STEER_RIGHT:
-			if ((pow > 0) & (angleSpeedRaw <= 3 * angleSpeedRawIdle_)) {
-				cntDebCal_++;
+			if ((pow > 0) & (angleSpeedRaw <= 3 * angleSpeedRawIdle)) {
+				cntDebCal++;
 			}
 			else {
-				cntDebCal_ = 0;
+				cntDebCal = 0;
 			};
 
-			if (cntDebCal_ > NUM_DEB) {
+			if (cntDebCal > NUM_DEB) {
 				// get max left raw steering angle
 				angleSensor_.angleRawRight_ = angleSensor_.readAngleRaw();
-				calState_ = SteerCalState::CALIBRATE;
+				calState = SteerCalState::CALIBRATE;
 			}
 			break;
 
@@ -140,7 +142,7 @@ void SensorHandler::calibrateAngleSensor(DriveControl& driveControl, SteerContro
 			}
 
 			//steerControl.setTarget(0);
-			calState_ = SteerCalState::READY;
+			calState = SteerCalState::READY;
 			break;
 
 		case SteerCalState::READY:

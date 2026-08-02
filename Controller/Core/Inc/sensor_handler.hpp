@@ -30,22 +30,18 @@ enum class SteerCalState {
 class SensorHandler {
 public:
 	SensorHandler(
-		SensorVars& sensorVars,
 		MPU6050& accelerometer,
 		WheelEncoder& wheelEncoder,
 		INA219& powerSensor,
 		CJMCU103& angleSensor
 	);
 
-	SensorVars sensorVars_;
-	MPU6050 accelerometer_;
-	WheelEncoder wheelEncoder_;
-	INA219 powerSensor_;
-	CJMCU103 angleSensor_;
+	MPU6050& accelerometer_;
+	WheelEncoder& wheelEncoder_;
+	INA219& powerSensor_;
+	CJMCU103& angleSensor_;
 
-	SteerCalState calState_{};
-	float angleSpeedRawIdle_{};
-	uint8_t cntDebCal_{};
+	SensorVars sensorVars_{};
 
 	void initSensors();
 	bool calibrateSensors(DriveControl& driveControl, SteerControl& steerControl);
