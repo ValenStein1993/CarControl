@@ -17,4 +17,7 @@ Testing/Emulation/*.txt.*
 App/build
 App/install
 App/log
+Testing/CarModel/Plugins/build
+Testing/CarModel/Plugins/install
+Testing/CarModel/Plugins/log
 
