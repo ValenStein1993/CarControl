@@ -11,12 +11,26 @@ using std::placeholders::_1;
 
 Localizer::Localizer()
   : Node("localizer") {
+
+	pub_position_ = this->create_publisher<car_msgs::msg::Position>("position", 10);
+    timer_ = this->create_wall_timer(500ms, std::bind(&Localizer::callback_position, this));
+
     sub_measurements_ = create_subscription<car_msgs::msg::SensorMeasurements>(
       "/sensor/measurement", 10, std::bind(&Localizer::callback_measurements, this, _1));
     sub_calibration_ = create_subscription<car_msgs::msg::SensorCalibration>(
       "/sensor/calibration", 10, std::bind(&Localizer::callback_calibration, this, _1));
 
   initStateSpace();
+}
+
+void Localizer::callback_position() {
+	car_msgs::msg::Position msg;
+	msg.pos_x = pos_.x;
+	msg.pos_y = pos_.y;
+	msg.speed = pos_.v;
+	msg.yaw = pos_.phi;
+
+	pub_position_->publish(msg);
 }
 
 void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
@@ -124,6 +138,11 @@ void Localizer::updateStateSpace(
 	ekf_predict(&stateSpace_.ekf, stateSpace_.fx, stateSpace_.F, stateSpace_.Q);
 	// update step with measurements
 	ekf_update(&stateSpace_.ekf, stateSpace_.z, stateSpace_.hx, stateSpace_.H, stateSpace_.R);
+	
+	pos_.x = stateSpace_.ekf.x[0];
+	pos_.y = stateSpace_.ekf.x[1];
+	pos_.v = stateSpace_.ekf.x[2];
+	pos_.phi = stateSpace_.ekf.x[3];
 }
 
 int main(int argc, char * argv[])

@@ -19,6 +19,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "car_msgs/msg/sensor_measurements.hpp"
 #include "car_msgs/msg/sensor_calibration.hpp"
+#include "car_msgs/msg/position.hpp"
+
 
 using std::placeholders::_1;
 
@@ -30,6 +32,7 @@ constexpr float weightCovMeasurement = 1;
 struct Position {
 	float x;
 	float y;
+	float v;
 	float phi;
 };
 
@@ -66,11 +69,15 @@ class Localizer : public rclcpp::Node {
 	void updateStateSpace(float dt, float accel_x, float accel_y, float angle, float translSpeed, float gyro_z);
     
   private:
+  	rclcpp::TimerBase::SharedPtr timer_{};
+  	rclcpp::Publisher<car_msgs::msg::Position>::SharedPtr pub_position_{};
+	
     rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_{};
     rclcpp::Subscription<car_msgs::msg::SensorCalibration>::SharedPtr sub_calibration_{};
 
     void callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg);
     void callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg);
+	void callback_position();
 
 };
 
