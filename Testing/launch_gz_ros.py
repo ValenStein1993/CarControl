@@ -23,12 +23,13 @@ def generate_launch_description():
                 'on_exit_shutdown': 'True'
             }.items(),
         ),
-
-        # Bridging and remapping Gazebo topics to ROS 2 (replace with your own topics)
         Node(
             package='localizer',
             executable='localizer',
-            output='screen'
+        ),
+        Node(
+            package='planner',
+            executable='planner',
         ),
     ])
 

@@ -21,7 +21,7 @@
         name="gz::sim::systems::Imu">
     </plugin>
     <plugin filename="libgazebo_msg_bridge.so"
-        name="msg_bridge::SensorMeasurements">
+        name="MessageBridge">
     </plugin>
 
     <model name="ground_plane">

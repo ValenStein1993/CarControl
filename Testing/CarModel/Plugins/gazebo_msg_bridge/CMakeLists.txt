@@ -14,7 +14,7 @@ find_package(gz-transport13 REQUIRED)
 add_library(
     gazebo_msg_bridge
     SHARED
-    src/SensorMeasurements.cpp
+    src/MessageBridge.cpp
 )
 
 
