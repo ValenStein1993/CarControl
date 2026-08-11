@@ -8,6 +8,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/SensorMeasurements.msg"
   "msg/SensorCalibration.msg"
   "msg/Position.msg"
+  "msg/Steering.msg"
 )
 
 ament_package()

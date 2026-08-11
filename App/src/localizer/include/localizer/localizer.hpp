@@ -20,7 +20,7 @@
 #include "car_msgs/msg/sensor_measurements.hpp"
 #include "car_msgs/msg/sensor_calibration.hpp"
 #include "car_msgs/msg/position.hpp"
-
+#include "common/datatypes.hpp"
 
 using std::placeholders::_1;
 
@@ -28,13 +28,6 @@ using std::placeholders::_1;
 constexpr float wheelWidth = 3;
 constexpr float weightCovModel = 1.1;
 constexpr float weightCovMeasurement = 1;
-
-struct Position {
-	float x;
-	float y;
-	float v;
-	float phi;
-};
 
 struct SensorConfig {
 	bool isCalibrated;
