@@ -9,6 +9,8 @@ find_package(sensor_msgs REQUIRED)
 find_package(gz-sim8 REQUIRED)
 find_package(car_msgs REQUIRED)
 find_package(gz-transport13 REQUIRED)
+find_package(common REQUIRED)
+
 
 
 add_library(
@@ -31,6 +33,7 @@ ament_target_dependencies(
     sensor_msgs
     car_msgs
     gz-transport13
+    common
 )
 
 target_link_libraries(

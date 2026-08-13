@@ -1,8 +1,14 @@
+#include <cmath>
+#include <thread>
+
 #include "gazebo_msg_bridge/MessageBridge.hpp"
 #include <gz/plugin/Register.hh>
+#include <gz/math/Quaternion.hh>
+
+#include "common/config.hpp"
 #include "car_msgs/msg/sensor_measurements.hpp"
-#include "car_msgs/msg/steering.hpp"
-#include <thread>
+#include "car_msgs/msg/motion_control.hpp"
+#include "car_msgs/msg/vehicle_state.hpp"
 
 
 MessageBridge::MessageBridge() {
@@ -30,48 +36,58 @@ void MessageBridge::Configure(
         rclcpp::init(0, nullptr);
     }
 
-    // use gazebo node to subscribe to the sensor topics and then publish 
-    // the data to custom message type using ros2 node
-    gz_node_.Subscribe("/imu", &MessageBridge::OnImu, this);
-
     ros_node_ = std::make_shared<rclcpp::Node>("sensor_measurements_bridge");
-
     executor_ = std::make_shared<rclcpp::executors::SingleThreadedExecutor>();
-    executor_->add_node(ros_node_);
+    executor_->add_node(ros_node_); 
     ros_spin_thread_ = std::thread([this]() { executor_->spin(); });
 
+    // use gazebo node to subscribe to the sensor topics and then publish 
+    // the data to custom message type using ros2 node
+    gz_node_.Subscribe("/imu", &MessageBridge::callback_imu, this);
     ros_pub_measurements_ = ros_node_->create_publisher<car_msgs::msg::SensorMeasurements>(
-        "/sensor_measurements",
+        topics::sensorMeasurements,
         10
     );
 
-    // subscribe to ROS steering topic and publish via gazebo node
-    ros_sub_steering_ = ros_node_->create_subscription<car_msgs::msg::Steering>(
-        "/steering",
+    // subscribe to ROS motion control topic and publish via gazebo node
+    ros_sub_motionControl_ = ros_node_->create_subscription<car_msgs::msg::MotionControl>(
+        topics::motionControl,
         10,
-        std::bind(&MessageBridge::OnSteering, this, std::placeholders::_1)
+        std::bind(&MessageBridge::callback_motionControl, this, std::placeholders::_1)
     );
 
-    gz_pub_steering_ = gz_node_.Advertise<gz::msgs::Twist>("/cmd_vel");
+    gz_pub_motionControl_ = gz_node_.Advertise<gz::msgs::Twist>("/cmd_vel");
+
+    // subscribe to odometry data and publish true vehicle state via ROS node
+    gz_node_.Subscribe("/model/car/odometry", &MessageBridge::callback_odometry, this);
+    ros_pub_vehicleState_ = ros_node_->create_publisher<car_msgs::msg::VehicleState>(
+        topics::vehicleStateAct,
+        10
+    );
 }
 
-void MessageBridge::OnImu(const gz::msgs::IMU &_msg) {
+void MessageBridge::callback_imu(const gz::msgs::IMU &_msg) {
     lastImu_ = _msg;
 }
 
-void MessageBridge::OnSteering(const car_msgs::msg::Steering &_msg) {
-    lastSteering_ = _msg;
+void MessageBridge::callback_motionControl(const car_msgs::msg::MotionControl &_msg) {
+    lastMotionControl_ = _msg;
 }
+
+void MessageBridge::callback_odometry(const gz::msgs::Odometry &_msg) {
+    lastOdometry_ = _msg;
+}
+
 
 void MessageBridge::PreUpdate(
     const gz::sim::UpdateInfo &_info,
     gz::sim::EntityComponentManager &_ecm) {
 
     gz::msgs::Twist msg;
-    msg.mutable_linear()->set_x(lastSteering_.speed); 
-    msg.mutable_angular()->set_z(lastSteering_.steering_angle);
+    msg.mutable_linear()->set_x(lastMotionControl_.speed); 
+    msg.mutable_angular()->set_z(lastMotionControl_.steering_angle);
 
-    gz_pub_steering_.Publish(msg);
+    gz_pub_motionControl_.Publish(msg);
 
 }
 
@@ -79,22 +95,35 @@ void MessageBridge::PostUpdate(
     const gz::sim::UpdateInfo &_info,
     const gz::sim::EntityComponentManager &_ecm) {
 
-    if (!ros_pub_measurements_)
-        return;
+    car_msgs::msg::SensorMeasurements msgMeasurements;
 
-    car_msgs::msg::SensorMeasurements msg;
-
-    msg.time = static_cast<uint32_t>(
+    msgMeasurements.time = static_cast<uint32_t>(
             ros_node_->get_clock()->now().nanoseconds()
             / 1000000);    
-    msg.mpu6050_accel_x = lastImu_.linear_acceleration().x();
-    msg.mpu6050_accel_y = lastImu_.linear_acceleration().y();
-    msg.mpu6050_accel_z = lastImu_.linear_acceleration().z();
-    msg.mpu6050_gyro_x = lastImu_.angular_velocity().x();
-    msg.mpu6050_gyro_y = lastImu_.angular_velocity().y();
-    msg.mpu6050_gyro_z = lastImu_.angular_velocity().z();
+    msgMeasurements.mpu6050_accel_x = lastImu_.linear_acceleration().x();
+    msgMeasurements.mpu6050_accel_y = lastImu_.linear_acceleration().y();
+    msgMeasurements.mpu6050_accel_z = lastImu_.linear_acceleration().z();
+    msgMeasurements.mpu6050_gyro_x = lastImu_.angular_velocity().x();
+    msgMeasurements.mpu6050_gyro_y = lastImu_.angular_velocity().y();
+    msgMeasurements.mpu6050_gyro_z = lastImu_.angular_velocity().z();
 
-    ros_pub_measurements_->publish(msg);
+    ros_pub_measurements_->publish(msgMeasurements);
+
+    car_msgs::msg::VehicleState msgState;
+    msgState.pos_x = lastOdometry_.pose().position().x();
+    msgState.pos_y = lastOdometry_.pose().position().y();
+    msgState.speed = std::hypot(lastOdometry_.twist().linear().x(), lastOdometry_.twist().linear().y());
+
+    const auto &orientation = lastOdometry_.pose().orientation();
+    gz::math::Quaterniond q(
+        orientation.w(),
+        orientation.x(),
+        orientation.y(),
+        orientation.z()
+    );
+    msgState.yaw = q.Yaw();
+
+    ros_pub_vehicleState_->publish(msgState);
 }
 
 GZ_ADD_PLUGIN(

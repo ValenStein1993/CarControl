@@ -1,22 +1,22 @@
 #pragma once
 #include "rclcpp/rclcpp.hpp"
 
-#include "car_msgs/msg/position.hpp"
-#include "car_msgs/msg/steering.hpp"
+#include "car_msgs/msg/vehicle_state.hpp"
+#include "car_msgs/msg/motion_control.hpp"
 #include "common/datatypes.hpp"
 
 class Planner : public rclcpp::Node {
   public:
     Planner();
-    Position pos_{};
+    VehicleState vehicleState_{};
 	
   private:
   	rclcpp::TimerBase::SharedPtr timer_{};
-  	rclcpp::Publisher<car_msgs::msg::Steering>::SharedPtr pub_steering_{};
+  	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_{};
 	
-    rclcpp::Subscription<car_msgs::msg::Position>::SharedPtr sub_position_{};
+    rclcpp::Subscription<car_msgs::msg::VehicleState>::SharedPtr sub_vehicleState_{};
 
-	void callback_position(const car_msgs::msg::Position::SharedPtr msg);
-  void callback_steering();
+	void callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg);
+  void callback_motionControl();
 
 };

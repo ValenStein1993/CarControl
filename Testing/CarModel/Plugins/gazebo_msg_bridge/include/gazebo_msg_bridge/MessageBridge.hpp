@@ -11,8 +11,9 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include "car_msgs/msg/sensor_measurements.hpp"
-#include "car_msgs/msg/steering.hpp"
-
+#include "car_msgs/msg/motion_control.hpp"
+#include "car_msgs/msg/vehicle_state.hpp"
+#include "gz/msgs/odometry.pb.h"
 
 class MessageBridge:
     public gz::sim::System,
@@ -49,19 +50,21 @@ public:
 
 private:
 
-    void OnImu(const gz::msgs::IMU &_msg);
-    void OnSteering(const car_msgs::msg::Steering &_msg);
-
+    void callback_imu(const gz::msgs::IMU &_msg);
+    void callback_motionControl(const car_msgs::msg::MotionControl &_msg);
+    void callback_odometry(const gz::msgs::Odometry &_msg);
     
     rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_;
     std::thread ros_spin_thread_;
     gz::transport::Node gz_node_;
-    gz::transport::Node::Publisher gz_pub_steering_;
+    gz::transport::Node::Publisher gz_pub_motionControl_;
 
     rclcpp::Node::SharedPtr ros_node_;
     rclcpp::Publisher<car_msgs::msg::SensorMeasurements>::SharedPtr ros_pub_measurements_;
-    rclcpp::Subscription<car_msgs::msg::Steering>::SharedPtr ros_sub_steering_;
+    rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr ros_pub_vehicleState_;
+    rclcpp::Subscription<car_msgs::msg::MotionControl>::SharedPtr ros_sub_motionControl_;
 
     gz::msgs::IMU lastImu_;
-    car_msgs::msg::Steering lastSteering_;
+    car_msgs::msg::MotionControl lastMotionControl_;
+    gz::msgs::Odometry lastOdometry_;
 };

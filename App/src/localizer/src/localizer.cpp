@@ -4,9 +4,10 @@
 
 
 #include "rclcpp/rclcpp.hpp"
+#include "common/config.hpp"
 #include "car_msgs/msg/sensor_measurements.hpp"
 #include "car_msgs/msg/sensor_calibration.hpp"
-#include "car_msgs/msg/position.hpp"
+#include "car_msgs/msg/vehicle_state.hpp"
 
 #include "localizer/localizer.hpp"
 
@@ -16,25 +17,25 @@ using namespace std::chrono_literals;
 Localizer::Localizer()
   : Node("localizer") {
 
-	pub_position_ = this->create_publisher<car_msgs::msg::Position>("/position", 10);
-	timer_ = this->create_wall_timer(500ms, std::bind(&Localizer::callback_position, this));
+	pub_vehicleState_ = this->create_publisher<car_msgs::msg::VehicleState>(topics::vehicleState, 10);
+	timer_ = this->create_wall_timer(500ms, std::bind(&Localizer::callback_vehicleState, this));
 
 	sub_measurements_ = create_subscription<car_msgs::msg::SensorMeasurements>(
-	"/sensor/measurement", 10, std::bind(&Localizer::callback_measurements, this, _1));
+	topics::sensorMeasurements, 10, std::bind(&Localizer::callback_measurements, this, _1));
 	sub_calibration_ = create_subscription<car_msgs::msg::SensorCalibration>(
-	"/sensor/calibration", 10, std::bind(&Localizer::callback_calibration, this, _1));
+	topics::sensorCalibration, 10, std::bind(&Localizer::callback_calibration, this, _1));
 
 	initStateSpace();
 }
 
-void Localizer::callback_position() {
-	car_msgs::msg::Position msg;
-	msg.pos_x = pos_.x;
-	msg.pos_y = pos_.y;
-	msg.speed = pos_.v;
-	msg.yaw = pos_.phi;
+void Localizer::callback_vehicleState() {
+	car_msgs::msg::VehicleState msg;
+	msg.pos_x = vehicleState_.x;
+	msg.pos_y = vehicleState_.y;
+	msg.speed = vehicleState_.v;
+	msg.yaw = vehicleState_.phi;
 
-	pub_position_->publish(msg);
+	pub_vehicleState_->publish(msg);
 }
 
 void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
@@ -143,10 +144,10 @@ void Localizer::updateStateSpace(
 	// update step with measurements
 	ekf_update(&stateSpace_.ekf, stateSpace_.z, stateSpace_.hx, stateSpace_.H, stateSpace_.R);
 	
-	pos_.x = stateSpace_.ekf.x[0];
-	pos_.y = stateSpace_.ekf.x[1];
-	pos_.v = stateSpace_.ekf.x[2];
-	pos_.phi = stateSpace_.ekf.x[3];
+	vehicleState_.x = stateSpace_.ekf.x[0];
+	vehicleState_.y = stateSpace_.ekf.x[1];
+	vehicleState_.v = stateSpace_.ekf.x[2];
+	vehicleState_.phi = stateSpace_.ekf.x[3];
 }
 
 int main(int argc, char * argv[])

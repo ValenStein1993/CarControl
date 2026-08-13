@@ -3,9 +3,9 @@
 #include <chrono>
 
 #include "rclcpp/rclcpp.hpp"
-#include "car_msgs/msg/position.hpp"
-#include "car_msgs/msg/steering.hpp"
-
+#include "car_msgs/msg/vehicle_state.hpp"
+#include "car_msgs/msg/motion_control.hpp"
+#include "common/config.hpp"
 
 #include "planner/planner.hpp"
 
@@ -15,23 +15,23 @@ using std::placeholders::_1;
 Planner::Planner()
   : Node("planner") {
 
-  pub_steering_ = this->create_publisher<car_msgs::msg::Steering>("/steering", 10);
-  timer_ = this->create_wall_timer(500ms, std::bind(&Planner::callback_steering, this));
+    pub_motionControl_ = this->create_publisher<car_msgs::msg::MotionControl>(topics::motionControl, 10);
+    timer_ = this->create_wall_timer(500ms, std::bind(&Planner::callback_motionControl, this));
 
-  sub_position_ = create_subscription<car_msgs::msg::Position>(
-    "/position", 10, std::bind(&Planner::callback_position, this, _1));
+    sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
+    topics::vehicleState, 10, std::bind(&Planner::callback_vehicleState, this, _1));
 }
 
-void Planner::callback_position(const car_msgs::msg::Position::SharedPtr msg) {
-  // Implementation for position callback
+void Planner::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg) {
+  // Implementation for vehicle state callback
 }
 
-void Planner::callback_steering() {
-  car_msgs::msg::Steering msg;
-  msg.steering_angle = 5.0; // Example value, replace with actual logic
+void Planner::callback_motionControl() {
+  car_msgs::msg::MotionControl msg;
+  msg.steering_angle = 1.0; // Example value, replace with actual logic
   msg.speed = 2.0; // Example value, replace with actual logic
 
-  pub_steering_->publish(msg);
+  pub_motionControl_->publish(msg);
 }
 
 int main(int argc, char * argv[])

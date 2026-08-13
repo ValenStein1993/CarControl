@@ -19,7 +19,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "car_msgs/msg/sensor_measurements.hpp"
 #include "car_msgs/msg/sensor_calibration.hpp"
-#include "car_msgs/msg/position.hpp"
+#include "car_msgs/msg/vehicle_state.hpp"
 #include "common/datatypes.hpp"
 
 using std::placeholders::_1;
@@ -54,7 +54,7 @@ struct VehicleStateSpace {
 class Localizer : public rclcpp::Node {
   public:
     Localizer();
-    Position pos_{};
+    VehicleState vehicleState_{};
 	VehicleStateSpace stateSpace_{};
 	SensorConfig sensorConfig_{};
 
@@ -63,14 +63,14 @@ class Localizer : public rclcpp::Node {
     
   private:
   	rclcpp::TimerBase::SharedPtr timer_{};
-  	rclcpp::Publisher<car_msgs::msg::Position>::SharedPtr pub_position_{};
+  	rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr pub_vehicleState_{};
 	
     rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_{};
     rclcpp::Subscription<car_msgs::msg::SensorCalibration>::SharedPtr sub_calibration_{};
 
     void callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg);
     void callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg);
-	void callback_position();
+	void callback_vehicleState();
 
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 
-struct Position {
+struct VehicleState {
 	float x;
 	float y;
 	float v;
