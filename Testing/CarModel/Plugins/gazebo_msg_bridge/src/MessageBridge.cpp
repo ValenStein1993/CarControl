@@ -44,6 +44,8 @@ void MessageBridge::Configure(
     // use gazebo node to subscribe to the sensor topics and then publish 
     // the data to custom message type using ros2 node
     gz_node_.Subscribe("/imu", &MessageBridge::callback_imu, this);
+    gz_node_.Subscribe("/wheel_states", &MessageBridge::callback_jointState, this);
+
     ros_pub_measurements_ = ros_node_->create_publisher<car_msgs::msg::SensorMeasurements>(
         topics::sensorMeasurements,
         10
@@ -78,6 +80,9 @@ void MessageBridge::callback_odometry(const gz::msgs::Odometry &_msg) {
     lastOdometry_ = _msg;
 }
 
+void MessageBridge::callback_jointState(const gz::msgs::Model &_msg) {
+    lastJointState_ = _msg;
+}
 
 void MessageBridge::PreUpdate(
     const gz::sim::UpdateInfo &_info,
@@ -107,10 +112,27 @@ void MessageBridge::PostUpdate(
     msgMeasurements.mpu6050_gyro_y = lastImu_.angular_velocity().y();
     msgMeasurements.mpu6050_gyro_z = lastImu_.angular_velocity().z();
 
+    /*
+    float rotSpeed = 0.5 * (lastJointState_.joint(0).axis1().velocity() + 
+        lastJointState_.joint(1).axis1().velocity());
+
+    msgMeasurements.wheelencoder_rotspeed = rotSpeed;
+    msgMeasurements.wheelencoder_translspeed = rotSpeed * vehicleSize::wheelRadius;
+
+    float rotPositionSteering = 0.5 * (lastJointState_.joint(2).axis1().position() + 
+        lastJointState_.joint(3).axis1().position());
+    float rotSpeedSteering = 0.5 * (lastJointState_.joint(2).axis1().velocity() + 
+        lastJointState_.joint(3).axis1().velocity());
+
+    msgMeasurements.cjmcu103_angle = rotPositionSteering;
+    msgMeasurements.cjmcu103_anglespeed = rotSpeedSteering;
+    */
     ros_pub_measurements_->publish(msgMeasurements);
 
     car_msgs::msg::VehicleState msgState;
-    msgState.time = 1;
+    msgState.time = static_cast<uint32_t>(
+            ros_node_->get_clock()->now().nanoseconds()
+            / 1000000); 
     msgState.pos_x = lastOdometry_.pose().position().x();
     msgState.pos_y = lastOdometry_.pose().position().y();
     msgState.speed = lastOdometry_.twist().linear().x();

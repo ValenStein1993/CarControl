@@ -3,6 +3,7 @@
 #include <gz/sim/System.hh>
 #include <gz/sim/EntityComponentManager.hh>
 #include <gz/msgs/imu.pb.h>
+#include <gz/msgs/model.pb.h>
 #include <gz/msgs/twist.pb.h>
 #include <gz/transport/Node.hh>
 #include <thread>
@@ -53,7 +54,8 @@ private:
     void callback_imu(const gz::msgs::IMU &_msg);
     void callback_motionControl(const car_msgs::msg::MotionControl &_msg);
     void callback_odometry(const gz::msgs::Odometry &_msg);
-    
+    void callback_jointState(const gz::msgs::Model &_msg);
+
     rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_;
     std::thread ros_spin_thread_;
     gz::transport::Node gz_node_;
@@ -65,6 +67,7 @@ private:
     rclcpp::Subscription<car_msgs::msg::MotionControl>::SharedPtr ros_sub_motionControl_;
 
     gz::msgs::IMU lastImu_;
+    gz::msgs::Model lastJointState_;
     car_msgs::msg::MotionControl lastMotionControl_;
     gz::msgs::Odometry lastOdometry_;
 };

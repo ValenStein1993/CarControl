@@ -108,7 +108,7 @@ void Localizer::updateStateSpace(
 	// v_k = v_k-1 + a_k-1 * dt
 	stateSpace_.fx[2] = x[2] + stateSpace_.u[0] * dt;
 	// phi_k = phi_k-1 + 1/L * v_k-1 * tan(theta_k-1) * dt
-	stateSpace_.fx[3] = x[3] + 1 / wheelWidth * x[2] * std::tan(stateSpace_.u[1]) * dt;
+	stateSpace_.fx[3] = x[3] + 1 / vehicleSize::wheelbase * x[2] * std::tan(stateSpace_.u[1]) * dt;
 
 	// ---- model jacobian ----
 	stateSpace_.F[0] = 1;
@@ -118,22 +118,22 @@ void Localizer::updateStateSpace(
 	stateSpace_.F[6] = std::sin(x[3]) * dt;
 	stateSpace_.F[7] = x[2] * std::cos(x[3]) * dt;
 	stateSpace_.F[10] = 1;
-	stateSpace_.F[14] = 1 / wheelWidth * std::tan(stateSpace_.u[1]) * dt;
+	stateSpace_.F[14] = 1 / vehicleSize::wheelbase * std::tan(stateSpace_.u[1]) * dt;
 	stateSpace_.F[15] = 1;
 
 	// ---- measurement equations ----
 	stateSpace_.hx[0] = stateSpace_.fx[2];
-	stateSpace_.hx[1] = 1 / wheelWidth * stateSpace_.fx[2] * std::tan(stateSpace_.u[1]);
+	stateSpace_.hx[1] = 1 / vehicleSize::wheelbase * stateSpace_.fx[2] * std::tan(stateSpace_.u[1]);
 
 	// ---- measurement jacobian ----
 	stateSpace_.H[2] = 1;
-	stateSpace_.H[6] = 1 / wheelWidth * std::tan(stateSpace_.u[1]);
+	stateSpace_.H[6] = 1 / vehicleSize::wheelbase * std::tan(stateSpace_.u[1]);
 
 	// ---- state covariance ----
 	// calculate Q from measurement noise W as Q = GWG with G as input jacobian
 	stateSpace_.Q[9] = weightCovModel * std::pow(dt, 2) * var_a;
 	// cov = (v/L/cos(theta)^2*dt)^2*var_theta
-	stateSpace_.Q[15] = weightCovModel * std::pow(1 / wheelWidth * stateSpace_.fx[2] / std::pow(std::cos(theta), 2) * dt, 2) * sensorConfig_.var_angle;
+	stateSpace_.Q[15] = weightCovModel * std::pow(1 / vehicleSize::wheelbase * stateSpace_.fx[2] / std::pow(std::cos(theta), 2) * dt, 2) * sensorConfig_.var_angle;
 
 	// ---- measurement covariance ----
 	stateSpace_.R[0] = weightCovMeasurement * sensorConfig_.var_rotspeed;

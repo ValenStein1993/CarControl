@@ -25,7 +25,6 @@
 using std::placeholders::_1;
 
 
-constexpr float wheelWidth = 3;
 constexpr float weightCovModel = 1.1;
 constexpr float weightCovMeasurement = 1;
 

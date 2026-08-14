@@ -9,3 +9,8 @@ const std::string vehicleStateAct = "/vehicle_state_actual";
 const std::string histVehicleState = "/hist_vehicle_state";
 const std::string histVehicleStateAct = "/hist_vehicle_state_actual";
 }
+
+namespace vehicleSize {
+    const float wheelbase = 0.14;
+    const float wheelRadius = 0.015;
+}
