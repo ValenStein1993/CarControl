@@ -19,7 +19,9 @@ Recorder::Recorder()
     timer_ = this->create_wall_timer(500ms, std::bind(&Recorder::callback_histVehicleState, this));
 
     sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
-    topics::vehicleState, 10, std::bind(&Recorder::callback_vehicleState, this, _1));
+        topics::vehicleState, 10, std::bind(&Recorder::callback_vehicleState, this, _1));
+    sub_vehicleStateAct_ = create_subscription<car_msgs::msg::VehicleState>(
+        topics::vehicleStateAct, 10, std::bind(&Recorder::callback_vehicleStateAct, this, _1));
 }
 
 void Recorder::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg) {

@@ -35,7 +35,7 @@
                 <always_on>1</always_on>
                 <update_rate>10</update_rate>
                 <visualize>true</visualize>
-                <topic>imu</topic>
+                <topic>imu_sensor</topic>
             </sensor>
         </link>
         <link name='left_steering_link'>
@@ -255,7 +255,6 @@
             name="gz::sim::systems::PosePublisher">
             <publish_model_pose>true</publish_model_pose>
             <update_frequency>10</update_frequency>
-            <topic>car_odometry</topic>
         </plugin>
         <plugin 
             filename="libgazebo_msg_bridge.so"

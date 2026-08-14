@@ -59,7 +59,7 @@ void MessageBridge::Configure(
     gz_pub_motionControl_ = gz_node_.Advertise<gz::msgs::Twist>("/cmd_vel");
 
     // subscribe to odometry data and publish true vehicle state via ROS node
-    gz_node_.Subscribe("/model/car/odometry", &MessageBridge::callback_odometry, this);
+    gz_node_.Subscribe("/model/CarModel/odometry", &MessageBridge::callback_odometry, this);
     ros_pub_vehicleState_ = ros_node_->create_publisher<car_msgs::msg::VehicleState>(
         topics::vehicleStateAct,
         10
@@ -110,9 +110,10 @@ void MessageBridge::PostUpdate(
     ros_pub_measurements_->publish(msgMeasurements);
 
     car_msgs::msg::VehicleState msgState;
+    msgState.time = 1;
     msgState.pos_x = lastOdometry_.pose().position().x();
     msgState.pos_y = lastOdometry_.pose().position().y();
-    msgState.speed = std::hypot(lastOdometry_.twist().linear().x(), lastOdometry_.twist().linear().y());
+    msgState.speed = lastOdometry_.twist().linear().x();
 
     const auto &orientation = lastOdometry_.pose().orientation();
     gz::math::Quaterniond q(
