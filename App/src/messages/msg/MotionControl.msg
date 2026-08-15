@@ -1,2 +1,2 @@
-float32 steering_angle
+float32 yaw_rate
 float32 speed

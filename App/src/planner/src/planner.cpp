@@ -28,7 +28,7 @@ void Planner::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr
 
 void Planner::callback_motionControl() {
   car_msgs::msg::MotionControl msg;
-  msg.steering_angle = 1.0; // Example value, replace with actual logic
+  msg.yaw_rate = 0.1; // Example value, replace with actual logic
   msg.speed = 0.5; // Example value, replace with actual logic
 
   pub_motionControl_->publish(msg);

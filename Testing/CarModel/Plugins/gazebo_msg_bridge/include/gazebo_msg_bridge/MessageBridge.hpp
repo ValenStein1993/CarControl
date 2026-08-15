@@ -68,6 +68,14 @@ private:
 
     gz::msgs::IMU lastImu_;
     gz::msgs::Model lastJointState_;
+    std::mutex jointStateMutex_;
     car_msgs::msg::MotionControl lastMotionControl_;
     gz::msgs::Odometry lastOdometry_;
+
+    float leftWheelSpeed_{};
+    float rightWheelSpeed_{};
+    float leftSteeringSpeed_{};
+    float rightSteeringSpeed_{};
+    float leftSteeringPosition_{};
+    float rightSteeringPosition_{};
 };

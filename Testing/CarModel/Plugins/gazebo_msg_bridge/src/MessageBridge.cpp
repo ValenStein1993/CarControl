@@ -1,5 +1,6 @@
 #include <cmath>
 #include <thread>
+#include <mutex>
 
 #include "gazebo_msg_bridge/MessageBridge.hpp"
 #include <gz/plugin/Register.hh>
@@ -43,7 +44,7 @@ void MessageBridge::Configure(
 
     // use gazebo node to subscribe to the sensor topics and then publish 
     // the data to custom message type using ros2 node
-    gz_node_.Subscribe("/imu", &MessageBridge::callback_imu, this);
+    gz_node_.Subscribe("/imu_sensor", &MessageBridge::callback_imu, this);
     gz_node_.Subscribe("/wheel_states", &MessageBridge::callback_jointState, this);
 
     ros_pub_measurements_ = ros_node_->create_publisher<car_msgs::msg::SensorMeasurements>(
@@ -81,6 +82,7 @@ void MessageBridge::callback_odometry(const gz::msgs::Odometry &_msg) {
 }
 
 void MessageBridge::callback_jointState(const gz::msgs::Model &_msg) {
+    std::lock_guard<std::mutex> lock(jointStateMutex_);
     lastJointState_ = _msg;
 }
 
@@ -90,7 +92,7 @@ void MessageBridge::PreUpdate(
 
     gz::msgs::Twist msg;
     msg.mutable_linear()->set_x(lastMotionControl_.speed); 
-    msg.mutable_angular()->set_z(lastMotionControl_.steering_angle);
+    msg.mutable_angular()->set_z(lastMotionControl_.yaw_rate);
 
     gz_pub_motionControl_.Publish(msg);
 
@@ -111,22 +113,41 @@ void MessageBridge::PostUpdate(
     msgMeasurements.mpu6050_gyro_x = lastImu_.angular_velocity().x();
     msgMeasurements.mpu6050_gyro_y = lastImu_.angular_velocity().y();
     msgMeasurements.mpu6050_gyro_z = lastImu_.angular_velocity().z();
+    
+    // make local copy of joint state while mutex is locked
+    gz::msgs::Model jointState;
+    {
+        std::lock_guard<std::mutex> lock(jointStateMutex_);
+        jointState = lastJointState_;
+    }
 
-    /*
-    float rotSpeed = 0.5 * (lastJointState_.joint(0).axis1().velocity() + 
-        lastJointState_.joint(1).axis1().velocity());
+    for (const auto &joint : jointState.joint()) {
 
+        if (joint.name() == "left_backwheel_joint") {
+            leftWheelSpeed_ = joint.axis1().velocity();
+        }
+        else if (joint.name() == "right_backwheel_joint") {
+            rightWheelSpeed_ = joint.axis1().velocity();
+        }
+        else if (joint.name() == "left_steering_joint") {
+            leftSteeringSpeed_ = joint.axis1().velocity();
+            leftSteeringPosition_ = joint.axis1().position();
+        }
+        else if (joint.name() == "right_steering_joint") {
+            rightSteeringSpeed_ = joint.axis1().velocity();
+            rightSteeringPosition_ = joint.axis1().position();
+        }
+    }
+
+    float rotSpeed = 0.5 * (leftWheelSpeed_ + rightWheelSpeed_);
+    float rotPositionSteering = 0.5 * (leftSteeringPosition_ + rightSteeringPosition_);
+    float rotSpeedSteering = 0.5 * (leftSteeringSpeed_ + rightSteeringSpeed_);
+    
     msgMeasurements.wheelencoder_rotspeed = rotSpeed;
     msgMeasurements.wheelencoder_translspeed = rotSpeed * vehicleSize::wheelRadius;
-
-    float rotPositionSteering = 0.5 * (lastJointState_.joint(2).axis1().position() + 
-        lastJointState_.joint(3).axis1().position());
-    float rotSpeedSteering = 0.5 * (lastJointState_.joint(2).axis1().velocity() + 
-        lastJointState_.joint(3).axis1().velocity());
-
     msgMeasurements.cjmcu103_angle = rotPositionSteering;
     msgMeasurements.cjmcu103_anglespeed = rotSpeedSteering;
-    */
+
     ros_pub_measurements_->publish(msgMeasurements);
 
     car_msgs::msg::VehicleState msgState;
