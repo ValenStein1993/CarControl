@@ -12,6 +12,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include "car_msgs/msg/sensor_measurements.hpp"
+#include "car_msgs/msg/sensor_calibration.hpp"
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
 #include "gz/msgs/odometry.pb.h"
@@ -56,6 +57,8 @@ private:
     void callback_odometry(const gz::msgs::Odometry &_msg);
     void callback_jointState(const gz::msgs::Model &_msg);
 
+    std::chrono::steady_clock::duration lastPublishTime_{0};
+
     rclcpp::executors::SingleThreadedExecutor::SharedPtr executor_;
     std::thread ros_spin_thread_;
     gz::transport::Node gz_node_;
@@ -63,6 +66,7 @@ private:
 
     rclcpp::Node::SharedPtr ros_node_;
     rclcpp::Publisher<car_msgs::msg::SensorMeasurements>::SharedPtr ros_pub_measurements_;
+    rclcpp::Publisher<car_msgs::msg::SensorCalibration>::SharedPtr ros_pub_calibration_;
     rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr ros_pub_vehicleState_;
     rclcpp::Subscription<car_msgs::msg::MotionControl>::SharedPtr ros_sub_motionControl_;
 
@@ -72,10 +76,10 @@ private:
     car_msgs::msg::MotionControl lastMotionControl_;
     gz::msgs::Odometry lastOdometry_;
 
-    float leftWheelSpeed_{};
-    float rightWheelSpeed_{};
-    float leftSteeringSpeed_{};
-    float rightSteeringSpeed_{};
-    float leftSteeringPosition_{};
-    float rightSteeringPosition_{};
+    float leftWheelSpeed_{0};
+    float rightWheelSpeed_{0};
+    float leftSteeringSpeed_{0};
+    float rightSteeringSpeed_{0};
+    float leftSteeringPosition_{0};
+    float rightSteeringPosition_{0};
 };

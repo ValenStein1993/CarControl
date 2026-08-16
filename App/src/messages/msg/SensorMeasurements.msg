@@ -1,4 +1,5 @@
-uint32 time
+std_msgs/Header header
+
 float32 mpu6050_accel_x
 float32 mpu6050_accel_y
 float32 mpu6050_accel_z

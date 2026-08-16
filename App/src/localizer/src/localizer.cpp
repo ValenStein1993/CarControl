@@ -8,6 +8,7 @@
 #include "car_msgs/msg/sensor_measurements.hpp"
 #include "car_msgs/msg/sensor_calibration.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
+#include "car_msgs/msg/node_state.hpp"
 
 #include "localizer/localizer.hpp"
 
@@ -18,7 +19,9 @@ Localizer::Localizer()
   : Node("localizer") {
 
 	pub_vehicleState_ = this->create_publisher<car_msgs::msg::VehicleState>(topics::vehicleState, 10);
-	timer_ = this->create_wall_timer(500ms, std::bind(&Localizer::callback_vehicleState, this));
+	pub_nodeState_ = this->create_publisher<car_msgs::msg::NodeState>(topics::nodeState, 10);
+
+	timer_ = this->create_wall_timer(500ms, std::bind(&Localizer::publish_500ms, this));
 
 	sub_measurements_ = create_subscription<car_msgs::msg::SensorMeasurements>(
 	topics::sensorMeasurements, 10, std::bind(&Localizer::callback_measurements, this, _1));
@@ -28,36 +31,42 @@ Localizer::Localizer()
 	initStateSpace();
 }
 
-void Localizer::callback_vehicleState() {
-	car_msgs::msg::VehicleState msg;
-	msg.pos_x = vehicleState_.x;
-	msg.pos_y = vehicleState_.y;
-	msg.speed = vehicleState_.v;
-	msg.yaw = vehicleState_.phi;
+void Localizer::publish_500ms() {
+	car_msgs::msg::VehicleState VehStateMsg;
+	VehStateMsg.pos_x = vehicleState_.x;
+	VehStateMsg.pos_y = vehicleState_.y;
+	VehStateMsg.speed = vehicleState_.v;
+	VehStateMsg.yaw = vehicleState_.phi;
 
-	pub_vehicleState_->publish(msg);
+	pub_vehicleState_->publish(VehStateMsg);
+
+	car_msgs::msg::NodeState NodeStateMsg;
+	NodeStateMsg.localizer_is_ready = isReady_;
+
+	pub_nodeState_->publish(NodeStateMsg);
+
 }
 
 void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
-    static uint32_t lastTime{};  
-	uint32_t currentTime = msg->time;
+    static bool firstMessage = true;
+	rclcpp::Time currentTimestamp = msg->header.stamp;
 
-	if (!sensorConfig_.isCalibrated) {
+	if (!isReady_) {
 		return;
 	}
 	
-	if (lastTime == 0) {
-		lastTime = currentTime;
+	if (firstMessage) {
+		lastTimestamp_ = currentTimestamp;
+		firstMessage = false;
 		return;
 	}
 	
-    float dt = (currentTime - lastTime) / 1000.0f; 
-    lastTime = currentTime;
+    float dt = (currentTimestamp - lastTimestamp_).seconds();
+    lastTimestamp_ = currentTimestamp;
 
     updateStateSpace(
 		dt,
         msg->mpu6050_accel_x,
-        msg->mpu6050_accel_y,
         msg->cjmcu103_angle,
         msg->wheelencoder_translspeed,
         msg->mpu6050_gyro_z
@@ -71,6 +80,8 @@ void Localizer::callback_calibration(const car_msgs::msg::SensorCalibration::Sha
 	sensorConfig_.var_gyro_z = msg->mpu6050_var_gyro_z;
 	sensorConfig_.var_angle = msg->cjmcu103_var_angle;
 	sensorConfig_.var_rotspeed = msg->wheelencoder_var_rotspeed;
+
+	isReady_ = sensorConfig_.isCalibrated;
 }
 
 void Localizer::initStateSpace() {
@@ -81,21 +92,14 @@ void Localizer::initStateSpace() {
 void Localizer::updateStateSpace(
 	float dt, 
 	float accel_x, 
-	float accel_y, 
 	float angle, 
 	float translSpeed, 
 	float gyro_z) {
 	// x = {x, y, v, phi};
 	_float_t* x = stateSpace_.ekf.x;
 
-	float a = std::sqrt(std::pow(accel_x, 2) + std::pow(accel_y, 2));
-	float var_a = std::pow(accel_x, 2) / std::pow(a, 2) * sensorConfig_.var_accel_x +
-			std::pow(accel_y, 2) / std::pow(a, 2) * sensorConfig_.var_accel_y;
-
-	float theta = angle; // einheiten überprüfen
-
-	stateSpace_.u[0] = a;
-	stateSpace_.u[1] = theta;
+	stateSpace_.u[0] = accel_x;
+	stateSpace_.u[1] = angle;
 
 	stateSpace_.z[0] = translSpeed;
 	stateSpace_.z[1] = gyro_z;
@@ -131,9 +135,9 @@ void Localizer::updateStateSpace(
 
 	// ---- state covariance ----
 	// calculate Q from measurement noise W as Q = GWG with G as input jacobian
-	stateSpace_.Q[9] = weightCovModel * std::pow(dt, 2) * var_a;
+	stateSpace_.Q[9] = weightCovModel * std::pow(dt, 2) * sensorConfig_.var_accel_x;
 	// cov = (v/L/cos(theta)^2*dt)^2*var_theta
-	stateSpace_.Q[15] = weightCovModel * std::pow(1 / vehicleSize::wheelbase * stateSpace_.fx[2] / std::pow(std::cos(theta), 2) * dt, 2) * sensorConfig_.var_angle;
+	stateSpace_.Q[15] = weightCovModel * std::pow(1 / vehicleSize::wheelbase * stateSpace_.fx[2] / std::pow(std::cos(angle), 2) * dt, 2) * sensorConfig_.var_angle;
 
 	// ---- measurement covariance ----
 	stateSpace_.R[0] = weightCovMeasurement * sensorConfig_.var_rotspeed;

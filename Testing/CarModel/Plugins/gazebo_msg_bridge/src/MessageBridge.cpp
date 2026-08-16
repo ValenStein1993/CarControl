@@ -67,6 +67,12 @@ void MessageBridge::Configure(
         topics::vehicleStateAct,
         10
     );
+
+    // publish sensor calibration message
+    ros_pub_calibration_ = ros_node_->create_publisher<car_msgs::msg::SensorCalibration>(
+        topics::sensorCalibration,
+        10
+    );
 }
 
 void MessageBridge::callback_imu(const gz::msgs::IMU &_msg) {
@@ -101,12 +107,20 @@ void MessageBridge::PreUpdate(
 void MessageBridge::PostUpdate(
     const gz::sim::UpdateInfo &_info,
     const gz::sim::EntityComponentManager &_ecm) {
+    
+    // publish sensor measurements every 100ms
+    if (_info.simTime - lastPublishTime_ < std::chrono::milliseconds(100)) {
+        return;
+    }
+    lastPublishTime_ = _info.simTime;
+
+    rclcpp::Time timestamp(
+        std::chrono::duration_cast<std::chrono::nanoseconds>(
+        _info.simTime).count());
 
     car_msgs::msg::SensorMeasurements msgMeasurements;
-
-    msgMeasurements.time = static_cast<uint32_t>(
-            ros_node_->get_clock()->now().nanoseconds()
-            / 1000000);    
+    
+    msgMeasurements.header.stamp = timestamp;
     msgMeasurements.mpu6050_accel_x = lastImu_.linear_acceleration().x();
     msgMeasurements.mpu6050_accel_y = lastImu_.linear_acceleration().y();
     msgMeasurements.mpu6050_accel_z = lastImu_.linear_acceleration().z();
@@ -150,10 +164,16 @@ void MessageBridge::PostUpdate(
 
     ros_pub_measurements_->publish(msgMeasurements);
 
+
+    car_msgs::msg::SensorCalibration calibrationMsg;
+    calibrationMsg.is_calibrated = true;
+    calibrationMsg.mpu6050_var_accel_x = 0.0004f;
+    calibrationMsg.mpu6050_var_gyro_z = 0.0001f;
+
+    ros_pub_calibration_->publish(calibrationMsg);
+
     car_msgs::msg::VehicleState msgState;
-    msgState.time = static_cast<uint32_t>(
-            ros_node_->get_clock()->now().nanoseconds()
-            / 1000000); 
+    msgState.header.stamp = timestamp;
     msgState.pos_x = lastOdometry_.pose().position().x();
     msgState.pos_y = lastOdometry_.pose().position().y();
     msgState.speed = lastOdometry_.twist().linear().x();

@@ -20,6 +20,8 @@
 #include "car_msgs/msg/sensor_measurements.hpp"
 #include "car_msgs/msg/sensor_calibration.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
+#include "car_msgs/msg/node_state.hpp"
+
 #include "common/datatypes.hpp"
 
 using std::placeholders::_1;
@@ -56,20 +58,24 @@ class Localizer : public rclcpp::Node {
     VehicleState vehicleState_{};
 	VehicleStateSpace stateSpace_{};
 	SensorConfig sensorConfig_{};
+	bool isReady_{false};
 
 	void initStateSpace();
-	void updateStateSpace(float dt, float accel_x, float accel_y, float angle, float translSpeed, float gyro_z);
+	void updateStateSpace(float dt, float accel_x, float angle, float translSpeed, float gyro_z);
     
   private:
+  	rclcpp::Time lastTimestamp_{}; 
   	rclcpp::TimerBase::SharedPtr timer_{};
   	rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr pub_vehicleState_{};
+	rclcpp::Publisher<car_msgs::msg::NodeState>::SharedPtr pub_nodeState_{};
+
 	
     rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_{};
     rclcpp::Subscription<car_msgs::msg::SensorCalibration>::SharedPtr sub_calibration_{};
 
     void callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg);
     void callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg);
-	void callback_vehicleState();
+	void publish_500ms();
 
 };
 
