@@ -41,16 +41,39 @@ def generate_launch_description():
             }.items(),
         ),
         Node(
+            package='ros_gz_bridge',
+            executable='parameter_bridge',
+            arguments=[
+                '/clock@rosgraph_msgs/msg/Clock[gz.msgs.Clock'
+            ],
+            output='screen',
+        ),
+        Node(
             package='localizer',
             executable='localizer',
+            parameters=[{'use_sim_time': True}],
         ),
         Node(
             package='planner',
             executable='planner',
+            parameters=[{'use_sim_time': True}],
         ),
         Node(
             package='recorder',
             executable='recorder',
+            parameters=[{'use_sim_time': True}],
+        ),
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz',
+            parameters=[
+                {'use_sim_time': True}
+            ],
+            arguments=[
+                '-d',
+                './monitor.rviz'
+            ]
         ),
     ])
 

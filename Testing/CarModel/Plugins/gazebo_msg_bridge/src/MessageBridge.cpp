@@ -10,6 +10,8 @@
 #include "car_msgs/msg/sensor_measurements.hpp"
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
+#include <sensor_msgs/msg/laser_scan.hpp>
+
 
 
 MessageBridge::MessageBridge() {
@@ -73,10 +75,22 @@ void MessageBridge::Configure(
         topics::sensorCalibration,
         10
     );
+
+    // publish laser scan data from LiDAR to ROS
+    gz_node_.Subscribe("/lidar_sensor", &MessageBridge::callback_laserScan, this);
+    ros_pub_laserScan_ = ros_node_->create_publisher<sensor_msgs::msg::LaserScan>(
+        topics::laserScan,
+        10
+    );
 }
 
 void MessageBridge::callback_imu(const gz::msgs::IMU &_msg) {
     lastImu_ = _msg;
+}
+
+void MessageBridge::callback_laserScan(const gz::msgs::LaserScan &_msg) {
+    std::lock_guard<std::mutex> lock(laserScanMutex_);
+    lastLaserScan_ = _msg;
 }
 
 void MessageBridge::callback_motionControl(const car_msgs::msg::MotionControl &_msg) {
@@ -108,7 +122,7 @@ void MessageBridge::PostUpdate(
     const gz::sim::UpdateInfo &_info,
     const gz::sim::EntityComponentManager &_ecm) {
     
-    // publish sensor measurements every 100ms
+    // publish measurements every 100ms
     if (_info.simTime - lastPublishTime_ < std::chrono::milliseconds(100)) {
         return;
     }
@@ -118,6 +132,7 @@ void MessageBridge::PostUpdate(
         std::chrono::duration_cast<std::chrono::nanoseconds>(
         _info.simTime).count());
 
+    // Sensor Measurements Message
     car_msgs::msg::SensorMeasurements msgMeasurements;
     
     msgMeasurements.header.stamp = timestamp;
@@ -164,7 +179,7 @@ void MessageBridge::PostUpdate(
 
     ros_pub_measurements_->publish(msgMeasurements);
 
-
+    // Sensor Calibration Message
     car_msgs::msg::SensorCalibration calibrationMsg;
     calibrationMsg.is_calibrated = true;
     calibrationMsg.mpu6050_var_accel_x = 0.0004f;
@@ -172,6 +187,7 @@ void MessageBridge::PostUpdate(
 
     ros_pub_calibration_->publish(calibrationMsg);
 
+    // Actual Vehicle State Message
     car_msgs::msg::VehicleState msgState;
     msgState.header.stamp = timestamp;
     msgState.pos_x = lastOdometry_.pose().position().x();
@@ -188,6 +204,37 @@ void MessageBridge::PostUpdate(
     msgState.yaw = q.Yaw();
 
     ros_pub_vehicleState_->publish(msgState);
+
+    // Laser Scan Message
+    sensor_msgs::msg::LaserScan msgLaserScan;
+
+    gz::msgs::LaserScan lastLaserScan;
+    {
+        std::lock_guard<std::mutex> lock(laserScanMutex_);
+        lastLaserScan = lastLaserScan_;
+    }
+
+    msgLaserScan.header.stamp = timestamp;
+    msgLaserScan.header.frame_id = "chassis";
+    msgLaserScan.angle_min = lastLaserScan.angle_min();
+    msgLaserScan.angle_max = lastLaserScan.angle_max();
+    msgLaserScan.angle_increment = lastLaserScan.angle_step();
+    msgLaserScan.range_min = lastLaserScan.range_min();
+    msgLaserScan.range_max = lastLaserScan.range_max();
+    msgLaserScan.ranges.resize(lastLaserScan.ranges_size());
+
+    for (int i = 0; i < lastLaserScan.ranges_size(); ++i) {
+        msgLaserScan.ranges[i] = lastLaserScan.ranges(i);
+    }
+
+    msgLaserScan.intensities.resize(lastLaserScan.intensities_size());
+
+    for (int i = 0; i < lastLaserScan.intensities_size(); ++i) {
+        msgLaserScan.intensities[i] = lastLaserScan.intensities(i);
+    }
+
+    ros_pub_laserScan_->publish(msgLaserScan);
+
 }
 
 GZ_ADD_PLUGIN(

@@ -2,15 +2,19 @@
 #include <cmath>
 #include <chrono>
 
-
 #include "rclcpp/rclcpp.hpp"
+#include "localizer/localizer.hpp"
 #include "common/config.hpp"
+
 #include "car_msgs/msg/sensor_measurements.hpp"
 #include "car_msgs/msg/sensor_calibration.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
 #include "car_msgs/msg/node_state.hpp"
+#include "geometry_msgs/msg/transform_stamped.hpp"
 
-#include "localizer/localizer.hpp"
+#include "tf2/LinearMath/Quaternion.hpp"
+#include "tf2_ros/transform_broadcaster.hpp"
+
 
 using std::placeholders::_1;
 using namespace std::chrono_literals;
@@ -18,32 +22,58 @@ using namespace std::chrono_literals;
 Localizer::Localizer()
   : Node("localizer") {
 
-	pub_vehicleState_ = this->create_publisher<car_msgs::msg::VehicleState>(topics::vehicleState, 10);
-	pub_nodeState_ = this->create_publisher<car_msgs::msg::NodeState>(topics::nodeState, 10);
+	pub_vehicleState_ = create_publisher<car_msgs::msg::VehicleState>(topics::vehicleState, 10);
+	pub_nodeState_ = create_publisher<car_msgs::msg::NodeState>(topics::nodeState, 10);
 
-	timer_ = this->create_wall_timer(500ms, std::bind(&Localizer::publish_500ms, this));
+	timer_ = create_wall_timer(500ms, std::bind(&Localizer::publish_500ms, this));
 
 	sub_measurements_ = create_subscription<car_msgs::msg::SensorMeasurements>(
-	topics::sensorMeasurements, 10, std::bind(&Localizer::callback_measurements, this, _1));
+		topics::sensorMeasurements, 10, std::bind(&Localizer::callback_measurements, this, _1));
 	sub_calibration_ = create_subscription<car_msgs::msg::SensorCalibration>(
-	topics::sensorCalibration, 10, std::bind(&Localizer::callback_calibration, this, _1));
+		topics::sensorCalibration, 10, std::bind(&Localizer::callback_calibration, this, _1));
+
+	tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
 	initStateSpace();
 }
 
 void Localizer::publish_500ms() {
-	car_msgs::msg::VehicleState VehStateMsg;
-	VehStateMsg.pos_x = vehicleState_.x;
-	VehStateMsg.pos_y = vehicleState_.y;
-	VehStateMsg.speed = vehicleState_.v;
-	VehStateMsg.yaw = vehicleState_.phi;
+	// Publish Vehicle State
+	car_msgs::msg::VehicleState vehStateMsg;
+	vehStateMsg.pos_x = vehicleState_.x;
+	vehStateMsg.pos_y = vehicleState_.y;
+	vehStateMsg.speed = vehicleState_.v;
+	vehStateMsg.yaw = vehicleState_.phi;
 
-	pub_vehicleState_->publish(VehStateMsg);
+	pub_vehicleState_->publish(vehStateMsg);
 
-	car_msgs::msg::NodeState NodeStateMsg;
-	NodeStateMsg.localizer_is_ready = isReady_;
+	// Publish Node State
+	car_msgs::msg::NodeState nodeStateMsg;
+	nodeStateMsg.localizer_is_ready = isReady_;
 
-	pub_nodeState_->publish(NodeStateMsg);
+	pub_nodeState_->publish(nodeStateMsg);
+
+	// Publish current transform of chassis frame in map frame
+	geometry_msgs::msg::TransformStamped transformMsg;
+
+	transformMsg.header.stamp = this->get_clock()->now();
+	transformMsg.header.frame_id = "map";
+	transformMsg.child_frame_id = "chassis";
+	transformMsg.transform.translation.x = vehicleState_.x;
+	transformMsg.transform.translation.y = vehicleState_.y;
+	transformMsg.transform.translation.z = 0.0;
+
+	tf2::Quaternion q;
+	q.setRPY(0, 0, vehicleState_.phi);
+	transformMsg.transform.rotation.x = q.x();
+	transformMsg.transform.rotation.y = q.y();
+	transformMsg.transform.rotation.z = q.z();
+	transformMsg.transform.rotation.w = q.w();
+
+	// Send the transformation
+	tf_broadcaster_->sendTransform(transformMsg);
+
+
 
 }
 

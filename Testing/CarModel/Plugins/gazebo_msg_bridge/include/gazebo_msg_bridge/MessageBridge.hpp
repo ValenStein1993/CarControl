@@ -6,6 +6,9 @@
 #include <gz/msgs/model.pb.h>
 #include <gz/msgs/twist.pb.h>
 #include <gz/transport/Node.hh>
+#include "gz/msgs/odometry.pb.h"
+#include <gz/msgs/laserscan.pb.h>
+
 #include <thread>
 #include <rclcpp/executors/single_threaded_executor.hpp>
 
@@ -15,7 +18,7 @@
 #include "car_msgs/msg/sensor_calibration.hpp"
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
-#include "gz/msgs/odometry.pb.h"
+#include <sensor_msgs/msg/laser_scan.hpp>
 
 class MessageBridge:
     public gz::sim::System,
@@ -56,6 +59,7 @@ private:
     void callback_motionControl(const car_msgs::msg::MotionControl &_msg);
     void callback_odometry(const gz::msgs::Odometry &_msg);
     void callback_jointState(const gz::msgs::Model &_msg);
+    void callback_laserScan(const gz::msgs::LaserScan &_msg);
 
     std::chrono::steady_clock::duration lastPublishTime_{0};
 
@@ -65,16 +69,21 @@ private:
     gz::transport::Node::Publisher gz_pub_motionControl_;
 
     rclcpp::Node::SharedPtr ros_node_;
+    rclcpp::Subscription<car_msgs::msg::MotionControl>::SharedPtr ros_sub_motionControl_;
     rclcpp::Publisher<car_msgs::msg::SensorMeasurements>::SharedPtr ros_pub_measurements_;
     rclcpp::Publisher<car_msgs::msg::SensorCalibration>::SharedPtr ros_pub_calibration_;
     rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr ros_pub_vehicleState_;
-    rclcpp::Subscription<car_msgs::msg::MotionControl>::SharedPtr ros_sub_motionControl_;
+    rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr ros_pub_laserScan_;
+
 
     gz::msgs::IMU lastImu_;
     gz::msgs::Model lastJointState_;
     std::mutex jointStateMutex_;
     car_msgs::msg::MotionControl lastMotionControl_;
     gz::msgs::Odometry lastOdometry_;
+    gz::msgs::LaserScan lastLaserScan_;
+    std::mutex laserScanMutex_;
+
 
     float leftWheelSpeed_{0};
     float rightWheelSpeed_{0};

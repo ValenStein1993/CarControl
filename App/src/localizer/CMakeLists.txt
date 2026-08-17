@@ -13,13 +13,15 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(car_msgs REQUIRED)
 find_package(common REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
 
 add_executable(localizer src/localizer.cpp)
 
 target_include_directories(localizer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/TinyEKF/src)
 target_include_directories(localizer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-ament_target_dependencies(localizer rclcpp car_msgs common)
+ament_target_dependencies(localizer rclcpp car_msgs common geometry_msgs tf2_ros)
 
 install(TARGETS
   localizer
