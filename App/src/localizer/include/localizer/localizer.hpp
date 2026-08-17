@@ -21,6 +21,7 @@
 #include "car_msgs/msg/sensor_calibration.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
 #include "car_msgs/msg/node_state.hpp"
+#include "car_msgs/msg/motion_control.hpp"
 
 #include "common/datatypes.hpp"
 #include "tf2_ros/transform_broadcaster.hpp"
@@ -75,10 +76,15 @@ class Localizer : public rclcpp::Node {
 	
     rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_{};
     rclcpp::Subscription<car_msgs::msg::SensorCalibration>::SharedPtr sub_calibration_{};
+	rclcpp::Subscription<car_msgs::msg::MotionControl>::SharedPtr sub_motionControl_{};
+
 
     void callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg);
     void callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg);
+    void callback_motionControl(const car_msgs::msg::MotionControl::SharedPtr msg);
 	void publish_500ms();
+
+	car_msgs::msg::MotionControl::SharedPtr lastMotionControl_;
 
 };
 

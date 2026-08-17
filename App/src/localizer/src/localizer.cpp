@@ -73,8 +73,6 @@ void Localizer::publish_500ms() {
 	// Send the transformation
 	tf_broadcaster_->sendTransform(transformMsg);
 
-
-
 }
 
 void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
@@ -94,6 +92,11 @@ void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::S
     float dt = (currentTimestamp - lastTimestamp_).seconds();
     lastTimestamp_ = currentTimestamp;
 
+	// if vehicle is idle and there is no command to move, skip the update to avoid drift in the EKF
+	if (!lastMotionControl_ || (lastMotionControl_->speed == 0.0f && msg->wheelencoder_translspeed < 1e-8f)) {
+		return;
+	}
+
     updateStateSpace(
 		dt,
         msg->mpu6050_accel_x,
@@ -112,6 +115,10 @@ void Localizer::callback_calibration(const car_msgs::msg::SensorCalibration::Sha
 	sensorConfig_.var_rotspeed = msg->wheelencoder_var_rotspeed;
 
 	isReady_ = sensorConfig_.isCalibrated;
+}
+
+void Localizer::callback_motionControl(const car_msgs::msg::MotionControl::SharedPtr msg) {
+	lastMotionControl_ = msg;
 }
 
 void Localizer::initStateSpace() {
