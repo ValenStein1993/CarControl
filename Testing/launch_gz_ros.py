@@ -49,6 +49,11 @@ def generate_launch_description():
             output='screen',
         ),
         Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'base_link_lidar', 'lidar']
+        ),
+        Node(
             package='localizer',
             executable='localizer',
             parameters=[{'use_sim_time': True}],
@@ -62,6 +67,19 @@ def generate_launch_description():
             package='recorder',
             executable='recorder',
             parameters=[{'use_sim_time': True}],
+        ),
+        Node(
+            package='ros2_laser_scan_matcher',
+            executable='laser_scan_matcher',
+            parameters=[{
+                'use_sim_time': True, 
+                'publish_odom': '/lidar_odom',
+                'publish_tf': True,
+                'base_frame': 'base_link_lidar',
+                'odom_frame': 'odom',
+                'map_frame': 'map',
+                'laser_frame': 'lidar'
+                }],
         ),
         Node(
             package='rviz2',

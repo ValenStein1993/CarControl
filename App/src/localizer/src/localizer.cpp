@@ -53,25 +53,44 @@ void Localizer::publish_500ms() {
 
 	pub_nodeState_->publish(nodeStateMsg);
 
-	// Publish current transform of chassis frame in map frame
-	geometry_msgs::msg::TransformStamped transformMsg;
+	// Publish transform map --> odom
+	geometry_msgs::msg::TransformStamped mapOdomTfMsg;
 
-	transformMsg.header.stamp = this->get_clock()->now();
-	transformMsg.header.frame_id = "map";
-	transformMsg.child_frame_id = "chassis";
-	transformMsg.transform.translation.x = vehicleState_.x;
-	transformMsg.transform.translation.y = vehicleState_.y;
-	transformMsg.transform.translation.z = 0.0;
+	mapOdomTfMsg.header.stamp = this->get_clock()->now();
+	mapOdomTfMsg.header.frame_id = "map";
+	mapOdomTfMsg.child_frame_id = "odom";
+	mapOdomTfMsg.transform.translation.x = 0.0;
+	mapOdomTfMsg.transform.translation.y = 0.0;
+	mapOdomTfMsg.transform.translation.z = 0.0;
 
 	tf2::Quaternion q;
-	q.setRPY(0, 0, vehicleState_.phi);
-	transformMsg.transform.rotation.x = q.x();
-	transformMsg.transform.rotation.y = q.y();
-	transformMsg.transform.rotation.z = q.z();
-	transformMsg.transform.rotation.w = q.w();
+	q.setRPY(0, 0, 0);
+	mapOdomTfMsg.transform.rotation.x = q.x();
+	mapOdomTfMsg.transform.rotation.y = q.y();
+	mapOdomTfMsg.transform.rotation.z = q.z();
+	mapOdomTfMsg.transform.rotation.w = q.w();
 
 	// Send the transformation
-	tf_broadcaster_->sendTransform(transformMsg);
+	tf_broadcaster_->sendTransform(mapOdomTfMsg);
+
+	// Publish transform odom --> base_link
+	geometry_msgs::msg::TransformStamped odomEkfTfMsg;
+
+	odomEkfTfMsg.header.stamp = this->get_clock()->now();
+	odomEkfTfMsg.header.frame_id = "odom";
+	odomEkfTfMsg.child_frame_id = "base_link_ekf";
+	odomEkfTfMsg.transform.translation.x = vehicleState_.x;
+	odomEkfTfMsg.transform.translation.y = vehicleState_.y;
+	odomEkfTfMsg.transform.translation.z = 0.0;
+
+	q.setRPY(0, 0, vehicleState_.phi);
+	odomEkfTfMsg.transform.rotation.x = q.x();
+	odomEkfTfMsg.transform.rotation.y = q.y();
+	odomEkfTfMsg.transform.rotation.z = q.z();
+	odomEkfTfMsg.transform.rotation.w = q.w();
+
+	// Send the transformation
+	tf_broadcaster_->sendTransform(odomEkfTfMsg);
 
 }
 

@@ -218,7 +218,7 @@ void MessageBridge::PostUpdate(
     }
 
     msgLaserScan.header.stamp = timestamp;
-    msgLaserScan.header.frame_id = "chassis";
+    msgLaserScan.header.frame_id = "lidar";
     msgLaserScan.angle_min = lastLaserScan.angle_min();
     msgLaserScan.angle_max = lastLaserScan.angle_max();
     msgLaserScan.angle_increment = lastLaserScan.angle_step();
