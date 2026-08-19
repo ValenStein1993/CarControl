@@ -1,4 +1,5 @@
 import os
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -12,6 +13,11 @@ from launch_ros.substitutions import FindPackageShare
 def generate_launch_description():
     # Resolve paths relative to this launch file so relative paths work
     here = os.path.dirname(os.path.abspath(__file__))
+
+    config_abs = os.path.join(here, '..', 'App', 'config')
+    with open(config_abs, 'r') as f:
+        config = yaml.safe_load(f)
+
     world_abs = os.path.join(here, 'CarModel', 'warehouse_world.sdf')
     carmodel_abs = os.path.join(here, 'CarModel', 'carmodel.sdf')
     plugin_lib_abs = os.path.join(here, 'CarModel', 'Plugins', 'install', 'gazebo_msg_bridge', 'lib')
@@ -76,7 +82,7 @@ def generate_launch_description():
                 'publish_odom': '/lidar_odom',
                 'publish_tf': True,
                 'base_frame': 'base_link_lidar',
-                'odom_frame': 'odom',
+                'odom_frame': config['frames']['odom'],
                 'map_frame': 'map',
                 'laser_frame': 'lidar'
                 }],

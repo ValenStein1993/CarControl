@@ -1,6 +1,8 @@
 #include <memory>
 #include <cmath>
 #include <chrono>
+#include <yaml-cpp/yaml.h>
+
 
 #include "rclcpp/rclcpp.hpp"
 #include "common/config.hpp"
@@ -12,16 +14,19 @@ using std::placeholders::_1;
 
 Recorder::Recorder()
   : Node("recorder") {
+    config_ = common::get_config();
 
-    pub_histVehicleState_ = this->create_publisher<nav_msgs::msg::Path>(topics::histVehicleState, 10);
-    pub_histVehicleStateAct_ = this->create_publisher<nav_msgs::msg::Path>(topics::histVehicleStateAct, 10);
+    pub_histVehicleState_ = this->create_publisher<nav_msgs::msg::Path>(
+        config_["topics"]["histVehicleState"].as<std::string>(), 10);
+    pub_histVehicleStateAct_ = this->create_publisher<nav_msgs::msg::Path>(
+        config_["topics"]["histVehicleStateAct"].as<std::string>(), 10);
 
     timer_ = this->create_wall_timer(500ms, std::bind(&Recorder::callback_histVehicleState, this));
 
     sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
-        topics::vehicleState, 10, std::bind(&Recorder::callback_vehicleState, this, _1));
+        config_["topics"]["vehicleState"].as<std::string>(), 10, std::bind(&Recorder::callback_vehicleState, this, _1));
     sub_vehicleStateAct_ = create_subscription<car_msgs::msg::VehicleState>(
-        topics::vehicleStateAct, 10, std::bind(&Recorder::callback_vehicleStateAct, this, _1));
+        config_["topics"]["vehicleStateAct"].as<std::string>(), 10, std::bind(&Recorder::callback_vehicleStateAct, this, _1));
 }
 
 void Recorder::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg) {

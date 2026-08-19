@@ -1,0 +1,29 @@
+topics:
+  sensorMeasurements: /sensor/measurements
+  sensorCalibration: /sensor/calibration
+  motionControl: /motion_control
+  vehicleState: /vehicle_state
+  vehicleStateAct: /vehicle_state_actual
+  histVehicleState: /hist_vehicle_state
+  histVehicleStateAct: /hist_vehicle_state_actual
+  nodeState: /node_state
+  laserScan: /scan
+
+frames:
+  map: map
+  odom: odom
+  vehBase: base_link
+  vehBaseEkf: base_link_ekf
+  vehBaseLidar: base_link_lidar
+  lidar: lidar
+
+vehicle:
+  geometry:
+    wheelbase: 0.14;
+    wheelRadius: 0.015;
+    lidar:
+      x: 0
+      y: 0
+      z: 0
+
+

@@ -1,18 +1,20 @@
+#pragma once
+
 #include <string>
 
-namespace topics {
-const std::string sensorMeasurements = "/sensor/measurements";
-const std::string sensorCalibration = "/sensor/calibration";
-const std::string motionControl = "/motion_control";
-const std::string vehicleState = "/vehicle_state";
-const std::string vehicleStateAct = "/vehicle_state_actual";
-const std::string histVehicleState = "/hist_vehicle_state";
-const std::string histVehicleStateAct = "/hist_vehicle_state_actual";
-const std::string nodeState = "/node_state";
-const std::string laserScan = "/scan";
-}
+#include <ament_index_cpp/get_package_share_directory.hpp>
+#include <yaml-cpp/yaml.h>
 
-namespace vehicleSize {
-    const float wheelbase = 0.14;
-    const float wheelRadius = 0.015;
+namespace common
+{
+
+    inline std::string get_config_path() {
+        return ament_index_cpp::get_package_share_directory("common")
+            + "/config/config.yaml";
+    }
+
+    inline YAML::Node get_config() {
+        return YAML::LoadFile(get_config_path());
+    }
+
 }

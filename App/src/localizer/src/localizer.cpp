@@ -1,6 +1,7 @@
 #include <memory>
 #include <cmath>
 #include <chrono>
+#include <yaml-cpp/yaml.h>
 
 #include "rclcpp/rclcpp.hpp"
 #include "localizer/localizer.hpp"
@@ -21,16 +22,21 @@ using namespace std::chrono_literals;
 
 Localizer::Localizer()
   : Node("localizer") {
+	config_ = common::get_config();
 
-	pub_vehicleState_ = create_publisher<car_msgs::msg::VehicleState>(topics::vehicleState, 10);
-	pub_nodeState_ = create_publisher<car_msgs::msg::NodeState>(topics::nodeState, 10);
+	pub_vehicleState_ = create_publisher<car_msgs::msg::VehicleState>(
+		config_["topics"]["vehicleState"].as<std::string>(), 10);
+	pub_nodeState_ = create_publisher<car_msgs::msg::NodeState>(
+		config_["topics"]["nodeState"].as<std::string>(), 10);
 
 	timer_ = create_wall_timer(500ms, std::bind(&Localizer::publish_500ms, this));
 
 	sub_measurements_ = create_subscription<car_msgs::msg::SensorMeasurements>(
-		topics::sensorMeasurements, 10, std::bind(&Localizer::callback_measurements, this, _1));
+		config_["topics"]["sensorMeasurements"].as<std::string>(), 10, 
+		std::bind(&Localizer::callback_measurements, this, _1));
 	sub_calibration_ = create_subscription<car_msgs::msg::SensorCalibration>(
-		topics::sensorCalibration, 10, std::bind(&Localizer::callback_calibration, this, _1));
+		config_["topics"]["sensorCalibration"].as<std::string>(), 10, 
+		std::bind(&Localizer::callback_calibration, this, _1));
 
 	tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
@@ -160,6 +166,7 @@ void Localizer::updateStateSpace(
 	stateSpace_.z[0] = translSpeed;
 	stateSpace_.z[1] = gyro_z;
 
+	float wheelbase = config_["vehicle"]["geometry"]["wheelbase"].as<float>();
 	// ---- model equations ----
 	// x_k = x_k-1 + v_k-1 * cos(phi_k-1) * dt
 	stateSpace_.fx[0] = x[0] + x[2] * std::cos(x[3]) * dt;
@@ -168,7 +175,7 @@ void Localizer::updateStateSpace(
 	// v_k = v_k-1 + a_k-1 * dt
 	stateSpace_.fx[2] = x[2] + stateSpace_.u[0] * dt;
 	// phi_k = phi_k-1 + 1/L * v_k-1 * tan(theta_k-1) * dt
-	stateSpace_.fx[3] = x[3] + 1 / vehicleSize::wheelbase * x[2] * std::tan(stateSpace_.u[1]) * dt;
+	stateSpace_.fx[3] = x[3] + 1 / wheelbase * x[2] * std::tan(stateSpace_.u[1]) * dt;
 
 	// ---- model jacobian ----
 	stateSpace_.F[0] = 1;
@@ -178,22 +185,22 @@ void Localizer::updateStateSpace(
 	stateSpace_.F[6] = std::sin(x[3]) * dt;
 	stateSpace_.F[7] = x[2] * std::cos(x[3]) * dt;
 	stateSpace_.F[10] = 1;
-	stateSpace_.F[14] = 1 / vehicleSize::wheelbase * std::tan(stateSpace_.u[1]) * dt;
+	stateSpace_.F[14] = 1 / wheelbase * std::tan(stateSpace_.u[1]) * dt;
 	stateSpace_.F[15] = 1;
 
 	// ---- measurement equations ----
 	stateSpace_.hx[0] = stateSpace_.fx[2];
-	stateSpace_.hx[1] = 1 / vehicleSize::wheelbase * stateSpace_.fx[2] * std::tan(stateSpace_.u[1]);
+	stateSpace_.hx[1] = 1 / wheelbase * stateSpace_.fx[2] * std::tan(stateSpace_.u[1]);
 
 	// ---- measurement jacobian ----
 	stateSpace_.H[2] = 1;
-	stateSpace_.H[6] = 1 / vehicleSize::wheelbase * std::tan(stateSpace_.u[1]);
+	stateSpace_.H[6] = 1 / wheelbase * std::tan(stateSpace_.u[1]);
 
 	// ---- state covariance ----
 	// calculate Q from measurement noise W as Q = GWG with G as input jacobian
 	stateSpace_.Q[9] = weightCovModel * std::pow(dt, 2) * sensorConfig_.var_accel_x;
 	// cov = (v/L/cos(theta)^2*dt)^2*var_theta
-	stateSpace_.Q[15] = weightCovModel * std::pow(1 / vehicleSize::wheelbase * stateSpace_.fx[2] / std::pow(std::cos(angle), 2) * dt, 2) * sensorConfig_.var_angle;
+	stateSpace_.Q[15] = weightCovModel * std::pow(1 / wheelbase * stateSpace_.fx[2] / std::pow(std::cos(angle), 2) * dt, 2) * sensorConfig_.var_angle;
 
 	// ---- measurement covariance ----
 	stateSpace_.R[0] = weightCovMeasurement * sensorConfig_.var_rotspeed;

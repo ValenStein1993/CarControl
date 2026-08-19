@@ -14,6 +14,7 @@ find_package(car_msgs REQUIRED)
 find_package(common REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 
 add_executable(recorder src/recorder.cpp)
@@ -21,6 +22,10 @@ add_executable(recorder src/recorder.cpp)
 target_include_directories(recorder PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 ament_target_dependencies(recorder rclcpp car_msgs common nav_msgs geometry_msgs)
+target_link_libraries(
+  recorder
+  yaml-cpp::yaml-cpp
+)
 
 install(TARGETS
   recorder

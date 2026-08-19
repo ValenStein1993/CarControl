@@ -1,6 +1,8 @@
 #include <memory>
 #include <cmath>
 #include <chrono>
+#include <yaml-cpp/yaml.h>
+
 
 #include "rclcpp/rclcpp.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
@@ -15,13 +17,15 @@ using std::placeholders::_1;
 Planner::Planner()
   : Node("planner") {
 
-    pub_motionControl_ = this->create_publisher<car_msgs::msg::MotionControl>(topics::motionControl, 10);
+    config_ = common::get_config();
+
+    pub_motionControl_ = this->create_publisher<car_msgs::msg::MotionControl>(config_["topics"]["motionControl"].as<std::string>(), 10);
     timer_ = this->create_wall_timer(500ms, std::bind(&Planner::callback_motionControl, this));
 
     sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
-      topics::vehicleState, 10, std::bind(&Planner::callback_vehicleState, this, _1));
+      config_["topics"]["vehicleState"].as<std::string>(), 10, std::bind(&Planner::callback_vehicleState, this, _1));
     sub_nodeState_ = create_subscription<car_msgs::msg::NodeState>(
-      topics::nodeState, 10, std::bind(&Planner::callback_nodeState, this, _1));
+      config_["topics"]["nodeState"].as<std::string>(), 10, std::bind(&Planner::callback_nodeState, this, _1));
 }
 
 void Planner::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg) {

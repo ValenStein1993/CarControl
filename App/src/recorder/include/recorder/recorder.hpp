@@ -1,4 +1,6 @@
 #pragma once
+#include <yaml-cpp/yaml.h>
+
 #include "rclcpp/rclcpp.hpp"
 
 #include "car_msgs/msg/vehicle_state.hpp"
@@ -12,6 +14,8 @@ class Recorder : public rclcpp::Node {
     Recorder();
 	
   private:
+    YAML::Node config_{};
+
   	rclcpp::TimerBase::SharedPtr timer_{};
     geometry_msgs::msg::PoseStamped latest_pose_;
     geometry_msgs::msg::PoseStamped latest_poseAct_;

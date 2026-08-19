@@ -13,7 +13,7 @@
 #define EKF_U 2 // input dimension, u = {a, theta};
 
 #include "tinyekf.h"
-
+#include <yaml-cpp/yaml.h>
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
@@ -67,17 +67,17 @@ class Localizer : public rclcpp::Node {
 	void updateStateSpace(float dt, float accel_x, float angle, float translSpeed, float gyro_z);
     
   private:
+  	YAML::Node config_{};
+	
   	rclcpp::Time lastTimestamp_{}; 
   	rclcpp::TimerBase::SharedPtr timer_{};
   	rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr pub_vehicleState_{};
 	rclcpp::Publisher<car_msgs::msg::NodeState>::SharedPtr pub_nodeState_{};
 	std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
-	
     rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_{};
     rclcpp::Subscription<car_msgs::msg::SensorCalibration>::SharedPtr sub_calibration_{};
 	rclcpp::Subscription<car_msgs::msg::MotionControl>::SharedPtr sub_motionControl_{};
-
 
     void callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg);
     void callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg);

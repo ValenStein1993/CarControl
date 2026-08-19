@@ -1,4 +1,6 @@
 #pragma once
+#include <yaml-cpp/yaml.h>
+
 #include "rclcpp/rclcpp.hpp"
 
 #include "car_msgs/msg/vehicle_state.hpp"
@@ -12,6 +14,8 @@ class Planner : public rclcpp::Node {
     VehicleState vehicleState_{};
 	
   private:
+    YAML::Node config_{};
+
     car_msgs::msg::NodeState::SharedPtr lastNodeState_{};
   	rclcpp::TimerBase::SharedPtr timer_{};
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_{};
