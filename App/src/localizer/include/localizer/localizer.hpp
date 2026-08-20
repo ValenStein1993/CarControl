@@ -71,7 +71,7 @@ class Localizer : public rclcpp::Node {
 	
   	rclcpp::Time lastTimestamp_{}; 
   	rclcpp::TimerBase::SharedPtr timer_{};
-  	rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr pub_vehicleState_{};
+  	rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr pub_vehicleStateEkf_{};
 	rclcpp::Publisher<car_msgs::msg::NodeState>::SharedPtr pub_nodeState_{};
 	std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 

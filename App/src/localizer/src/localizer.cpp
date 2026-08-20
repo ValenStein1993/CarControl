@@ -24,8 +24,8 @@ Localizer::Localizer()
   : Node("localizer") {
 	config_ = common::get_config();
 
-	pub_vehicleState_ = create_publisher<car_msgs::msg::VehicleState>(
-		config_["topics"]["vehicleState"].as<std::string>(), 10);
+	pub_vehicleStateEkf_ = create_publisher<car_msgs::msg::VehicleState>(
+		config_["topics"]["vehicleStateEkf"].as<std::string>(), 10);
 	pub_nodeState_ = create_publisher<car_msgs::msg::NodeState>(
 		config_["topics"]["nodeState"].as<std::string>(), 10);
 
@@ -37,6 +37,9 @@ Localizer::Localizer()
 	sub_calibration_ = create_subscription<car_msgs::msg::SensorCalibration>(
 		config_["topics"]["sensorCalibration"].as<std::string>(), 10, 
 		std::bind(&Localizer::callback_calibration, this, _1));
+	sub_motionControl_ = create_subscription<car_msgs::msg::MotionControl>(
+		config_["topics"]["motionControl"].as<std::string>(), 10, 
+		std::bind(&Localizer::callback_motionControl, this, _1));
 
 	tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
@@ -51,7 +54,7 @@ void Localizer::publish_500ms() {
 	vehStateMsg.speed = vehicleState_.v;
 	vehStateMsg.yaw = vehicleState_.phi;
 
-	pub_vehicleState_->publish(vehStateMsg);
+	pub_vehicleStateEkf_->publish(vehStateMsg);
 
 	// Publish Node State
 	car_msgs::msg::NodeState nodeStateMsg;
@@ -119,6 +122,7 @@ void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::S
 
 	// if vehicle is idle and there is no command to move, skip the update to avoid drift in the EKF
 	if (!lastMotionControl_ || (lastMotionControl_->speed == 0.0f && msg->wheelencoder_translspeed < 1e-8f)) {
+		RCLCPP_INFO(get_logger(), "Vehicle is not in motion, skip odometry.");
 		return;
 	}
 
@@ -165,6 +169,13 @@ void Localizer::updateStateSpace(
 
 	stateSpace_.z[0] = translSpeed;
 	stateSpace_.z[1] = gyro_z;
+
+	std::cout << "accel_x: " << accel_x << std::endl;
+	std::cout << "angle: " << angle << std::endl;
+	std::cout << "translSpeed: " << translSpeed << std::endl;
+	std::cout << "gyro_z: " << gyro_z << std::endl;
+
+
 
 	float wheelbase = config_["vehicle"]["wheelbase"].as<float>();
 	// ---- model equations ----

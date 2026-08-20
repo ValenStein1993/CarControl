@@ -2,9 +2,12 @@ topics:
   sensorMeasurements: /sensor/measurements
   sensorCalibration: /sensor/calibration
   motionControl: /motion_control
-  vehicleState: /vehicle_state
+  vehicleStateEkf: /vehicle_state_ekf
+  vehicleStateCsm: /vehicle_state_csm
+  vehicleState: /vehicle_state_ekf
   vehicleStateAct: /vehicle_state_actual
-  histVehicleState: /hist_vehicle_state
+  histVehicleStateEkf: /hist_vehicle_state_ekf
+  histVehicleStateCsm: /hist_vehicle_state_csm
   histVehicleStateAct: /hist_vehicle_state_actual
   nodeState: /node_state
   laserScan: /scan

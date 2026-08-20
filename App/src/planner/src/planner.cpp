@@ -23,7 +23,7 @@ Planner::Planner()
     timer_ = this->create_wall_timer(500ms, std::bind(&Planner::callback_motionControl, this));
 
     sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
-      config_["topics"]["vehicleState"].as<std::string>(), 10, std::bind(&Planner::callback_vehicleState, this, _1));
+      config_["topics"]["vehicleStateEkf"].as<std::string>(), 10, std::bind(&Planner::callback_vehicleState, this, _1));
     sub_nodeState_ = create_subscription<car_msgs::msg::NodeState>(
       config_["topics"]["nodeState"].as<std::string>(), 10, std::bind(&Planner::callback_nodeState, this, _1));
 }
