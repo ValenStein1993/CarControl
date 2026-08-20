@@ -66,7 +66,7 @@ void Recorder::callback_histVehicleState() {
     pathCsm_.header.frame_id = config_["frames"]["odom"].as<std::string>();
     pathCsm_.poses.push_back(latest_poseCsm_);
     pathCsm_.header.stamp = latest_poseCsm_.header.stamp;
-    pub_histVehicleStateEkf_->publish(pathCsm_);
+    pub_histVehicleStateCsm_->publish(pathCsm_);
     
     pathAct_.header.frame_id = config_["frames"]["odom"].as<std::string>();
     pathAct_.poses.push_back(latest_poseAct_);

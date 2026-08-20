@@ -6,12 +6,15 @@
 #include "gazebo_msg_bridge/MessageBridge.hpp"
 #include <gz/plugin/Register.hh>
 #include <gz/math/Quaternion.hh>
+#include <gz/sim/EntityComponentManager.hh>
+#include <gz/sim/Util.hh>
 
 #include "common/config.hpp"
 #include "car_msgs/msg/sensor_measurements.hpp"
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
 #include <sensor_msgs/msg/laser_scan.hpp>
+
 
 
 
@@ -36,6 +39,8 @@ void MessageBridge::Configure(
     const std::shared_ptr<const sdf::Element> &_sdf,
     gz::sim::EntityComponentManager &_ecm,
     gz::sim::EventManager &_eventMgr) {
+
+    modelEntity_ = _entity;
 
     if (!rclcpp::ok()) {
         rclcpp::init(0, nullptr);
@@ -65,8 +70,7 @@ void MessageBridge::Configure(
 
     gz_pub_motionControl_ = gz_node_.Advertise<gz::msgs::Twist>("/cmd_vel");
 
-    // subscribe to odometry data and publish true vehicle state via ROS node
-    gz_node_.Subscribe("/model/CarModel/odometry", &MessageBridge::callback_odometry, this);
+    // publish true vehicle state via ROS node
     ros_pub_vehicleState_ = ros_node_->create_publisher<car_msgs::msg::VehicleState>(
         config_["topics"]["vehicleStateAct"].as<std::string>(),
         10
@@ -97,10 +101,6 @@ void MessageBridge::callback_laserScan(const gz::msgs::LaserScan &_msg) {
 
 void MessageBridge::callback_motionControl(const car_msgs::msg::MotionControl &_msg) {
     lastMotionControl_ = _msg;
-}
-
-void MessageBridge::callback_odometry(const gz::msgs::Odometry &_msg) {
-    lastOdometry_ = _msg;
 }
 
 void MessageBridge::callback_jointState(const gz::msgs::Model &_msg) {
@@ -189,24 +189,16 @@ void MessageBridge::PostUpdate(
     calibrationMsg.wheelencoder_var_rotspeed = 1e-8f;
     calibrationMsg.cjmcu103_var_angle = 1e-8f;
 
-
     ros_pub_calibration_->publish(calibrationMsg);
 
     // Actual Vehicle State Message
     car_msgs::msg::VehicleState msgState;
     msgState.header.stamp = timestamp;
-    msgState.pos_x = lastOdometry_.pose().position().x();
-    msgState.pos_y = lastOdometry_.pose().position().y();
-    msgState.speed = lastOdometry_.twist().linear().x();
-
-    const auto &orientation = lastOdometry_.pose().orientation();
-    gz::math::Quaterniond q(
-        orientation.w(),
-        orientation.x(),
-        orientation.y(),
-        orientation.z()
-    );
-    msgState.yaw = q.Yaw();
+    
+    const gz::math::Pose3d pose = gz::sim::worldPose(modelEntity_, _ecm);
+    msgState.pos_x = pose.Pos().X();
+    msgState.pos_y = pose.Pos().Y();
+    msgState.yaw = pose.Rot().Yaw();
 
     ros_pub_vehicleState_->publish(msgState);
 

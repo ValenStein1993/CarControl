@@ -137,10 +137,10 @@
             </visual>
         </link>
         <link name='left_steering_link'>
-            <pose relative_to="pos_front_axle">0 {{ 0.5 * vehicle.chassis.main.width }} -0.005 0 0 0</pose>
+            <pose relative_to="pos_front_axle">0 {{ 0.5 * vehicle.chassis.main.width }} 0 0 0 0</pose>
         </link>
         <link name='right_steering_link'>
-            <pose relative_to="pos_front_axle">0 {{ -0.5 * vehicle.chassis.main.width }} -0.005 0 0 0</pose>
+            <pose relative_to="pos_front_axle">0 {{ -0.5 * vehicle.chassis.main.width }} 0 0 0 0</pose>
         </link>
         <link name='left_frontwheel'>
             <pose relative_to="pos_front_axle">0 {{ 0.5 * vehicle.wheeltrack }} 0 -1.5707 0 0</pose>
@@ -194,7 +194,7 @@
         </link>
 
         <link name='left_backwheel'>
-            <pose relative_to="pos_rear_axle">0 {{ 0.5 * vehicle.wheeltrack }} -0.005 -1.5707 0 0</pose>
+            <pose relative_to="pos_rear_axle">0 {{ 0.5 * vehicle.wheeltrack }} 0 -1.5707 0 0</pose>
             <inertial>
                 <mass>{{ vehicle.wheels.mass }}</mass>
                 <inertia>
@@ -228,7 +228,7 @@
         </link>
 
         <link name='right_backwheel'>
-            <pose relative_to="pos_rear_axle">0 {{ -0.5 * vehicle.wheeltrack }} -0.005 -1.5707 0 0</pose>
+            <pose relative_to="pos_rear_axle">0 {{ -0.5 * vehicle.wheeltrack }} 0 -1.5707 0 0</pose>
             <inertial>
                 <mass>{{ vehicle.wheels.mass }}</mass>
                 <inertia>
@@ -351,12 +351,6 @@
             <wheel_radius>{{ vehicle.wheels.radius }}</wheel_radius>
             <odom_publish_frequency>10</odom_publish_frequency>
             <topic>cmd_vel</topic>
-        </plugin>
-        <plugin
-            filename="gz-sim-pose-publisher-system"
-            name="gz::sim::systems::PosePublisher">
-            <publish_model_pose>true</publish_model_pose>
-            <update_frequency>10</update_frequency>
         </plugin>
         <plugin 
             filename="libgazebo_msg_bridge.so"

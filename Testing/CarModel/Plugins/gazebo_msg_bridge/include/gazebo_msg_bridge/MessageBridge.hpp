@@ -56,10 +56,10 @@ public:
 
 private:
   	YAML::Node config_{};
+    gz::sim::Entity modelEntity_;
 
     void callback_imu(const gz::msgs::IMU &_msg);
     void callback_motionControl(const car_msgs::msg::MotionControl &_msg);
-    void callback_odometry(const gz::msgs::Odometry &_msg);
     void callback_jointState(const gz::msgs::Model &_msg);
     void callback_laserScan(const gz::msgs::LaserScan &_msg);
 
@@ -82,7 +82,6 @@ private:
     gz::msgs::Model lastJointState_;
     std::mutex jointStateMutex_;
     car_msgs::msg::MotionControl lastMotionControl_;
-    gz::msgs::Odometry lastOdometry_;
     gz::msgs::LaserScan lastLaserScan_;
     std::mutex laserScanMutex_;
 

@@ -38,7 +38,7 @@
                         <x>
                             <noise type="gaussian">
                                 <mean>0.0</mean>
-                                <stddev>0.02</stddev>
+                                <stddev>0.0</stddev>
                                 <bias_mean>0.0</bias_mean>
                                 <bias_stddev>0.000</bias_stddev>
                             </noise>
@@ -137,10 +137,10 @@
             </visual>
         </link>
         <link name='left_steering_link'>
-            <pose relative_to="pos_front_axle">0 0.04 -0.005 0 0 0</pose>
+            <pose relative_to="pos_front_axle">0 0.04 0 0 0 0</pose>
         </link>
         <link name='right_steering_link'>
-            <pose relative_to="pos_front_axle">0 -0.04 -0.005 0 0 0</pose>
+            <pose relative_to="pos_front_axle">0 -0.04 0 0 0 0</pose>
         </link>
         <link name='left_frontwheel'>
             <pose relative_to="pos_front_axle">0 0.05 0 -1.5707 0 0</pose>
@@ -194,7 +194,7 @@
         </link>
 
         <link name='left_backwheel'>
-            <pose relative_to="pos_rear_axle">0 0.05 -0.005 -1.5707 0 0</pose>
+            <pose relative_to="pos_rear_axle">0 0.05 0 -1.5707 0 0</pose>
             <inertial>
                 <mass>0.1</mass>
                 <inertia>
@@ -228,7 +228,7 @@
         </link>
 
         <link name='right_backwheel'>
-            <pose relative_to="pos_rear_axle">0 -0.05 -0.005 -1.5707 0 0</pose>
+            <pose relative_to="pos_rear_axle">0 -0.05 0 -1.5707 0 0</pose>
             <inertial>
                 <mass>0.1</mass>
                 <inertia>

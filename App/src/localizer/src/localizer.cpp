@@ -170,13 +170,6 @@ void Localizer::updateStateSpace(
 	stateSpace_.z[0] = translSpeed;
 	stateSpace_.z[1] = gyro_z;
 
-	std::cout << "accel_x: " << accel_x << std::endl;
-	std::cout << "angle: " << angle << std::endl;
-	std::cout << "translSpeed: " << translSpeed << std::endl;
-	std::cout << "gyro_z: " << gyro_z << std::endl;
-
-
-
 	float wheelbase = config_["vehicle"]["wheelbase"].as<float>();
 	// ---- model equations ----
 	// x_k = x_k-1 + v_k-1 * cos(phi_k-1) * dt
@@ -209,7 +202,7 @@ void Localizer::updateStateSpace(
 
 	// ---- state covariance ----
 	// calculate Q from measurement noise W as Q = GWG with G as input jacobian
-	stateSpace_.Q[9] = weightCovModel * std::pow(dt, 2) * sensorConfig_.var_accel_x;
+	stateSpace_.Q[10] = weightCovModel * std::pow(dt, 2) * sensorConfig_.var_accel_x;
 	// cov = (v/L/cos(theta)^2*dt)^2*var_theta
 	stateSpace_.Q[15] = weightCovModel * std::pow(1 / wheelbase * stateSpace_.fx[2] / std::pow(std::cos(angle), 2) * dt, 2) * sensorConfig_.var_angle;
 
