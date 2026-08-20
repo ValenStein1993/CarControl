@@ -18,6 +18,7 @@
   <depend>gz-transport13</depend>
   <depend>car_msgs</depend>
   <depend>common</depend>
+  <depend>yaml-cpp</depend>
 
 
 </package>

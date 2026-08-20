@@ -14,7 +14,7 @@ def generate_launch_description():
     # Resolve paths relative to this launch file so relative paths work
     here = os.path.dirname(os.path.abspath(__file__))
 
-    config_abs = os.path.join(here, '..', 'App', 'config')
+    config_abs = os.path.join(get_package_share_directory('common'), 'config', 'config.yaml')
     with open(config_abs, 'r') as f:
         config = yaml.safe_load(f)
 

@@ -1,6 +1,7 @@
 #include <cmath>
 #include <thread>
 #include <mutex>
+#include <yaml-cpp/yaml.h>
 
 #include "gazebo_msg_bridge/MessageBridge.hpp"
 #include <gz/plugin/Register.hh>
@@ -15,6 +16,7 @@
 
 
 MessageBridge::MessageBridge() {
+    config_ = common::get_config();
 }
 
 
@@ -50,13 +52,13 @@ void MessageBridge::Configure(
     gz_node_.Subscribe("/wheel_states", &MessageBridge::callback_jointState, this);
 
     ros_pub_measurements_ = ros_node_->create_publisher<car_msgs::msg::SensorMeasurements>(
-        topics::sensorMeasurements,
+        config_["topics"]["sensorMeasurements"].as<std::string>(),
         10
     );
 
     // subscribe to ROS motion control topic and publish via gazebo node
     ros_sub_motionControl_ = ros_node_->create_subscription<car_msgs::msg::MotionControl>(
-        topics::motionControl,
+        config_["topics"]["motionControl"].as<std::string>(),
         10,
         std::bind(&MessageBridge::callback_motionControl, this, std::placeholders::_1)
     );
@@ -66,20 +68,20 @@ void MessageBridge::Configure(
     // subscribe to odometry data and publish true vehicle state via ROS node
     gz_node_.Subscribe("/model/CarModel/odometry", &MessageBridge::callback_odometry, this);
     ros_pub_vehicleState_ = ros_node_->create_publisher<car_msgs::msg::VehicleState>(
-        topics::vehicleStateAct,
+        config_["topics"]["vehicleStateAct"].as<std::string>(),
         10
     );
 
     // publish sensor calibration message
     ros_pub_calibration_ = ros_node_->create_publisher<car_msgs::msg::SensorCalibration>(
-        topics::sensorCalibration,
+        config_["topics"]["sensorCalibration"].as<std::string>(),
         10
     );
 
     // publish laser scan data from LiDAR to ROS
     gz_node_.Subscribe("/lidar_sensor", &MessageBridge::callback_laserScan, this);
     ros_pub_laserScan_ = ros_node_->create_publisher<sensor_msgs::msg::LaserScan>(
-        topics::laserScan,
+        config_["topics"]["laserScan"].as<std::string>(),
         10
     );
 }
@@ -173,7 +175,7 @@ void MessageBridge::PostUpdate(
     float rotSpeedSteering = 0.5 * (leftSteeringSpeed_ + rightSteeringSpeed_);
     
     msgMeasurements.wheelencoder_rotspeed = rotSpeed;
-    msgMeasurements.wheelencoder_translspeed = rotSpeed * vehicleSize::wheelRadius;
+    msgMeasurements.wheelencoder_translspeed = rotSpeed * config_["vehicle"]["wheels"]["radius"].as<float>();
     msgMeasurements.cjmcu103_angle = rotPositionSteering;
     msgMeasurements.cjmcu103_anglespeed = rotSpeedSteering;
 

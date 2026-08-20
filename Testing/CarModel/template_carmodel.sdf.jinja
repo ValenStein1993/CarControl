@@ -4,20 +4,20 @@
         <link name='chassis'>
             <pose relative_to='__model__'>0 0 0.02 0 0 0</pose> 
             <inertial> 
-                <mass>1.15</mass>
+                <mass>{{ vehicle.chassis.main.mass }}</mass>
                 <inertia>
-                    <ixx>0.0006516666666666667</ixx>
+                    <ixx>{{ 1/12 * vehicle.chassis.main.mass * (vehicle.chassis.main.width ** 2 + vehicle.chassis.main.height ** 2) }}</ixx>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
-                    <iyy>0.001657916666666667</iyy>
+                    <iyy>{{ 1/12 * vehicle.chassis.main.mass * (vehicle.chassis.main.length ** 2 + vehicle.chassis.main.height ** 2) }}</iyy>
                     <iyz>0</iyz>
-                    <izz>0.0022329166666666665</izz>
+                    <izz>{{ 1/12 * vehicle.chassis.main.mass * (vehicle.chassis.main.width ** 2 + vehicle.chassis.main.length ** 2) }}</izz>
                 </inertia>
             </inertial>
             <visual name='visual'>
                 <geometry>
                     <box>
-                        <size>0.13 0.08 0.02</size>
+                        <size>{{ vehicle.chassis.main.length }} {{ vehicle.chassis.main.width }} {{ vehicle.chassis.main.height }}</size>
                     </box>
                 </geometry>
                 <material>
@@ -27,18 +27,18 @@
             <collision name='collision'>
                 <geometry>
                     <box>
-                        <size>0.13 0.08 0.02</size>
+                        <size>{{ vehicle.chassis.main.length }} {{ vehicle.chassis.main.width }} {{ vehicle.chassis.main.height }}</size>
                     </box>
                 </geometry>
             </collision>
             <sensor name="imu_sensor" type="imu">
-                <pose relative_to='chassis'>0 0 0 0 0 0</pose>
+                <pose relative_to='chassis'>{{ sensors.imu.pos_chassis.x }} {{ sensors.imu.pos_chassis.y }} {{ sensors.imu.pos_chassis.z }} 0 0 0</pose>
                 <imu>
                     <linear_acceleration>
                         <x>
                             <noise type="gaussian">
                                 <mean>0.0</mean>
-                                <stddev>0.02</stddev>
+                                <stddev>{{ sensors.imu.stddev.accel }}</stddev>
                                 <bias_mean>0.0</bias_mean>
                                 <bias_stddev>0.000</bias_stddev>
                             </noise>
@@ -48,7 +48,7 @@
                         <z>
                             <noise type="gaussian">
                                 <mean>0.0</mean>
-                                <stddev>0.01</stddev>
+                                <stddev>{{ sensors.imu.stddev.yaw_rate }}</stddev>
                                 <bias_mean>0.0</bias_mean>
                                 <bias_stddev>0.0</bias_stddev>
                             </noise>
@@ -61,7 +61,7 @@
                 <topic>/imu_sensor</topic>
             </sensor>
             <sensor name='gpu_lidar' type='gpu_lidar'>
-                <pose relative_to='chassis'>0 0 0.3 0 0 0</pose>
+                <pose relative_to='chassis'>{{ sensors.lidar.pos_chassis.x }} {{ sensors.lidar.pos_chassis.y }} {{ sensors.lidar.pos_chassis.z }} 0 0 0</pose>
                 <topic>/lidar_sensor</topic>
                 <update_rate>10</update_rate>
                 <ray>
@@ -90,11 +90,11 @@
             </sensor>
         </link>
         <link name='front_chassis'>
-            <pose relative_to='chassis'>0.085 0 0 0 0 0</pose>
+            <pose relative_to='chassis'>{{ 0.5 * (vehicle.chassis.main.length + vehicle.chassis.front.length) }} 0 0 0 0 0</pose>
             <visual name='visual'>
                 <geometry>
                     <box>
-                        <size>0.04 0.03 0.02</size>
+                        <size>{{ vehicle.chassis.front.length }} {{ vehicle.chassis.front.width }} {{ vehicle.chassis.front.height }}</size>
                     </box>
                 </geometry>
                 <material>
@@ -103,7 +103,7 @@
             </visual>
         </link>
         <link name='pos_front_axle'>
-            <pose relative_to='front_chassis'>0.0050000000000000044 0 -0.005 0 0 0</pose>
+            <pose relative_to='front_chassis'>{{ 0.5 * (vehicle.wheelbase - vehicle.chassis.main.length) }} 0 -0.005 0 0 0</pose>
         </link>
         <link name='front_axle'>
             <pose relative_to='pos_front_axle'>0 0 0 -1.5707 0 0</pose>
@@ -111,7 +111,7 @@
                 <geometry>
                     <cylinder>
                         <radius>0.002</radius>
-                        <length>0.085</length>
+                        <length>{{ vehicle.wheeltrack - vehicle.wheels.width }}</length>
                     </cylinder>
                 </geometry>
                 <material>
@@ -120,7 +120,7 @@
             </visual>
         </link>
         <link name='pos_rear_axle'>
-            <pose relative_to='chassis'>-0.05 0 -0.005 0 0 0</pose>
+            <pose relative_to='chassis'>{{ -0.5 * (vehicle.wheelbase - vehicle.chassis.front.length) }} 0 -0.005 0 0 0</pose>
         </link>
         <link name='rear_axle'>
             <pose relative_to='pos_rear_axle'>0 0 0 -1.5707 0 0</pose>
@@ -128,7 +128,7 @@
                 <geometry>
                     <cylinder>
                         <radius>0.002</radius>
-                        <length>0.085</length>
+                        <length>{{ vehicle.wheeltrack - vehicle.wheels.width }}</length>
                     </cylinder>
                 </geometry>
                 <material>
@@ -137,80 +137,80 @@
             </visual>
         </link>
         <link name='left_steering_link'>
-            <pose relative_to="pos_front_axle">0 0.04 -0.005 0 0 0</pose>
+            <pose relative_to="pos_front_axle">0 {{ 0.5 * vehicle.chassis.main.width }} -0.005 0 0 0</pose>
         </link>
         <link name='right_steering_link'>
-            <pose relative_to="pos_front_axle">0 -0.04 -0.005 0 0 0</pose>
+            <pose relative_to="pos_front_axle">0 {{ -0.5 * vehicle.chassis.main.width }} -0.005 0 0 0</pose>
         </link>
         <link name='left_frontwheel'>
-            <pose relative_to="pos_front_axle">0 0.05 0 -1.5707 0 0</pose>
+            <pose relative_to="pos_front_axle">0 {{ 0.5 * vehicle.wheeltrack }} 0 -1.5707 0 0</pose>
             <inertial>
-                <mass>0.1</mass>
+                <mass>{{ vehicle.wheels.mass }}</mass>
                 <inertia>
-                    <ixx>7.499999999999999e-06</ixx>
+                    <ixx>{{ 1/12 * vehicle.wheels.mass * (3 * vehicle.wheels.radius ** 2 + vehicle.wheels.width ** 2) }}</ixx>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
-                    <iyy>7.499999999999999e-06</iyy>
+                    <iyy>{{ 1/12 * vehicle.wheels.mass * (3 * vehicle.wheels.radius ** 2 + vehicle.wheels.width ** 2) }}</iyy>
                     <iyz>0</iyz>
-                    <izz>1.125e-05</izz>
+                    <izz>{{ 0.5 * vehicle.wheels.mass * vehicle.wheels.radius ** 2 }}</izz>
                 </inertia>
             </inertial>
             <visual name='visual'>
                 <geometry>
-                    <cylinder><radius>0.015</radius><length>0.015</length></cylinder>
+                    <cylinder><radius>{{ vehicle.wheels.radius }}</radius><length>{{ vehicle.wheels.width }}</length></cylinder>
                 </geometry>
                 <material><diffuse>1.0 0.0 0.0 1</diffuse></material>
             </visual>
             <collision name='collision'>
                 <geometry>
-                    <cylinder><radius>0.015</radius><length>0.015</length></cylinder>
+                    <cylinder><radius>{{ vehicle.wheels.radius }}</radius><length>{{ vehicle.wheels.width }}</length></cylinder>
                 </geometry>
             </collision>
         </link>
         <link name='right_frontwheel'>
-            <pose relative_to="pos_front_axle">0 -0.05 0 -1.5707 0 0</pose>
+            <pose relative_to="pos_front_axle">0 {{  -0.5 * vehicle.wheeltrack }} 0 -1.5707 0 0</pose>
             <inertial>
-                <mass>0.1</mass>
+                <mass>{{ vehicle.wheels.mass }}</mass>
                 <inertia>
-                    <ixx>7.499999999999999e-06</ixx>
+                    <ixx>{{ 1/12 * vehicle.wheels.mass * (3 * vehicle.wheels.radius ** 2 + vehicle.wheels.width ** 2) }}</ixx>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
-                    <iyy>7.499999999999999e-06</iyy>
+                    <iyy>{{ 1/12 * vehicle.wheels.mass * (3 * vehicle.wheels.radius ** 2 + vehicle.wheels.width ** 2) }}</iyy>
                     <iyz>0</iyz>
-                    <izz>1.125e-05</izz>
+                    <izz>{{ 0.5 * vehicle.wheels.mass * vehicle.wheels.radius ** 2 }}</izz>
                 </inertia>
             </inertial>
             <visual name='visual'>
                 <geometry>
-                    <cylinder><radius>0.015</radius><length>0.015</length></cylinder>
+                    <cylinder><radius>{{ vehicle.wheels.radius }}</radius><length>{{ vehicle.wheels.width }}</length></cylinder>
                 </geometry>
                 <material><diffuse>1.0 0.0 0.0 1</diffuse></material>
             </visual>
             <collision name='collision'>
                 <geometry>
-                    <cylinder><radius>0.015</radius><length>0.015</length></cylinder>
+                    <cylinder><radius>{{ vehicle.wheels.radius }}</radius><length>{{ vehicle.wheels.width }}</length></cylinder>
                 </geometry>
             </collision>
         </link>
 
         <link name='left_backwheel'>
-            <pose relative_to="pos_rear_axle">0 0.05 -0.005 -1.5707 0 0</pose>
+            <pose relative_to="pos_rear_axle">0 {{ 0.5 * vehicle.wheeltrack }} -0.005 -1.5707 0 0</pose>
             <inertial>
-                <mass>0.1</mass>
+                <mass>{{ vehicle.wheels.mass }}</mass>
                 <inertia>
-                    <ixx>7.499999999999999e-06</ixx>
+                    <ixx>{{ 1/12 * vehicle.wheels.mass * (3 * vehicle.wheels.radius ** 2 + vehicle.wheels.width ** 2) }}</ixx>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
-                    <iyy>7.499999999999999e-06</iyy>
+                    <iyy>{{ 1/12 * vehicle.wheels.mass * (3 * vehicle.wheels.radius ** 2 + vehicle.wheels.width ** 2) }}</iyy>
                     <iyz>0</iyz>
-                    <izz>1.125e-05</izz>
+                    <izz>{{ 0.5 * vehicle.wheels.mass * vehicle.wheels.radius ** 2 }}</izz>
                 </inertia>
             </inertial>
             <visual name='visual'>
                 <geometry>
                     <cylinder>
-                        <radius>0.015</radius>
-                        <length>0.015</length>
+                        <radius>{{ vehicle.wheels.radius }}</radius>
+                        <length>{{ vehicle.wheels.width }}</length>
                     </cylinder>
                 </geometry>
                 <material>
@@ -220,31 +220,31 @@
             <collision name='collision'>
                 <geometry>
                     <cylinder>
-                        <radius>0.015</radius>
-                        <length>0.015</length>
+                        <radius>{{ vehicle.wheels.radius }}</radius>
+                        <length>{{ vehicle.wheels.width }}</length>
                     </cylinder>
                 </geometry>
             </collision>
         </link>
 
         <link name='right_backwheel'>
-            <pose relative_to="pos_rear_axle">0 -0.05 -0.005 -1.5707 0 0</pose>
+            <pose relative_to="pos_rear_axle">0 {{ -0.5 * vehicle.wheeltrack }} -0.005 -1.5707 0 0</pose>
             <inertial>
-                <mass>0.1</mass>
+                <mass>{{ vehicle.wheels.mass }}</mass>
                 <inertia>
-                    <ixx>7.499999999999999e-06</ixx>
+                    <ixx>{{ 1/12 * vehicle.wheels.mass * (3 * vehicle.wheels.radius ** 2 + vehicle.wheels.width ** 2) }}</ixx>
                     <ixy>0</ixy>
                     <ixz>0</ixz>
-                    <iyy>7.499999999999999e-06</iyy>
+                    <iyy>{{ 1/12 * vehicle.wheels.mass * (3 * vehicle.wheels.radius ** 2 + vehicle.wheels.width ** 2) }}</iyy>
                     <iyz>0</iyz>
-                    <izz>1.125e-05</izz>
+                    <izz>{{ 0.5 * vehicle.wheels.mass * vehicle.wheels.radius ** 2 }}</izz>
                 </inertia>
             </inertial>
             <visual name='visual'>
                 <geometry>
                     <cylinder>
-                        <radius>0.015</radius>
-                        <length>0.015</length>
+                        <radius>{{ vehicle.wheels.radius }}</radius>
+                        <length>{{ vehicle.wheels.width }}</length>
                     </cylinder>
                 </geometry>
                 <material>
@@ -254,8 +254,8 @@
             <collision name='collision'>
                 <geometry>
                     <cylinder>
-                        <radius>0.015</radius>
-                        <length>0.015</length>
+                        <radius>{{ vehicle.wheels.radius }}</radius>
+                        <length>{{ vehicle.wheels.width }}</length>
                     </cylinder>
                 </geometry>
             </collision>
@@ -344,11 +344,11 @@
             <right_joint>right_backwheel_joint</right_joint>
             <left_steering_joint>left_steering_joint</left_steering_joint>
             <right_steering_joint>right_steering_joint</right_steering_joint>
-            <kingpin_width>0.08</kingpin_width>       <!-- matches wheel_separation -->
+            <kingpin_width>{{ vehicle.chassis.main.width }}</kingpin_width>       <!-- matches wheel_separation -->
             <steering_limit>0.6</steering_limit>     <!-- must match joint limits -->
-            <wheel_base>0.14</wheel_base>             <!-- distance front to rear axle -->
-            <wheel_separation>0.1</wheel_separation>
-            <wheel_radius>0.015</wheel_radius>
+            <wheel_base>{{ vehicle.wheelbase }}</wheel_base>             <!-- distance front to rear axle -->
+            <wheel_separation>{{ vehicle.wheeltrack }}</wheel_separation>
+            <wheel_radius>{{ vehicle.wheels.radius }}</wheel_radius>
             <odom_publish_frequency>10</odom_publish_frequency>
             <topic>cmd_vel</topic>
         </plugin>

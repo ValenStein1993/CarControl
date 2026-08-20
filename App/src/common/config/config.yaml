@@ -17,13 +17,39 @@ frames:
   vehBaseLidar: base_link_lidar
   lidar: lidar
 
-vehicle:
-  geometry:
-    wheelbase: 0.14;
-    wheelRadius: 0.015;
-    lidar:
+sensors:
+  imu:
+    pos_chassis:
       x: 0
       y: 0
       z: 0
+    stddev:
+      accel: 0.02
+      yaw_rate: 0.01
+  lidar:
+    pos_chassis:
+      x: 0
+      y: 0
+      z: 0.3
+
+vehicle:
+  wheelbase: 0.14
+  wheeltrack: 0.1
+  chassis:
+    main:
+      length: 0.13
+      width: 0.08
+      height: 0.02
+      mass: 1.15
+    front:
+      length: 0.04
+      width: 0.03
+      height: 0.02
+  wheels:
+    radius: 0.015
+    width: 0.015
+    mass: 0.1
+
+
 
 

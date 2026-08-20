@@ -166,7 +166,7 @@ void Localizer::updateStateSpace(
 	stateSpace_.z[0] = translSpeed;
 	stateSpace_.z[1] = gyro_z;
 
-	float wheelbase = config_["vehicle"]["geometry"]["wheelbase"].as<float>();
+	float wheelbase = config_["vehicle"]["wheelbase"].as<float>();
 	// ---- model equations ----
 	// x_k = x_k-1 + v_k-1 * cos(phi_k-1) * dt
 	stateSpace_.fx[0] = x[0] + x[2] * std::cos(x[3]) * dt;

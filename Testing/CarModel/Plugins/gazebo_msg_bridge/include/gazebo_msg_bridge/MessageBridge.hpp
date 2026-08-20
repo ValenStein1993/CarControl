@@ -1,4 +1,5 @@
 #pragma once
+#include <yaml-cpp/yaml.h>
 
 #include <gz/sim/System.hh>
 #include <gz/sim/EntityComponentManager.hh>
@@ -54,6 +55,7 @@ public:
 
 
 private:
+  	YAML::Node config_{};
 
     void callback_imu(const gz::msgs::IMU &_msg);
     void callback_motionControl(const car_msgs::msg::MotionControl &_msg);
