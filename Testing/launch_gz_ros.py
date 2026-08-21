@@ -79,12 +79,12 @@ def generate_launch_description():
             executable='laser_scan_matcher',
             parameters=[{
                 'use_sim_time': True, 
-                'publish_odom': '/lidar_odom',
+                'publish_odom': config['topics']['vehicleStateCsm'],
                 'publish_tf': True,
-                'base_frame': 'base_link_lidar',
+                'base_frame': config['frames']['vehBaseLidar'],
                 'odom_frame': config['frames']['odom'],
-                'map_frame': 'map',
-                'laser_frame': 'lidar'
+                'map_frame': config['frames']['map'],
+                'laser_frame': config['frames']['lidar'],
                 }],
         ),
         Node(

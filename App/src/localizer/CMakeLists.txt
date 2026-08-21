@@ -16,13 +16,14 @@ find_package(common REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 add_executable(localizer src/localizer.cpp)
 
 target_include_directories(localizer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/TinyEKF/src)
 target_include_directories(localizer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-ament_target_dependencies(localizer rclcpp car_msgs common geometry_msgs tf2_ros)
+ament_target_dependencies(localizer rclcpp car_msgs common geometry_msgs tf2_ros nav_msgs)
 target_link_libraries(
   localizer
   yaml-cpp::yaml-cpp

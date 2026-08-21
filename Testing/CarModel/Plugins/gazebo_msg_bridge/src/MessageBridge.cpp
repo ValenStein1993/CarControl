@@ -184,10 +184,10 @@ void MessageBridge::PostUpdate(
     // Sensor Calibration Message
     car_msgs::msg::SensorCalibration calibrationMsg;
     calibrationMsg.is_calibrated = true;
-    calibrationMsg.mpu6050_var_accel_x = 4e-4f;
-    calibrationMsg.mpu6050_var_gyro_z = 1e-4f;
-    calibrationMsg.wheelencoder_var_rotspeed = 1e-8f;
-    calibrationMsg.cjmcu103_var_angle = 1e-8f;
+    calibrationMsg.mpu6050_var_accel_x = std::pow(config_["sensors"]["imu"]["stddev"]["accel"].as<float>(), 2);
+    calibrationMsg.mpu6050_var_gyro_z = std::pow(config_["sensors"]["imu"]["stddev"]["yaw_rate"].as<float>(), 2);
+    calibrationMsg.wheelencoder_var_rotspeed = std::pow(config_["sensors"]["wheelencoder"]["stddev"].as<float>(), 2);
+    calibrationMsg.cjmcu103_var_angle = std::pow(config_["sensors"]["potentiometer"]["stddev"].as<float>(), 2);
 
     ros_pub_calibration_->publish(calibrationMsg);
 

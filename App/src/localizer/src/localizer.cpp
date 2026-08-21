@@ -40,6 +40,9 @@ Localizer::Localizer()
 	sub_motionControl_ = create_subscription<car_msgs::msg::MotionControl>(
 		config_["topics"]["motionControl"].as<std::string>(), 10, 
 		std::bind(&Localizer::callback_motionControl, this, _1));
+	sub_vehicleStateCsm_ = create_subscription<nav_msgs::msg::Odometry>(
+		config_["topics"]["vehicleStateCsm"].as<std::string>(), 10, 
+		std::bind(&Localizer::callback_vehicleStateCsm, this, _1));
 
 	tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
@@ -103,6 +106,19 @@ void Localizer::publish_500ms() {
 
 }
 
+void Localizer::callback_vehicleStateCsm(const nav_msgs::msg::Odometry::SharedPtr msg) {
+	if (!isReady_) {
+		return;
+	}
+
+	float x = msg->pose.pose.position.x;
+    float y = msg->pose.pose.position.y;
+	float yaw = msg->twist.twist.angular.z;
+
+	updateStateSpaceScan(x, y, yaw);
+}
+
+
 void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
     static bool firstMessage = true;
 	rclcpp::Time currentTimestamp = msg->header.stamp;
@@ -126,7 +142,7 @@ void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::S
 		return;
 	}
 
-    updateStateSpace(
+    updateStateSpaceOdom(
 		dt,
         msg->mpu6050_accel_x,
         msg->cjmcu103_angle,
@@ -155,7 +171,7 @@ void Localizer::initStateSpace() {
     ekf_initialize(&stateSpace_.ekf, pdiag);
 }
 
-void Localizer::updateStateSpace(
+void Localizer::updateStateSpaceOdom(
 	float dt, 
 	float accel_x, 
 	float angle, 
@@ -167,8 +183,8 @@ void Localizer::updateStateSpace(
 	stateSpace_.u[0] = accel_x;
 	stateSpace_.u[1] = angle;
 
-	stateSpace_.z[0] = translSpeed;
-	stateSpace_.z[1] = gyro_z;
+	stateSpace_.z[3] = translSpeed;
+	stateSpace_.z[4] = gyro_z;
 
 	float wheelbase = config_["vehicle"]["wheelbase"].as<float>();
 	// ---- model equations ----
@@ -193,22 +209,29 @@ void Localizer::updateStateSpace(
 	stateSpace_.F[15] = 1;
 
 	// ---- measurement equations ----
-	stateSpace_.hx[0] = stateSpace_.fx[2];
-	stateSpace_.hx[1] = 1 / wheelbase * stateSpace_.fx[2] * std::tan(stateSpace_.u[1]);
+	// zero all values to remove CSM values
+	std::fill(std::begin(stateSpace_.hx), std::end(stateSpace_.hx), 0.0f);
+	stateSpace_.hx[3] = stateSpace_.fx[2];
+	stateSpace_.hx[4] = 1 / wheelbase * stateSpace_.fx[2] * std::tan(stateSpace_.u[1]);
 
 	// ---- measurement jacobian ----
-	stateSpace_.H[2] = 1;
-	stateSpace_.H[6] = 1 / wheelbase * std::tan(stateSpace_.u[1]);
+	// zero all values to remove CSM values
+	std::fill(std::begin(stateSpace_.H), std::end(stateSpace_.H), 0.0f);
+	stateSpace_.H[14] = 1;
+	stateSpace_.H[18] = 1 / wheelbase * std::tan(stateSpace_.u[1]);
 
 	// ---- state covariance ----
 	// calculate Q from measurement noise W as Q = GWG with G as input jacobian
-	stateSpace_.Q[10] = weightCovModel * std::pow(dt, 2) * sensorConfig_.var_accel_x;
+	stateSpace_.Q[10] = std::pow(dt, 2) * sensorConfig_.var_accel_x;
 	// cov = (v/L/cos(theta)^2*dt)^2*var_theta
-	stateSpace_.Q[15] = weightCovModel * std::pow(1 / wheelbase * stateSpace_.fx[2] / std::pow(std::cos(angle), 2) * dt, 2) * sensorConfig_.var_angle;
+	stateSpace_.Q[15] = std::pow(1 / wheelbase * stateSpace_.fx[2] / std::pow(std::cos(angle), 2) * dt, 2) * sensorConfig_.var_angle;
 
 	// ---- measurement covariance ----
-	stateSpace_.R[0] = weightCovMeasurement * sensorConfig_.var_rotspeed;
-	stateSpace_.R[3] = weightCovMeasurement * sensorConfig_.var_gyro_z;
+	stateSpace_.R[0] = ignoredMeasurementVariance;
+	stateSpace_.R[6] = ignoredMeasurementVariance;
+	stateSpace_.R[12] = ignoredMeasurementVariance;
+	stateSpace_.R[18] = sensorConfig_.var_rotspeed;
+	stateSpace_.R[24] = sensorConfig_.var_gyro_z;
 
 	// prediction step with model and inputs
 	ekf_predict(&stateSpace_.ekf, stateSpace_.fx, stateSpace_.F, stateSpace_.Q);
@@ -220,6 +243,42 @@ void Localizer::updateStateSpace(
 	vehicleState_.v = stateSpace_.ekf.x[2];
 	vehicleState_.phi = stateSpace_.ekf.x[3];
 }
+
+void Localizer::updateStateSpaceScan(float x, float y, float yaw) {
+	stateSpace_.z[0] = x;
+	stateSpace_.z[1] = y;
+	stateSpace_.z[2] = yaw;
+	// x = {x, y, v, phi};
+
+	// ---- measurement equations ----
+	// zero all values to remove odom values
+	std::fill(std::begin(stateSpace_.hx), std::end(stateSpace_.hx), 0.0f);
+	stateSpace_.hx[0] = stateSpace_.fx[0];
+	stateSpace_.hx[1] = stateSpace_.fx[1];
+	stateSpace_.hx[2] = stateSpace_.fx[3];
+
+	// ---- measurement jacobian ----
+	// zero all values to remove odom values
+	std::fill(std::begin(stateSpace_.H), std::end(stateSpace_.H), 0.0f);
+	stateSpace_.H[0] = 1;
+	stateSpace_.H[5] = 1;
+	stateSpace_.H[11] = 1;
+
+	// ---- measurement covariance ----
+	stateSpace_.R[0] = 1e-8;
+	stateSpace_.R[6] = 1e-8;
+	stateSpace_.R[12] = 1e-8;
+	stateSpace_.R[18] = ignoredMeasurementVariance;
+	stateSpace_.R[24] = ignoredMeasurementVariance;
+
+	ekf_update(&stateSpace_.ekf, stateSpace_.z, stateSpace_.hx, stateSpace_.H, stateSpace_.R);
+	
+	vehicleState_.x = stateSpace_.ekf.x[0];
+	vehicleState_.y = stateSpace_.ekf.x[1];
+	vehicleState_.v = stateSpace_.ekf.x[2];
+	vehicleState_.phi = stateSpace_.ekf.x[3];
+}
+
 
 int main(int argc, char * argv[])
 {

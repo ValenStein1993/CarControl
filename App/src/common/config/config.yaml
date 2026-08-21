@@ -27,13 +27,18 @@ sensors:
       y: 0
       z: 0
     stddev:
-      accel: 0.0
+      accel: 0.02
       yaw_rate: 0.01
   lidar:
     pos_chassis:
       x: 0
       y: 0
       z: 0.3
+    stddev: 0.005
+  potentiometer:
+    stddev: 0.0001
+  wheelencoder:
+    stddev: 0.0001
 
 vehicle:
   wheelbase: 0.14

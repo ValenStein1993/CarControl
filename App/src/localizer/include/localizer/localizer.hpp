@@ -9,7 +9,7 @@
 #define INC_LOCALIZER_HPP_
 
 #define EKF_N 4 // state dimension, x = {x, y, v, phi};
-#define EKF_M 2 // measurement dimension, z = {v, phi_dot};
+#define EKF_M 5 // measurement dimension, z = {x, y, phi, v, phi_dot};
 #define EKF_U 2 // input dimension, u = {a, theta};
 
 #include "tinyekf.h"
@@ -22,6 +22,7 @@
 #include "car_msgs/msg/vehicle_state.hpp"
 #include "car_msgs/msg/node_state.hpp"
 #include "car_msgs/msg/motion_control.hpp"
+#include <nav_msgs/msg/odometry.hpp>
 
 #include "common/datatypes.hpp"
 #include "tf2_ros/transform_broadcaster.hpp"
@@ -29,9 +30,8 @@
 
 using std::placeholders::_1;
 
+constexpr float ignoredMeasurementVariance = 1e12f;
 
-constexpr float weightCovModel = 1.1;
-constexpr float weightCovMeasurement = 1;
 
 struct SensorConfig {
 	bool isCalibrated;
@@ -64,8 +64,9 @@ class Localizer : public rclcpp::Node {
 	bool isReady_{false};
 
 	void initStateSpace();
-	void updateStateSpace(float dt, float accel_x, float angle, float translSpeed, float gyro_z);
-    
+	void updateStateSpaceOdom(float dt, float accel_x, float angle, float translSpeed, float gyro_z);
+	void updateStateSpaceScan(float x, float y, float yaw);
+
   private:
   	YAML::Node config_{};
 	
@@ -78,10 +79,13 @@ class Localizer : public rclcpp::Node {
     rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_{};
     rclcpp::Subscription<car_msgs::msg::SensorCalibration>::SharedPtr sub_calibration_{};
 	rclcpp::Subscription<car_msgs::msg::MotionControl>::SharedPtr sub_motionControl_{};
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_vehicleStateCsm_{};
+
 
     void callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg);
     void callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg);
     void callback_motionControl(const car_msgs::msg::MotionControl::SharedPtr msg);
+	void callback_vehicleStateCsm(const nav_msgs::msg::Odometry::SharedPtr msg);
 	void publish_500ms();
 
 	car_msgs::msg::MotionControl::SharedPtr lastMotionControl_;
