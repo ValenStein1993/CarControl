@@ -12,7 +12,10 @@
 #include "car_msgs/msg/vehicle_state.hpp"
 #include "car_msgs/msg/node_state.hpp"
 #include "geometry_msgs/msg/transform_stamped.hpp"
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
+
+#include <tf2/utils.hpp>
 #include "tf2/LinearMath/Quaternion.hpp"
 #include "tf2_ros/transform_broadcaster.hpp"
 
@@ -111,25 +114,29 @@ void Localizer::callback_vehicleStateCsm(const nav_msgs::msg::Odometry::SharedPt
 		return;
 	}
 
+	// Odom EKF has to run first
+	if (firstMessage_) {
+		return;
+	}
+
 	float x = msg->pose.pose.position.x;
     float y = msg->pose.pose.position.y;
-	float yaw = msg->twist.twist.angular.z;
+	float yaw = tf2::getYaw(msg->pose.pose.orientation);
 
 	updateStateSpaceScan(x, y, yaw);
 }
 
 
 void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
-    static bool firstMessage = true;
 	rclcpp::Time currentTimestamp = msg->header.stamp;
 
 	if (!isReady_) {
 		return;
 	}
 	
-	if (firstMessage) {
+	if (firstMessage_) {
 		lastTimestamp_ = currentTimestamp;
-		firstMessage = false;
+		firstMessage_ = false;
 		return;
 	}
 	
@@ -178,6 +185,8 @@ void Localizer::updateStateSpaceOdom(
 	float translSpeed, 
 	float gyro_z) {
 	// x = {x, y, v, phi};
+	// z = {x, y, phi, v, phi_dot}
+
 	_float_t* x = stateSpace_.ekf.x;
 
 	stateSpace_.u[0] = accel_x;
@@ -249,13 +258,15 @@ void Localizer::updateStateSpaceScan(float x, float y, float yaw) {
 	stateSpace_.z[1] = y;
 	stateSpace_.z[2] = yaw;
 	// x = {x, y, v, phi};
+	// z = {x, y, phi, v, phi_dot}
+
 
 	// ---- measurement equations ----
 	// zero all values to remove odom values
 	std::fill(std::begin(stateSpace_.hx), std::end(stateSpace_.hx), 0.0f);
-	stateSpace_.hx[0] = stateSpace_.fx[0];
-	stateSpace_.hx[1] = stateSpace_.fx[1];
-	stateSpace_.hx[2] = stateSpace_.fx[3];
+	stateSpace_.hx[0] = stateSpace_.ekf.x[0];
+	stateSpace_.hx[1] = stateSpace_.ekf.x[1];
+	stateSpace_.hx[2] = stateSpace_.ekf.x[3];
 
 	// ---- measurement jacobian ----
 	// zero all values to remove odom values

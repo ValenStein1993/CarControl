@@ -68,6 +68,7 @@ class Localizer : public rclcpp::Node {
 	void updateStateSpaceScan(float x, float y, float yaw);
 
   private:
+  	bool firstMessage_{true};
   	YAML::Node config_{};
 	
   	rclcpp::Time lastTimestamp_{}; 
