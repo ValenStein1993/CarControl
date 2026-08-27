@@ -70,6 +70,11 @@ def generate_launch_description():
             parameters=[{'use_sim_time': True}],
         ),
         Node(
+            package='mapper',
+            executable='mapper',
+            parameters=[{'use_sim_time': True}],
+        ),
+        Node(
             package='recorder',
             executable='recorder',
             parameters=[{'use_sim_time': True}],

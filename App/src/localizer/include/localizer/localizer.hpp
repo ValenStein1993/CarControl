@@ -88,6 +88,8 @@ class Localizer : public rclcpp::Node {
     void callback_motionControl(const car_msgs::msg::MotionControl::SharedPtr msg);
 	void callback_vehicleStateCsm(const nav_msgs::msg::Odometry::SharedPtr msg);
 	void publish_500ms();
+	float normalizeAngle(float angle);
+
 
 	car_msgs::msg::MotionControl::SharedPtr lastMotionControl_;
 

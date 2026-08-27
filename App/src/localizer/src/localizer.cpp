@@ -2,6 +2,7 @@
 #include <cmath>
 #include <chrono>
 #include <yaml-cpp/yaml.h>
+#include <numbers>
 
 #include "rclcpp/rclcpp.hpp"
 #include "localizer/localizer.hpp"
@@ -246,6 +247,9 @@ void Localizer::updateStateSpaceOdom(
 	ekf_predict(&stateSpace_.ekf, stateSpace_.fx, stateSpace_.F, stateSpace_.Q);
 	// update step with measurements
 	ekf_update(&stateSpace_.ekf, stateSpace_.z, stateSpace_.hx, stateSpace_.H, stateSpace_.R);
+
+	// normalize yaw
+	stateSpace_.ekf.x[3] = normalizeAngle(stateSpace_.ekf.x[3]);
 	
 	vehicleState_.x = stateSpace_.ekf.x[0];
 	vehicleState_.y = stateSpace_.ekf.x[1];
@@ -259,7 +263,6 @@ void Localizer::updateStateSpaceScan(float x, float y, float yaw) {
 	stateSpace_.z[2] = yaw;
 	// x = {x, y, v, phi};
 	// z = {x, y, phi, v, phi_dot}
-
 
 	// ---- measurement equations ----
 	// zero all values to remove odom values
@@ -284,10 +287,22 @@ void Localizer::updateStateSpaceScan(float x, float y, float yaw) {
 
 	ekf_update(&stateSpace_.ekf, stateSpace_.z, stateSpace_.hx, stateSpace_.H, stateSpace_.R);
 	
+	// normalize yaw
+	stateSpace_.ekf.x[3] = normalizeAngle(stateSpace_.ekf.x[3]);
+	
 	vehicleState_.x = stateSpace_.ekf.x[0];
 	vehicleState_.y = stateSpace_.ekf.x[1];
 	vehicleState_.v = stateSpace_.ekf.x[2];
 	vehicleState_.phi = stateSpace_.ekf.x[3];
+}
+
+float Localizer::normalizeAngle(float angle) {
+    angle = std::fmod(angle + std::numbers::pi, 2.0 * std::numbers::pi);
+
+    if (angle < 0.0)
+        angle += 2.0 * std::numbers::pi;
+
+    return angle - std::numbers::pi;
 }
 
 

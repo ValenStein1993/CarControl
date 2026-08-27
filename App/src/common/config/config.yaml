@@ -11,6 +11,7 @@ topics:
   histVehicleStateAct: /hist_vehicle_state_actual
   nodeState: /node_state
   laserScan: /scan
+  occupancyGrid: /occupancy_grid
 
 frames:
   map: map
@@ -22,8 +23,8 @@ frames:
 
 occgrid:
   resolution: 0.05
-  width: 40
-  height: 40
+  width: 799
+  height: 799
 
 sensors:
   imu:
