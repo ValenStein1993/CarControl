@@ -31,7 +31,7 @@ Mapper::Mapper()
 		config_["topics"]["occupancyGrid"].as<std::string>(), 10);
 
     sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
-        config_["topics"]["vehicleState"].as<std::string>(), 10, std::bind(&Mapper::callback_vehicleState, this, _1));
+        config_["topics"]["vehicleStateEkf"].as<std::string>(), 10, std::bind(&Mapper::callback_vehicleState, this, _1));
     sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
         config_["topics"]["laserScan"].as<std::string>(), 10, std::bind(&Mapper::callback_laserscan, this, _1));
 }
@@ -53,18 +53,20 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
 
         float theta_lidar = msg->angle_min + static_cast<float>(i) * msg->angle_increment;
         float theta_map = lastVehicleState_->yaw + theta_lidar;
+        float xmax = rmax * std::cos(theta_map);
+        float ymax = rmax * std::sin(theta_map);
 
         float res_occgrid = config_["occgrid"]["resolution"].as<float>();
         float x = lastVehicleState_->pos_x;
         float y = lastVehicleState_->pos_y;
         float r = 0;
-
+        
         float stddev_lidar = config_["sensors"]["lidar"]["stddev"].as<float>();
         boost::math::normal_distribution lidar_dist{rmax, stddev_lidar};
         
         float x_inc, y_inc, r_inc;
         int sign_x, sign_y;
-        if (std::abs(x) >= std::abs(y)) {
+        if (std::abs(xmax - x) >= std::abs(ymax - y)) {
             x_inc = res_occgrid;
             r_inc = x_inc / std::cos(theta_map);
             y_inc = r_inc * std::sin(theta_map);
@@ -88,12 +90,11 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
         else {
             sign_y = 1;
         } 
-
+        
         while (r <= rmax) {
             int idx_grid = getMapIndexFromPos(x, y);
-            if (idx_grid >=  static_cast<int>(occgrid_.size())) {
-                RCLCPP_INFO(get_logger(), "Vehicle is outside occupancy map!");
-                return;
+            if (idx_grid == -1) {
+                break;
             }
 
             float p = boost::math::pdf(lidar_dist, r);
@@ -113,6 +114,14 @@ void Mapper::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr 
 
 void Mapper::callback_map() {
     nav_msgs::msg::OccupancyGrid occGridMsg;
+    occGridMsg.header.stamp = this->get_clock()->now();
+	occGridMsg.header.frame_id = config_["frames"]["odom"].as<std::string>();
+    occGridMsg.info.height = config_["occgrid"]["height"].as<int>();
+    occGridMsg.info.width = config_["occgrid"]["width"].as<int>();
+    occGridMsg.info.resolution = config_["occgrid"]["resolution"].as<float>();
+    occGridMsg.info.origin.position.x = -0.5 * config_["occgrid"]["width"].as<int>() * config_["occgrid"]["resolution"].as<float>();
+    occGridMsg.info.origin.position.y = -0.5 * config_["occgrid"]["height"].as<int>() * config_["occgrid"]["resolution"].as<float>();
+    occGridMsg.info.origin.position.z = 0.0;
     occGridMsg.data.resize(occgrid_.size());
 
     for (size_t i = 0; i < occgrid_.size(); ++i) {
@@ -133,6 +142,9 @@ int Mapper::getMapIndexFromPos(float x, float y) {
     const float resolution = config_["occgrid"]["resolution"].as<float>();
     const float x_min = -0.5f * width * resolution;
     const float y_min = -0.5f * height * resolution;
+
+    if ((std::abs(x) > std::abs(x_min)) | (std::abs(y) > std::abs(y_min)))
+        return -1;
 
     const int grid_x = static_cast<int>(std::floor((x - x_min) / resolution));
     const int grid_y = static_cast<int>(std::floor((y - y_min) / resolution));
