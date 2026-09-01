@@ -8,6 +8,7 @@
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include "common/config.hpp"
+#include "common/map_utils.hpp"
 #include <boost/math/distributions/normal.hpp> 
 
 
@@ -92,7 +93,7 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
         } 
         
         while (r <= rmax) {
-            int idx_grid = getMapIndexFromPos(x, y);
+            int idx_grid = Common::MapUtils::getMapIndexFromPos(x, y, config_);
             if (idx_grid == -1) {
                 break;
             }
@@ -134,22 +135,6 @@ void Mapper::callback_map() {
     }
 
     pub_occGrid_->publish(occGridMsg);
-}
-
-int Mapper::getMapIndexFromPos(float x, float y) {
-    const int width = config_["occgrid"]["width"].as<int>();
-    const int height = config_["occgrid"]["height"].as<int>();
-    const float resolution = config_["occgrid"]["resolution"].as<float>();
-    const float x_min = -0.5f * width * resolution;
-    const float y_min = -0.5f * height * resolution;
-
-    if ((std::abs(x) > std::abs(x_min)) | (std::abs(y) > std::abs(y_min)))
-        return -1;
-
-    const int grid_x = static_cast<int>(std::floor((x - x_min) / resolution));
-    const int grid_y = static_cast<int>(std::floor((y - y_min) / resolution));
-
-    return grid_x + grid_y * width;
 }
 
 void Mapper::updateBinaryBayesFilter(int idx, float p) {

@@ -13,6 +13,7 @@
   <depend>car_msgs</depend>
   <depend>common</depend>
   <depend>yaml-cpp</depend>
+  <depend>nav_msgs</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

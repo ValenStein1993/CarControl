@@ -13,13 +13,20 @@ find_package(rclcpp REQUIRED)
 find_package(car_msgs REQUIRED)
 find_package(common REQUIRED)
 find_package(yaml-cpp REQUIRED)
+find_package(nav_msgs REQUIRED)
+
 
 
 add_executable(planner src/planner.cpp)
 
 target_include_directories(planner PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-ament_target_dependencies(planner rclcpp car_msgs common)
+ament_target_dependencies(planner 
+  rclcpp 
+  car_msgs 
+  common
+  nav_msgs)
+  
 target_link_libraries(
   planner
   yaml-cpp::yaml-cpp

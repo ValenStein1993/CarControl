@@ -32,7 +32,6 @@ class Mapper : public rclcpp::Node {
     void callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg);
     void callback_map();
 
-    int getMapIndexFromPos(float x, float y);
     void updateBinaryBayesFilter(int idx, float p);
 
 

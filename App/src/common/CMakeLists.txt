@@ -9,6 +9,8 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 add_library(common INTERFACE)
 
@@ -19,6 +21,8 @@ target_include_directories(common INTERFACE
 
 target_link_libraries(common INTERFACE
   ament_index_cpp::ament_index_cpp
+  yaml-cpp::yaml-cpp
+  rclcpp::rclcpp
 )
 
 # Install C++ headers

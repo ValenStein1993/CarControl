@@ -12,6 +12,7 @@ topics:
   nodeState: /node_state
   laserScan: /scan
   occupancyGrid: /occupancy_grid
+  globalPath: /global_path
 
 frames:
   map: map
