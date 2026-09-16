@@ -10,7 +10,6 @@
 *.mk
 Controller/Build
 External
-.vscode
 __pycache__
 Testing/logs
 Testing/Emulation/*.txt.*

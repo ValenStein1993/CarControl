@@ -1,0 +1,12 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Planner",
+            "type": "ros2",
+            "request": "launch",
+            "target": "${workspaceFolder}/App/install/startup/share/startup/launch/launch_nodes.py",
+            "preLaunchTask": "RunPreLaunchTasks"
+        }
+    ]
+}
