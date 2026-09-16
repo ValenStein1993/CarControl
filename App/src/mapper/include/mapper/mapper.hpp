@@ -4,6 +4,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "common/datatypes.hpp"
+#include "common/basenode.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
@@ -11,12 +12,11 @@
 
 constexpr float init_probOcc = 0.5f;
 
-class Mapper : public rclcpp::Node {
+class Mapper : public BaseNode {
   public:
     Mapper();
 	
   private:
-    YAML::Node config_{};
     car_msgs::msg::VehicleState::SharedPtr lastVehicleState_{};
 
   	rclcpp::TimerBase::SharedPtr timer_{};
@@ -30,7 +30,7 @@ class Mapper : public rclcpp::Node {
 
     void callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg);
     void callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg);
-    void callback_map();
+    void publish_map();
 
     void updateBinaryBayesFilter(int idx, float p);
 

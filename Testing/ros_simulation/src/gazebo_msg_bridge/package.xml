@@ -20,5 +20,7 @@
   <depend>common</depend>
   <depend>yaml-cpp</depend>
 
-
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
 </package>

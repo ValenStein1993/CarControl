@@ -17,8 +17,8 @@ Testing/Emulation/*.txt.*
 App/build
 App/install
 App/log
-Testing/CarModel/Plugins/build
-Testing/CarModel/Plugins/install
-Testing/CarModel/Plugins/log
+Testing/ros_simulation/install
+Testing/ros_simulation/build
+Testing/ros_simulation/log
 build
 

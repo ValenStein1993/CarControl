@@ -63,8 +63,8 @@ void Planner::publish_motionControl()
   }
   
   car_msgs::msg::MotionControl msg;
-  msg.yaw_rate = 0.3; // Example value, replace with actual logic
-  msg.speed = 0.5; // Example value, replace with actual logic
+  msg.yaw_rate = 0.0; // Example value, replace with actual logic
+  msg.speed = 0.05; // Example value, replace with actual logic
 
   pub_motionControl_->publish(msg);
 }
@@ -80,7 +80,7 @@ void Planner::publish_path()
   nav_msgs::msg::Path pathMsg;
   pathMsg.header.stamp = get_clock()->now();
   pathMsg.header.frame_id = config_["frames"]["odom"].as<std::string>();
-  
+
   for (int idx : path) {
     auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx, config_);
     geometry_msgs::msg::PoseStamped pose;
@@ -161,7 +161,9 @@ std::vector<int> Planner::findShortestPath(
 
       for (int v : adjList_[u]) {
           int w = occgrid[v]; 
-          
+
+            RCLCPP_INFO(get_logger(), "u: %d, v: %d, w: %d", u, v, w);
+
           // update distance if shorter
           if (dist[u] + w < dist[v]) {
               dist[v] = dist[u] + w;   

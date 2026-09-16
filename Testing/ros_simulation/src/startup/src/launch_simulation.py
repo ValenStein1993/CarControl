@@ -11,20 +11,17 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    # Resolve paths relative to this launch file so relative paths work
-    here = os.path.dirname(os.path.abspath(__file__))
+    model_abs = get_package_share_directory('model')
 
-    config_abs = os.path.join(get_package_share_directory('common'), 'config', 'config.yaml')
-    with open(config_abs, 'r') as f:
-        config = yaml.safe_load(f)
+    world_abs = os.path.join(model_abs, 'src', 'warehouse_world.sdf')
+    carmodel_abs = os.path.join(model_abs, 'src', 'carmodel.sdf')
 
-    world_abs = os.path.join(here, 'CarModel', 'warehouse_world.sdf')
-    carmodel_abs = os.path.join(here, 'CarModel', 'carmodel.sdf')
-    plugin_lib_abs = os.path.join(here, 'CarModel', 'Plugins', 'install', 'gazebo_msg_bridge', 'lib')
-
+    plugin_lib_abs = os.path.join(get_package_share_directory('gazebo_msg_bridge'), 'install', 'gazebo_msg_bridge', 'lib')
     ros_gz_sim_pkg_path = get_package_share_directory('ros_gz_sim')
     gz_launch_path = PathJoinSubstitution([ros_gz_sim_pkg_path, 'launch', 'gz_sim.launch.py'])
     gz_spawn_model_path = PathJoinSubstitution([ros_gz_sim_pkg_path, 'launch', 'gz_spawn_model.launch.py'])
+
+    nodes_launch_path = os.path.join(get_package_share_directory('startup'), 'launch', 'launch_nodes.py')
 
     return LaunchDescription([
         SetEnvironmentVariable('GZ_SIM_PLUGIN_PATH', plugin_lib_abs),
@@ -60,39 +57,6 @@ def generate_launch_description():
             arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'base_link_lidar', 'lidar']
         ),
         Node(
-            package='localizer',
-            executable='localizer',
-            parameters=[{'use_sim_time': True}],
-        ),
-        Node(
-            package='planner',
-            executable='planner',
-            parameters=[{'use_sim_time': True}],
-        ),
-        Node(
-            package='mapper',
-            executable='mapper',
-            parameters=[{'use_sim_time': True}],
-        ),
-        Node(
-            package='recorder',
-            executable='recorder',
-            parameters=[{'use_sim_time': True}],
-        ),
-        Node(
-            package='ros2_laser_scan_matcher',
-            executable='laser_scan_matcher',
-            parameters=[{
-                'use_sim_time': True, 
-                'publish_odom': config['topics']['vehicleStateCsm'],
-                'publish_tf': True,
-                'base_frame': config['frames']['vehBaseLidar'],
-                'odom_frame': config['frames']['odom'],
-                'map_frame': config['frames']['map'],
-                'laser_frame': config['frames']['lidar'],
-                }],
-        ),
-        Node(
             package='rviz2',
             executable='rviz2',
             name='rviz',
@@ -106,4 +70,6 @@ def generate_launch_description():
         ),
     ])
 
-    
+
+if __name__ == '__main__':
+    generate_launch_description()

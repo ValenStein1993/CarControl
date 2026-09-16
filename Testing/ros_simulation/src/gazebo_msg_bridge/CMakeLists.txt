@@ -14,7 +14,6 @@ find_package(yaml-cpp REQUIRED)
 
 
 
-
 add_library(
     gazebo_msg_bridge
     SHARED

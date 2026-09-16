@@ -12,22 +12,22 @@
 #include <boost/math/distributions/normal.hpp> 
 
 
-
 using namespace std::chrono_literals;
 using std::placeholders::_1;
 
 
 Mapper::Mapper()
-  : Node("mapper") {
-    config_ = common::get_config();
-
+  : BaseNode("mapper") 
+{
     // init ocup map
     occgrid_.resize(config_["occgrid"]["width"].as<int>() * config_["occgrid"]["height"].as<int>());
+
     // populate occup map with init values
     init_logOdd_ = std::log10(init_probOcc / (1 - init_probOcc));
     std::fill(std::begin(occgrid_), std::end(occgrid_), init_logOdd_);
 
-    timer_ = this->create_wall_timer(100ms, std::bind(&Mapper::callback_map, this));
+    add_timer(100ms, &Mapper::publish_map);
+
     pub_occGrid_ = create_publisher<nav_msgs::msg::OccupancyGrid>(
 		config_["topics"]["occupancyGrid"].as<std::string>(), 10);
 
@@ -38,7 +38,8 @@ Mapper::Mapper()
 }
 
 
-void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
+void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg) 
+{
     if (!lastVehicleState_) {
         return;
     }
@@ -54,55 +55,28 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
 
         float theta_lidar = msg->angle_min + static_cast<float>(i) * msg->angle_increment;
         float theta_map = lastVehicleState_->yaw + theta_lidar;
-        float xmax = rmax * std::cos(theta_map);
-        float ymax = rmax * std::sin(theta_map);
+        float dx = std::cos(theta_map);
+        float dy = std::sin(theta_map);
 
-        float res_occgrid = config_["occgrid"]["resolution"].as<float>();
         float x = lastVehicleState_->pos_x;
         float y = lastVehicleState_->pos_y;
-        float r = 0;
+        float r = 0.0f;
+
+        float res_occgrid = config_["occgrid"]["resolution"].as<float>();
+        float r_inc = res_occgrid / std::max(std::abs(dx), std::abs(dy));
         
         float stddev_lidar = config_["sensors"]["lidar"]["stddev"].as<float>();
         boost::math::normal_distribution lidar_dist{rmax, stddev_lidar};
         
-        float x_inc, y_inc, r_inc;
-        int sign_x, sign_y;
-        if (std::abs(xmax - x) >= std::abs(ymax - y)) {
-            x_inc = res_occgrid;
-            r_inc = x_inc / std::cos(theta_map);
-            y_inc = r_inc * std::sin(theta_map);
-        }
-        else {
-            y_inc = res_occgrid;
-            r_inc = y_inc / std::sin(theta_map);
-            x_inc = r_inc * std::cos(theta_map);
-        }
-
-        if (x < 0) {
-            sign_x = -1;
-        }
-        else {
-            sign_x = 1;
-        }
-
-        if (y < 0) {
-            sign_y = -1;
-        }
-        else {
-            sign_y = 1;
-        } 
-        
         while (r <= rmax) {
             int idx_grid = Common::MapUtils::getMapIndexFromPos(x, y, config_);
-            if (idx_grid == -1) {
-                break;
-            }
+            if (idx_grid == -1) break;
 
             float p = boost::math::pdf(lidar_dist, r);
             updateBinaryBayesFilter(idx_grid, p);
 
-            x += sign_x * x_inc;
-            y += sign_y * y_inc; 
+            x += dx * r_inc;
+            y += dy * r_inc;
             r += r_inc;
         }
     }
@@ -113,7 +87,7 @@ void Mapper::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr 
     lastVehicleState_ = msg;
 }
 
-void Mapper::callback_map() {
+void Mapper::publish_map() {
     nav_msgs::msg::OccupancyGrid occGridMsg;
     occGridMsg.header.stamp = this->get_clock()->now();
 	occGridMsg.header.frame_id = config_["frames"]["odom"].as<std::string>();
@@ -133,7 +107,7 @@ void Mapper::callback_map() {
         int8_t value = static_cast<int8_t>(p * 100.0f);
         occGridMsg.data[i] = value;
     }
-
+    
     pub_occGrid_->publish(occGridMsg);
 }
 
