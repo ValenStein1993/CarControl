@@ -1,48 +1,28 @@
 {
     "version": "2.0.0",
     "tasks": [
-        {
-            "label": "BuildModel",
-            "type": "shell",
-            "command": "bash",
-            "args": [ "-c", "python3 '${workspaceFolder}/Testing/ros_simulation/install/model/share/model/src/generate_model.py'" ],
-        },
-        {
-            "label": "BuildAll",
-            "type": "shell",
-            "command": "bash",
-            "args": [ "-c", "${workspaceFolder}/App/build_all.sh && ${workspaceFolder}/Testing/ros_simulation/build_all.sh" ],
-        },
-        {
-            "label": "LaunchSimulation",
-            "type": "shell",
-            "command": "source ${workspaceFolder}/Testing/ros_simulation/install/setup.bash && ros2 launch startup_sim launch_simulation.py",
-            "isBackground": true,
-            "problemMatcher": {
-                "pattern": {
-                "regexp": "."
+                {
+                "label": "RunPreLaunchTasks",
+                "type": "shell",
+                "command": "bash",
+                "args": [
+                    "-c",
+                    "${workspaceFolder}/App/build_all.sh && ${workspaceFolder}/Testing/ros_simulation/build_all.sh && source ${workspaceFolder}/App/install/setup.bash && source ${workspaceFolder}/Testing/ros_simulation/install/setup.bash && python3 '${workspaceFolder}/Testing/ros_simulation/install/model/share/model/src/generate_model.py' && ros2 launch startup_sim launch_simulation.py"
+                ],
+                "isBackground": true,
+                "problemMatcher": {
+                    "pattern": { "regexp": "." },
+                    "background": {
+                        "activeOnStart": true,
+                        "beginsPattern": ".",
+                        "endsPattern": "Waiting for service|create.*become available|.*"
+                    }
                 },
-                "background": {
-                "activeOnStart": true,
-                "beginsPattern": ".",
-                "endsPattern": "Waiting for service|create.*become available|.*"
+                "presentation": {
+                    "reveal": "always",
+                    "panel": "shared"
                 }
-            },
-            "presentation": {
-                "reveal": "always",
-                "panel": "dedicated"
             }
-        },
-        {
-            "label": "RunPreLaunchTasks",
-            "dependsOn": [
-                "BuildModel",
-                "BuildAll",
-                "LaunchSimulation"
-            ],
-            "dependsOrder": "sequence", 
-            "problemMatcher": []
-        },
     ]
 }
  

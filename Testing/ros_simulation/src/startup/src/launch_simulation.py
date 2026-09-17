@@ -21,8 +21,6 @@ def generate_launch_description():
     gz_launch_path = PathJoinSubstitution([ros_gz_sim_pkg_path, 'launch', 'gz_sim.launch.py'])
     gz_spawn_model_path = PathJoinSubstitution([ros_gz_sim_pkg_path, 'launch', 'gz_spawn_model.launch.py'])
 
-    nodes_launch_path = os.path.join(get_package_share_directory('startup'), 'launch', 'launch_nodes.py')
-
     return LaunchDescription([
         SetEnvironmentVariable('GZ_SIM_PLUGIN_PATH', plugin_lib_abs),
         IncludeLaunchDescription(
@@ -69,7 +67,3 @@ def generate_launch_description():
             ]
         ),
     ])
-
-
-if __name__ == '__main__':
-    generate_launch_description()

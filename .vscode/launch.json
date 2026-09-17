@@ -2,11 +2,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug Planner",
+            "name": "Debug ROS2",
             "type": "ros2",
             "request": "launch",
-            "target": "${workspaceFolder}/App/install/startup/share/startup/launch/launch_nodes.py",
-            "preLaunchTask": "RunPreLaunchTasks"
+            "target": "${workspaceFolder}/App/src/startup/launch/launch_nodes.py",
+            "preLaunchTask": "RunPreLaunchTasks",
         }
     ]
 }

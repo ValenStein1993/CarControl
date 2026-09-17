@@ -71,6 +71,10 @@ void Planner::publish_motionControl()
 
 void Planner::publish_path()
 {
+  if (!lastVehicleState_ || !lastOccGrid_) {
+    return;
+  }
+  
   int idx_state = Common::MapUtils::getMapIndexFromPos(
     lastVehicleState_->pos_x, 
     lastVehicleState_->pos_y, 
