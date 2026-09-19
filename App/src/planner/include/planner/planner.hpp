@@ -20,6 +20,12 @@ class Planner : public BaseNode {
     VehicleState vehicleState_;
 	
   private:
+    std::string config_frames_odom_;
+    int config_occgrid_width_;
+    int config_occgrid_height_;
+    float config_occgrid_resolution_;
+
+
     std::pair<int, int> target_{};
     int idx_target_{};
     std::vector<std::vector<int>> adjList_;

@@ -17,10 +17,16 @@ using std::placeholders::_1;
 
 
 Mapper::Mapper()
-  : BaseNode("mapper") 
+  : BaseNode("mapper")
 {
+    config_occgrid_resolution_ = config_["occgrid"]["resolution"].as<float>();
+    config_sensors_lidar_stddev_ = config_["sensors"]["lidar"]["stddev"].as<float>();
+    config_frames_odom_ = config_["frames"]["odom"].as<std::string>();
+    config_occgrid_width_ = config_["occgrid"]["width"].as<int>();
+    config_occgrid_height_ = config_["occgrid"]["height"].as<int>();
+
     // init ocup map
-    occgrid_.resize(config_["occgrid"]["width"].as<int>() * config_["occgrid"]["height"].as<int>());
+    occgrid_.resize(config_occgrid_width_ * config_occgrid_height_);
 
     // populate occup map with init values
     init_logOdd_ = std::log10(init_probOcc / (1 - init_probOcc));
@@ -44,40 +50,42 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
         return;
     }
 
+    float p_occ = 0.7f;
+    float l_free = std::log((1 - p_occ) / p_occ);
+    float l_occ = std::log(p_occ / (1 - p_occ));
+    float l_min = -5.f;
+    float l_max = 5.f;
+
     for (size_t i = 0; i < msg->ranges.size(); ++i) {
-        float rmax = msg->ranges[i];
+        float range = msg->ranges[i];
 
-        if (!std::isfinite(rmax))
-            continue;
+        if (!std::isfinite(range) || range < msg->range_min) continue;
 
-        if (rmax < msg->range_min || rmax > msg->range_max)
-            continue;
+        bool hit = range < msg->range_max;
+        float rmax = std::min(range, msg->range_max);
 
-        float theta_lidar = msg->angle_min + static_cast<float>(i) * msg->angle_increment;
-        float theta_map = lastVehicleState_->yaw + theta_lidar;
-        float dx = std::cos(theta_map);
-        float dy = std::sin(theta_map);
+        float theta = lastVehicleState_->yaw + msg->angle_min + i * msg->angle_increment;
+        float dx = std::cos(theta);
+        float dy = std::sin(theta);
+        float step = 0.5f * config_occgrid_resolution_;
 
         float x = lastVehicleState_->pos_x;
         float y = lastVehicleState_->pos_y;
-        float r = 0.0f;
 
-        float res_occgrid = config_["occgrid"]["resolution"].as<float>();
-        float r_inc = res_occgrid / std::max(std::abs(dx), std::abs(dy));
-        
-        float stddev_lidar = config_["sensors"]["lidar"]["stddev"].as<float>();
-        boost::math::normal_distribution lidar_dist{rmax, stddev_lidar};
-        
-        while (r <= rmax) {
-            int idx_grid = Common::MapUtils::getMapIndexFromPos(x, y, config_);
-            if (idx_grid == -1) break;
-
-            float p = boost::math::pdf(lidar_dist, r);
-            updateBinaryBayesFilter(idx_grid, p);
-
-            x += dx * r_inc;
-            y += dy * r_inc;
-            r += r_inc;
+        int last_idx = -1;
+        for (float r = 0.f; r < rmax; r += step, x += dx*step, y += dy*step) {
+            int idx = Common::MapUtils::getMapIndexFromPos(x, y, config_occgrid_width_,
+                config_occgrid_height_, config_occgrid_resolution_);
+            if (idx < 0) break;
+            if (idx == last_idx) continue;  // don't update the same cell twice
+            occgrid_[idx] = std::clamp(occgrid_[idx] + l_free, l_min, l_max);
+            last_idx = idx;
+        }
+        if (hit) {
+            int idx = Common::MapUtils::getMapIndexFromPos(
+                lastVehicleState_->pos_x + dx*rmax, lastVehicleState_->pos_y + dy*rmax,
+                config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
+            if (idx >= 0) occgrid_[idx] = std::clamp(occgrid_[idx] + l_occ, l_min, l_max);
         }
     }
 }
@@ -90,12 +98,12 @@ void Mapper::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr 
 void Mapper::publish_map() {
     nav_msgs::msg::OccupancyGrid occGridMsg;
     occGridMsg.header.stamp = this->get_clock()->now();
-	occGridMsg.header.frame_id = config_["frames"]["odom"].as<std::string>();
-    occGridMsg.info.height = config_["occgrid"]["height"].as<int>();
-    occGridMsg.info.width = config_["occgrid"]["width"].as<int>();
-    occGridMsg.info.resolution = config_["occgrid"]["resolution"].as<float>();
-    occGridMsg.info.origin.position.x = -0.5 * config_["occgrid"]["width"].as<int>() * config_["occgrid"]["resolution"].as<float>();
-    occGridMsg.info.origin.position.y = -0.5 * config_["occgrid"]["height"].as<int>() * config_["occgrid"]["resolution"].as<float>();
+	occGridMsg.header.frame_id = config_frames_odom_;
+    occGridMsg.info.height = config_occgrid_height_;
+    occGridMsg.info.width = config_occgrid_width_;
+    occGridMsg.info.resolution = config_occgrid_resolution_;
+    occGridMsg.info.origin.position.x = -0.5 * config_occgrid_width_ * config_occgrid_resolution_;
+    occGridMsg.info.origin.position.y = -0.5 * config_occgrid_height_ * config_occgrid_resolution_;
     occGridMsg.info.origin.position.z = 0.0;
     occGridMsg.data.resize(occgrid_.size());
 

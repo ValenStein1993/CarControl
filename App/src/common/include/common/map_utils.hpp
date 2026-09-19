@@ -4,11 +4,7 @@
 
 namespace Common::MapUtils
 {
-    inline int getMapIndexFromPos(float x, float y, YAML::Node& config) {
-        const int width = config["occgrid"]["width"].as<int>();
-        const int height = config["occgrid"]["height"].as<int>();
-        const float resolution = config["occgrid"]["resolution"].as<float>();
-
+    inline int getMapIndexFromPos(float x, float y, int width, int height, float resolution) {
         const float x_min = -0.5f * width * resolution;
         const float y_min = -0.5f * height * resolution;
 
@@ -21,11 +17,7 @@ namespace Common::MapUtils
         return grid_x + grid_y * width;
     }
 
-    inline std::pair<float, float> getPosFromMapIndex(int idx, YAML::Node& config) {
-        const int width = config["occgrid"]["width"].as<int>();
-        const int height = config["occgrid"]["height"].as<int>();
-        const float resolution = config["occgrid"]["resolution"].as<float>();
-
+    inline std::pair<float, float> getPosFromMapIndex(int idx, int width, int height, float resolution) {
         const float x_min = -0.5f * width * resolution;
         const float y_min = -0.5f * height * resolution;
 

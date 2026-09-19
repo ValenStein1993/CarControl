@@ -7,7 +7,7 @@
                 "command": "bash",
                 "args": [
                     "-c",
-                    "${workspaceFolder}/App/build_all.sh && ${workspaceFolder}/Testing/ros_simulation/build_all.sh && source ${workspaceFolder}/App/install/setup.bash && source ${workspaceFolder}/Testing/ros_simulation/install/setup.bash && python3 '${workspaceFolder}/Testing/ros_simulation/install/model/share/model/src/generate_model.py' && ros2 launch startup_sim launch_simulation.py"
+                    "${workspaceFolder}/Scripts/debug_sim.sh"
                 ],
                 "isBackground": true,
                 "problemMatcher": {

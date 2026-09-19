@@ -20,8 +20,18 @@ using std::placeholders::_1;
 Planner::Planner()
   : BaseNode("planner") 
 {
+    config_frames_odom_ = config_["frames"]["odom"].as<std::string>();
+    config_occgrid_width_ = config_["occgrid"]["width"].as<int>();
+    config_occgrid_height_ = config_["occgrid"]["height"].as<int>();
+    config_occgrid_resolution_ = config_["occgrid"]["resolution"].as<float>();
+
     target_ = std::pair<int, int>{10, 10};
-    idx_target_ = Common::MapUtils::getMapIndexFromPos(target_.first, target_.second, config_);
+    idx_target_ = Common::MapUtils::getMapIndexFromPos(
+      target_.first, 
+      target_.second, 
+      config_occgrid_width_, 
+      config_occgrid_height_, 
+      config_occgrid_resolution_);
 
     adjList_ = buildAdjacentList();
     add_timer(500ms, &Planner::publish_motionControl);
@@ -74,19 +84,26 @@ void Planner::publish_path()
   if (!lastVehicleState_ || !lastOccGrid_) {
     return;
   }
-  
+
   int idx_state = Common::MapUtils::getMapIndexFromPos(
     lastVehicleState_->pos_x, 
     lastVehicleState_->pos_y, 
-    config_);
+    config_occgrid_width_, 
+    config_occgrid_height_, 
+    config_occgrid_resolution_);
   std::vector<int> path = findShortestPath(lastOccGrid_->data, idx_state, idx_target_);
 
   nav_msgs::msg::Path pathMsg;
   pathMsg.header.stamp = get_clock()->now();
-  pathMsg.header.frame_id = config_["frames"]["odom"].as<std::string>();
+  pathMsg.header.frame_id = config_frames_odom_;
 
   for (int idx : path) {
-    auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx, config_);
+    auto [x, y] = Common::MapUtils::getPosFromMapIndex(
+      idx, 
+      config_occgrid_width_, 
+      config_occgrid_height_, 
+      config_occgrid_resolution_);
+
     geometry_msgs::msg::PoseStamped pose;
     pose.pose.position.x = x;
     pose.pose.position.y = y;
@@ -97,8 +114,8 @@ void Planner::publish_path()
 
 std::vector<std::vector<int>> Planner::buildAdjacentList() 
 {
-  int width = config_["occgrid"]["width"].as<int>();
-  int height = config_["occgrid"]["height"].as<int>();
+  int width = config_occgrid_width_;
+  int height = config_occgrid_height_;
   int N = width * height;
 
   std::vector<std::vector<int>> adjList(N);
@@ -165,8 +182,6 @@ std::vector<int> Planner::findShortestPath(
 
       for (int v : adjList_[u]) {
           int w = occgrid[v]; 
-
-            RCLCPP_INFO(get_logger(), "u: %d, v: %d, w: %d", u, v, w);
 
           // update distance if shorter
           if (dist[u] + w < dist[v]) {

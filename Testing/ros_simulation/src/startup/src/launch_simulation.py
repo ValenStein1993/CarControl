@@ -12,6 +12,7 @@ from launch_ros.substitutions import FindPackageShare
 
 def generate_launch_description():
     model_abs = get_package_share_directory('model')
+    startup_abs = get_package_share_directory('startup_sim')
 
     world_abs = os.path.join(model_abs, 'src', 'warehouse_world.sdf')
     carmodel_abs = os.path.join(model_abs, 'src', 'carmodel.sdf')
@@ -63,7 +64,7 @@ def generate_launch_description():
             ],
             arguments=[
                 '-d',
-                './monitor.rviz'
+                os.path.join(startup_abs, 'src', 'monitor.rviz')
             ]
         ),
     ])

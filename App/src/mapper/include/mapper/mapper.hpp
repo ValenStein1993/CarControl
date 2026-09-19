@@ -17,6 +17,12 @@ class Mapper : public BaseNode {
     Mapper();
 	
   private:
+    float config_occgrid_resolution_; 
+    float config_sensors_lidar_stddev_;
+    std::string config_frames_odom_;
+    int config_occgrid_width_;
+    int config_occgrid_height_;
+
     car_msgs::msg::VehicleState::SharedPtr lastVehicleState_{};
 
   	rclcpp::TimerBase::SharedPtr timer_{};
