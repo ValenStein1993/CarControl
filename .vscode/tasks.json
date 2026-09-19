@@ -7,21 +7,8 @@
                 "command": "bash",
                 "args": [
                     "-c",
-                    "${workspaceFolder}/Scripts/debug_sim.sh"
+                    "cd ${workspaceFolder}/App && colcon build --cmake-args -DCMAKE_BUILD_TYPE=Debug"
                 ],
-                "isBackground": true,
-                "problemMatcher": {
-                    "pattern": { "regexp": "." },
-                    "background": {
-                        "activeOnStart": true,
-                        "beginsPattern": ".",
-                        "endsPattern": "Waiting for service|create.*become available|.*"
-                    }
-                },
-                "presentation": {
-                    "reveal": "always",
-                    "panel": "shared"
-                }
             }
     ]
 }

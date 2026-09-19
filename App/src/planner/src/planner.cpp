@@ -26,12 +26,8 @@ Planner::Planner()
     config_occgrid_resolution_ = config_["occgrid"]["resolution"].as<float>();
 
     target_ = std::pair<int, int>{10, 10};
-    idx_target_ = Common::MapUtils::getMapIndexFromPos(
-      target_.first, 
-      target_.second, 
-      config_occgrid_width_, 
-      config_occgrid_height_, 
-      config_occgrid_resolution_);
+    idx_target_ = Common::MapUtils::getMapIndexFromPos(target_.first, target_.second, 
+      config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
 
     adjList_ = buildAdjacentList();
     add_timer(500ms, &Planner::publish_motionControl);
@@ -85,12 +81,8 @@ void Planner::publish_path()
     return;
   }
 
-  int idx_state = Common::MapUtils::getMapIndexFromPos(
-    lastVehicleState_->pos_x, 
-    lastVehicleState_->pos_y, 
-    config_occgrid_width_, 
-    config_occgrid_height_, 
-    config_occgrid_resolution_);
+  int idx_state = Common::MapUtils::getMapIndexFromPos(lastVehicleState_->pos_x, lastVehicleState_->pos_y, 
+    config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
   std::vector<int> path = findShortestPath(lastOccGrid_->data, idx_state, idx_target_);
 
   nav_msgs::msg::Path pathMsg;
@@ -98,11 +90,8 @@ void Planner::publish_path()
   pathMsg.header.frame_id = config_frames_odom_;
 
   for (int idx : path) {
-    auto [x, y] = Common::MapUtils::getPosFromMapIndex(
-      idx, 
-      config_occgrid_width_, 
-      config_occgrid_height_, 
-      config_occgrid_resolution_);
+    auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx, config_occgrid_width_, 
+      config_occgrid_height_, config_occgrid_resolution_);
 
     geometry_msgs::msg::PoseStamped pose;
     pose.pose.position.x = x;
@@ -145,13 +134,16 @@ std::vector<std::vector<int>> Planner::buildAdjacentList()
   return adjList;
 }
 
-std::vector<int> Planner::findShortestPath(
-  std::vector<int8_t>& occgrid, 
-  int idx_state, 
-  int idx_target) 
+std::vector<int> Planner::findShortestPath(std::vector<int8_t>& occgrid, 
+  int idx_state, int idx_target) 
 {
+  int width = config_occgrid_width_;
+  int height = config_occgrid_height_;
+  int N = width * height;
+
   // Dijkstra Algorithm  
   int V = occgrid.size();
+  int8_t kBlocked = 75;
 
   // pq = {{distance, vertex}, ...}
   std::priority_queue<
@@ -167,29 +159,43 @@ std::vector<int> Planner::findShortestPath(
   pq.emplace(0, idx_state);
 
   while (!pq.empty()) {
-      auto top = pq.top();
-      pq.pop();
+    // select closest vertex u from the queue
+    auto top = pq.top();
+    pq.pop();
 
-      int d = top.first;  
-      int u = top.second; 
+    int d = top.first;  
+    int u = top.second; 
 
-      // stop when target node is found
-      if (u == idx_target)
-        break;
+    // stop when target node is found
+    if (u == idx_target)
+      break;
 
-      if (d > dist[u])
-          continue;
+    if (d > dist[u])
+        continue;
 
-      for (int v : adjList_[u]) {
-          int w = occgrid[v]; 
+    // check distance to all neighbors v of u
+    int ux = u % width, uy = u / width;
+    for (int dy = -1; dy <= 1; ++dy) {
+      for (int dx = -1; dx <= 1; ++dx) {
+        if (!dx && !dy) continue;
+        int vx = ux + dx;
+        int vy = uy + dy;
+        if (vx < 0 || vy < 0 || vx >= width || vy >= height) continue;
+        int v = vy * width + vx;
 
-          // update distance if shorter
-          if (dist[u] + w < dist[v]) {
-              dist[v] = dist[u] + w;   
-              parent[v] = u;
-              pq.emplace(dist[v], v);
-          }
+        int8_t c = occgrid[v];
+        if (c >= kBlocked) continue;                       
+        float step = (dx && dy) ? 1.4142f : 1.0f;           
+        step *= c;      
+
+        // if distance to v through u is shorter, update distance and parent
+        if (dist[u] + step < dist[v]) {
+          dist[v] = dist[u] + step;
+          parent[v] = u;
+          pq.emplace(dist[v], v);
+        }
       }
+    }
   }
 
   // construct path
@@ -200,7 +206,7 @@ std::vector<int> Planner::findShortestPath(
     path.push_back(v);
     v = parent[v];
   }
-
+  std::reverse(path.begin(), path.end());
   return path;
 }
 
