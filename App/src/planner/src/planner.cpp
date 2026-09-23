@@ -29,7 +29,6 @@ Planner::Planner()
     idx_target_ = Common::MapUtils::getMapIndexFromPos(target_.first, target_.second, 
       config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
 
-    adjList_ = buildAdjacentList();
     add_timer(500ms, &Planner::publish_motionControl);
     add_timer(500ms, &Planner::publish_path);
 
@@ -68,9 +67,40 @@ void Planner::publish_motionControl()
     return;
   }
   
+  int lookAhead = 1;
+  float min_distance = std::numeric_limits<float>::max();
+  int idx_minDistance = -1;
+
+  // get closest grid node to current position
+  for (size_t i = 0; i < path_.size(); ++i) {
+    auto [x, y] = Common::MapUtils::getPosFromMapIndex(path_[i], config_occgrid_width_, 
+      config_occgrid_height_, config_occgrid_resolution_);
+    float distance = std::hypot(x - lastVehicleState_->pos_x, y - lastVehicleState_->pos_y);
+    if (distance < min_distance) {
+      min_distance = distance;
+      idx_minDistance = i;
+    }
+  }
+
+  // find lookahead node to closest node
+  size_t idx_lookAhead;
+  float x_lookAhead, y_lookAhead;
+  auto [x_minDistance, y_minDistance] = Common::MapUtils::getPosFromMapIndex(path_[idx_minDistance], 
+    config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
+  for (idx_lookAhead = idx_minDistance; idx_lookAhead < path_.size(); ++idx_lookAhead) {
+    std::tie(x_lookAhead, y_lookAhead) = Common::MapUtils::getPosFromMapIndex(path_[idx_lookAhead], config_occgrid_width_, 
+      config_occgrid_height_, config_occgrid_resolution_);
+    float distance = std::hypot(x_lookAhead - x_minDistance, y_lookAhead - y_minDistance);
+    if (distance > lookAhead) break;
+  }
+
+  // pure pursuit algorithm
+  float l = std::hypot(x_lookAhead - lastVehicleState_->pos_x, y_lookAhead - lastVehicleState_->pos_y);
+  float yaw_rate = (x_lookAhead - lastVehicleState_->pos_x) / std::pow(l, 2);
+
   car_msgs::msg::MotionControl msg;
-  msg.yaw_rate = 0.0; // Example value, replace with actual logic
-  msg.speed = 0.05; // Example value, replace with actual logic
+  msg.yaw_rate = yaw_rate; 
+  msg.speed = 0.1; 
 
   pub_motionControl_->publish(msg);
 }
@@ -83,13 +113,13 @@ void Planner::publish_path()
 
   int idx_state = Common::MapUtils::getMapIndexFromPos(lastVehicleState_->pos_x, lastVehicleState_->pos_y, 
     config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
-  std::vector<int> path = findShortestPath(lastOccGrid_->data, idx_state, idx_target_);
+  path_ = findShortestPath(lastOccGrid_->data, idx_state, idx_target_);
 
   nav_msgs::msg::Path pathMsg;
   pathMsg.header.stamp = get_clock()->now();
   pathMsg.header.frame_id = config_frames_odom_;
 
-  for (int idx : path) {
+  for (int idx : path_) {
     auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx, config_occgrid_width_, 
       config_occgrid_height_, config_occgrid_resolution_);
 
@@ -101,45 +131,11 @@ void Planner::publish_path()
   pub_path_->publish(pathMsg);
 }
 
-std::vector<std::vector<int>> Planner::buildAdjacentList() 
-{
-  int width = config_occgrid_width_;
-  int height = config_occgrid_height_;
-  int N = width * height;
-
-  std::vector<std::vector<int>> adjList(N);
-
-  for (int i = 0; i < N; i++) {
-    adjList[i].reserve(4);
-
-    int row = i / width;
-    int col = i % width;
-
-    if (row > 0) {
-      adjList[i].push_back((row - 1) * width + col);
-    }
-
-    if (row < (height - 1)) {
-      adjList[i].push_back((row + 1) * width + col);
-    }
-
-    if (col > 0) {
-      adjList[i].push_back(i - 1);
-    }
-
-    if (col < (width - 1)) {
-      adjList[i].push_back(i + 1);
-    }
-  }
-  return adjList;
-}
-
 std::vector<int> Planner::findShortestPath(std::vector<int8_t>& occgrid, 
   int idx_state, int idx_target) 
 {
   int width = config_occgrid_width_;
   int height = config_occgrid_height_;
-  int N = width * height;
 
   // Dijkstra Algorithm  
   int V = occgrid.size();

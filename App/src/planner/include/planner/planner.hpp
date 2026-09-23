@@ -28,7 +28,7 @@ class Planner : public BaseNode {
 
     std::pair<int, int> target_{};
     int idx_target_{};
-    std::vector<std::vector<int>> adjList_;
+    std::vector<int> path_;
 
     car_msgs::msg::NodeState::SharedPtr lastNodeState_;
     car_msgs::msg::VehicleState::SharedPtr lastVehicleState_;
