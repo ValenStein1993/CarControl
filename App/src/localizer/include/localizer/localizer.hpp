@@ -26,10 +26,13 @@
 
 #include "common/datatypes.hpp"
 #include "common/basenode.hpp"
+
 #include "tf2_ros/transform_broadcaster.hpp"
 
 
 using std::placeholders::_1;
+
+constexpr float ignoredMeasurementVariance = 1e12f;
 
 
 struct SensorConfig {
@@ -57,22 +60,20 @@ struct VehicleStateSpace {
 class Localizer : public BaseNode {
   public:
     Localizer();
-
-	float config_vehicle_wheelbase_;
-
     VehicleState vehicleState_{};
 	VehicleStateSpace stateSpace_{};
 	SensorConfig sensorConfig_{};
 	bool isReady_{false};
 
 	void initStateSpace();
-	void updateStateSpace(float dt, float accel_x, float angle, float translSpeed, float gyro_z);
+	void updateStateSpaceOdom(float dt, float accel_x, float angle, float translSpeed, float gyro_z);
+	void updateStateSpaceScan(float x, float y, float yaw);
 
-  private:	
+  private:
+  	bool firstMessage_{true};
+	float config_vehicle_wheelbase_;
+	
   	rclcpp::Time lastTimestamp_{}; 
-	car_msgs::msg::MotionControl::SharedPtr lastMotionControl_;
-	nav_msgs::msg::Odometry::SharedPtr lastVehicleStateCsm_;
-
   	rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr pub_vehicleStateEkf_{};
 	rclcpp::Publisher<car_msgs::msg::NodeState>::SharedPtr pub_nodeState_{};
 	std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
@@ -89,6 +90,9 @@ class Localizer : public BaseNode {
 	void callback_vehicleStateCsm(const nav_msgs::msg::Odometry::SharedPtr msg);
 	void publish_500ms();
 	float normalizeAngle(float angle);
+
+
+	car_msgs::msg::MotionControl::SharedPtr lastMotionControl_;
 
 };
 
