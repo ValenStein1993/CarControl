@@ -29,7 +29,7 @@ Mapper::Mapper()
     occgrid_.resize(config_occgrid_width_ * config_occgrid_height_);
 
     // populate occup map with init values
-    init_logOdd_ = std::log10(init_probOcc / (1 - init_probOcc));
+    init_logOdd_ = std::log(init_probOcc / (1 - init_probOcc));
     std::fill(std::begin(occgrid_), std::end(occgrid_), init_logOdd_);
 
     add_timer(100ms, &Mapper::publish_map);
@@ -67,25 +67,33 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
         float theta = lastVehicleState_->yaw + msg->angle_min + i * msg->angle_increment;
         float dx = std::cos(theta);
         float dy = std::sin(theta);
-        float step = 0.5f * config_occgrid_resolution_;
+        float step = 0.5 * config_occgrid_resolution_;
 
         float x = lastVehicleState_->pos_x;
         float y = lastVehicleState_->pos_y;
+
+        int idx_hit = -1;
+        if (hit) {
+            idx_hit = Common::MapUtils::getMapIndexFromPos(
+                lastVehicleState_->pos_x + dx*rmax, lastVehicleState_->pos_y + dy*rmax,
+                config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
+        }
 
         int last_idx = -1;
         for (float r = 0.f; r < rmax; r += step, x += dx*step, y += dy*step) {
             int idx = Common::MapUtils::getMapIndexFromPos(x, y, config_occgrid_width_,
                 config_occgrid_height_, config_occgrid_resolution_);
             if (idx < 0) break;
-            if (idx == last_idx) continue;  // don't update the same cell twice
-            occgrid_[idx] = std::clamp(occgrid_[idx] + l_free, l_min, l_max);
+
+            // continue if idx is hit cell or last cell
+            if (idx == last_idx || idx == idx_hit) continue;  
+            // update binary bayes filter with free odd
+            occgrid_[idx] = std::clamp(occgrid_[idx] + l_free - init_logOdd_, l_min, l_max);
             last_idx = idx;
         }
-        if (hit) {
-            int idx = Common::MapUtils::getMapIndexFromPos(
-                lastVehicleState_->pos_x + dx*rmax, lastVehicleState_->pos_y + dy*rmax,
-                config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
-            if (idx >= 0) occgrid_[idx] = std::clamp(occgrid_[idx] + l_occ, l_min, l_max);
+        if (hit && idx_hit >= 0) {
+            // update binary bayes filter with occupied odd
+            occgrid_[idx_hit] = std::clamp(occgrid_[idx_hit] + l_occ - init_logOdd_, l_min, l_max);
         }
     }
 }

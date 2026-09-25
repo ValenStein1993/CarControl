@@ -143,11 +143,11 @@ std::vector<int> Planner::findShortestPath(std::vector<int8_t>& occgrid,
 
   // pq = {{distance, vertex}, ...}
   std::priority_queue<
-    std::pair<int, int>, 
-    std::vector<std::pair<int, int>>, 
-    std::greater<std::pair<int, int>>> pq;
+    std::pair<float, int>, 
+    std::vector<std::pair<float, int>>, 
+    std::greater<std::pair<float, int>>> pq;
 
-  std::vector<int> dist(V, INT_MAX);
+  std::vector<float> dist(V, INT_MAX);
   std::vector<int> parent(V, -1);
 
   // add source vertex to queue
@@ -159,7 +159,7 @@ std::vector<int> Planner::findShortestPath(std::vector<int8_t>& occgrid,
     auto top = pq.top();
     pq.pop();
 
-    int d = top.first;  
+    float d = top.first;  
     int u = top.second; 
 
     // stop when target node is found
@@ -182,7 +182,8 @@ std::vector<int> Planner::findShortestPath(std::vector<int8_t>& occgrid,
         int8_t c = occgrid[v];
         if (c >= kBlocked) continue;                       
         float step = (dx && dy) ? 1.4142f : 1.0f;           
-        step *= c;      
+        float risk_weight = 1.0f; 
+        step *= (1.0f + risk_weight * (static_cast<float>(c) / 100.0f));      
 
         // if distance to v through u is shorter, update distance and parent
         if (dist[u] + step < dist[v]) {
