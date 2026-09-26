@@ -67,7 +67,7 @@ void Planner::publish_motionControl()
     return;
   }
   
-  int lookAhead = 1;
+  int lookAhead = 0.5;
   float min_distance = std::numeric_limits<float>::max();
   int idx_minDistance = -1;
 
@@ -82,7 +82,7 @@ void Planner::publish_motionControl()
     }
   }
 
-  // find lookahead node to closest node
+  // find lookahead to closest node
   size_t idx_lookAhead;
   float x_lookAhead, y_lookAhead;
   auto [x_minDistance, y_minDistance] = Common::MapUtils::getPosFromMapIndex(path_[idx_minDistance], 
@@ -95,12 +95,21 @@ void Planner::publish_motionControl()
   }
 
   // pure pursuit algorithm
-  float l = std::hypot(x_lookAhead - lastVehicleState_->pos_x, y_lookAhead - lastVehicleState_->pos_y);
-  float yaw_rate = (x_lookAhead - lastVehicleState_->pos_x) / std::pow(l, 2);
+  float dx_global = x_lookAhead - lastVehicleState_->pos_x;
+  float dy_global = y_lookAhead - lastVehicleState_->pos_y;
+  float yaw = lastVehicleState_->yaw;
+
+  float dx_body =  std::cos(yaw) * dx_global + std::sin(yaw) * dy_global;
+  float dy_body = -std::sin(yaw) * dx_global + std::cos(yaw) * dy_global;
+
+  float speed = 0.1;
+  float l = std::hypot(dx_body, dy_body);      
+  float curvature = 2.0f * dy_body / (l * l); 
+  float yaw_rate = speed * curvature;
 
   car_msgs::msg::MotionControl msg;
   msg.yaw_rate = yaw_rate; 
-  msg.speed = 0.1; 
+  msg.speed = speed; 
 
   pub_motionControl_->publish(msg);
 }
