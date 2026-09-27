@@ -19,14 +19,8 @@ using std::placeholders::_1;
 Mapper::Mapper()
   : BaseNode("mapper")
 {
-    config_occgrid_resolution_ = config_["occgrid"]["resolution"].as<float>();
-    config_sensors_lidar_stddev_ = config_["sensors"]["lidar"]["stddev"].as<float>();
-    config_frames_odom_ = config_["frames"]["odom"].as<std::string>();
-    config_occgrid_width_ = config_["occgrid"]["width"].as<int>();
-    config_occgrid_height_ = config_["occgrid"]["height"].as<int>();
-
     // init ocup map
-    occgrid_.resize(config_occgrid_width_ * config_occgrid_height_);
+    occgrid_.resize(config_occgrid_width * config_occgrid_height);
 
     // populate occup map with init values
     init_logOdd_ = std::log(init_probOcc / (1 - init_probOcc));
@@ -35,12 +29,14 @@ Mapper::Mapper()
     add_timer(100ms, &Mapper::publish_map);
 
     pub_occGrid_ = create_publisher<nav_msgs::msg::OccupancyGrid>(
-		config_["topics"]["occupancyGrid"].as<std::string>(), 10);
+        static_cast<std::string>(config_topics_occupancyGrid), 10);
 
     sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
-        config_["topics"]["vehicleStateEkf"].as<std::string>(), 10, std::bind(&Mapper::callback_vehicleState, this, _1));
+        static_cast<std::string>(config_topics_vehicleStateEkf), 10, 
+        std::bind(&Mapper::callback_vehicleState, this, _1));
     sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
-        config_["topics"]["laserScan"].as<std::string>(), 10, std::bind(&Mapper::callback_laserscan, this, _1));
+        static_cast<std::string>(config_topics_laserScan), 10, 
+        std::bind(&Mapper::callback_laserscan, this, _1));
 }
 
 
@@ -67,7 +63,7 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
         float theta = lastVehicleState_->yaw + msg->angle_min + i * msg->angle_increment;
         float dx = std::cos(theta);
         float dy = std::sin(theta);
-        float step = 0.5 * config_occgrid_resolution_;
+        float step = 0.5 * config_occgrid_resolution;
 
         float x = lastVehicleState_->pos_x;
         float y = lastVehicleState_->pos_y;
@@ -75,14 +71,12 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
         int idx_hit = -1;
         if (hit) {
             idx_hit = Common::MapUtils::getMapIndexFromPos(
-                lastVehicleState_->pos_x + dx*rmax, lastVehicleState_->pos_y + dy*rmax,
-                config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
+                lastVehicleState_->pos_x + dx*rmax, lastVehicleState_->pos_y + dy*rmax);
         }
 
         int last_idx = -1;
         for (float r = 0.f; r < rmax; r += step, x += dx*step, y += dy*step) {
-            int idx = Common::MapUtils::getMapIndexFromPos(x, y, config_occgrid_width_,
-                config_occgrid_height_, config_occgrid_resolution_);
+            int idx = Common::MapUtils::getMapIndexFromPos(x, y);
             if (idx < 0) break;
 
             // continue if idx is hit cell or last cell
@@ -106,12 +100,12 @@ void Mapper::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr 
 void Mapper::publish_map() {
     nav_msgs::msg::OccupancyGrid occGridMsg;
     occGridMsg.header.stamp = this->get_clock()->now();
-	occGridMsg.header.frame_id = config_frames_odom_;
-    occGridMsg.info.height = config_occgrid_height_;
-    occGridMsg.info.width = config_occgrid_width_;
-    occGridMsg.info.resolution = config_occgrid_resolution_;
-    occGridMsg.info.origin.position.x = -0.5 * config_occgrid_width_ * config_occgrid_resolution_;
-    occGridMsg.info.origin.position.y = -0.5 * config_occgrid_height_ * config_occgrid_resolution_;
+	occGridMsg.header.frame_id = config_frames_ekf_odom;
+    occGridMsg.info.height = config_occgrid_height;
+    occGridMsg.info.width = config_occgrid_width;
+    occGridMsg.info.resolution = config_occgrid_resolution;
+    occGridMsg.info.origin.position.x = -0.5 * config_occgrid_width * config_occgrid_resolution;
+    occGridMsg.info.origin.position.y = -0.5 * config_occgrid_height * config_occgrid_resolution;
     occGridMsg.info.origin.position.z = 0.0;
     occGridMsg.data.resize(occgrid_.size());
 
@@ -127,10 +121,6 @@ void Mapper::publish_map() {
     pub_occGrid_->publish(occGridMsg);
 }
 
-void Mapper::updateBinaryBayesFilter(int idx, float p) {
-    float* l_prior = &occgrid_[idx];
-    *l_prior = std::log10(p / (1 - p)) + *l_prior - init_logOdd_;
-}
 
 int main(int argc, char * argv[]) {
     rclcpp::init(argc, argv);

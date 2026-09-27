@@ -1,11 +1,11 @@
 #include <memory>
 #include <cmath>
 #include <chrono>
-#include <yaml-cpp/yaml.h>
 #include <queue>
 #include <vector>
 #include <climits>
 #include <utility>
+#include <numbers>
 
 #include "planner/planner.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -18,31 +18,33 @@ using namespace std::chrono_literals;
 using std::placeholders::_1;
 
 Planner::Planner()
-  : BaseNode("planner") 
-{
-    config_frames_odom_ = config_["frames"]["odom"].as<std::string>();
-    config_occgrid_width_ = config_["occgrid"]["width"].as<int>();
-    config_occgrid_height_ = config_["occgrid"]["height"].as<int>();
-    config_occgrid_resolution_ = config_["occgrid"]["resolution"].as<float>();
+  : BaseNode("planner") {
 
-    target_ = std::pair<int, int>{10, 10};
-    idx_target_ = Common::MapUtils::getMapIndexFromPos(target_.first, target_.second, 
-      config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
+  declare_parameter<float>("x_target", 0.0f);
+	declare_parameter<float>("y_target", 0.0f);
 
-    add_timer(500ms, &Planner::publish_motionControl);
-    add_timer(500ms, &Planner::publish_path);
+  get_parameter("x_target", target_.first);
+  get_parameter("y_target", target_.second);
 
-    pub_motionControl_ = create_publisher<car_msgs::msg::MotionControl>(
-      config_["topics"]["motionControl"].as<std::string>(), 10);
-    pub_path_ = create_publisher<nav_msgs::msg::Path>(
-      config_["topics"]["globalPath"].as<std::string>(), 10);
+  idx_target_ = Common::MapUtils::getMapIndexFromPos(target_.first, target_.second);
 
-    sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
-      config_["topics"]["vehicleStateEkf"].as<std::string>(), 10, std::bind(&Planner::callback_vehicleState, this, _1));
-    sub_nodeState_ = create_subscription<car_msgs::msg::NodeState>(
-      config_["topics"]["nodeState"].as<std::string>(), 10, std::bind(&Planner::callback_nodeState, this, _1));
-    sub_occGrid_ = create_subscription<nav_msgs::msg::OccupancyGrid>(
-      config_["topics"]["occupancyGrid"].as<std::string>(), 10, std::bind(&Planner::callback_occGrid, this, _1));
+  add_timer(500ms, &Planner::publish_motionControl);
+  add_timer(500ms, &Planner::publish_path);
+
+  pub_motionControl_ = create_publisher<car_msgs::msg::MotionControl>(
+    static_cast<std::string>(config_topics_motionControl), 10);
+  pub_path_ = create_publisher<nav_msgs::msg::Path>(
+    static_cast<std::string>(config_topics_globalPath), 10);
+
+  sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
+    static_cast<std::string>(config_topics_vehicleStateEkf), 10, 
+    std::bind(&Planner::callback_vehicleState, this, _1));
+  sub_nodeState_ = create_subscription<car_msgs::msg::NodeState>(
+    static_cast<std::string>(config_topics_nodeState), 10, 
+    std::bind(&Planner::callback_nodeState, this, _1));
+  sub_occGrid_ = create_subscription<nav_msgs::msg::OccupancyGrid>(
+    static_cast<std::string>(config_topics_occupancyGrid), 10, 
+    std::bind(&Planner::callback_occGrid, this, _1));
 }
 
 void Planner::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg) 
@@ -67,14 +69,13 @@ void Planner::publish_motionControl()
     return;
   }
   
-  int lookAhead = 0.5;
+  int lookAhead = 0.1;
   float min_distance = std::numeric_limits<float>::max();
   int idx_minDistance = -1;
 
   // get closest grid node to current position
   for (size_t i = 0; i < path_.size(); ++i) {
-    auto [x, y] = Common::MapUtils::getPosFromMapIndex(path_[i], config_occgrid_width_, 
-      config_occgrid_height_, config_occgrid_resolution_);
+    auto [x, y] = Common::MapUtils::getPosFromMapIndex(path_[i]);
     float distance = std::hypot(x - lastVehicleState_->pos_x, y - lastVehicleState_->pos_y);
     if (distance < min_distance) {
       min_distance = distance;
@@ -85,11 +86,9 @@ void Planner::publish_motionControl()
   // find lookahead to closest node
   size_t idx_lookAhead;
   float x_lookAhead, y_lookAhead;
-  auto [x_minDistance, y_minDistance] = Common::MapUtils::getPosFromMapIndex(path_[idx_minDistance], 
-    config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
+  auto [x_minDistance, y_minDistance] = Common::MapUtils::getPosFromMapIndex(path_[idx_minDistance]);
   for (idx_lookAhead = idx_minDistance; idx_lookAhead < path_.size(); ++idx_lookAhead) {
-    std::tie(x_lookAhead, y_lookAhead) = Common::MapUtils::getPosFromMapIndex(path_[idx_lookAhead], config_occgrid_width_, 
-      config_occgrid_height_, config_occgrid_resolution_);
+    std::tie(x_lookAhead, y_lookAhead) = Common::MapUtils::getPosFromMapIndex(path_[idx_lookAhead]);
     float distance = std::hypot(x_lookAhead - x_minDistance, y_lookAhead - y_minDistance);
     if (distance > lookAhead) break;
   }
@@ -102,7 +101,7 @@ void Planner::publish_motionControl()
   float dx_body =  std::cos(yaw) * dx_global + std::sin(yaw) * dy_global;
   float dy_body = -std::sin(yaw) * dx_global + std::cos(yaw) * dy_global;
 
-  float speed = 0.1;
+  float speed = 0.05;
   float l = std::hypot(dx_body, dy_body);      
   float curvature = 2.0f * dy_body / (l * l); 
   float yaw_rate = speed * curvature;
@@ -120,17 +119,15 @@ void Planner::publish_path()
     return;
   }
 
-  int idx_state = Common::MapUtils::getMapIndexFromPos(lastVehicleState_->pos_x, lastVehicleState_->pos_y, 
-    config_occgrid_width_, config_occgrid_height_, config_occgrid_resolution_);
-  path_ = findShortestPath(lastOccGrid_->data, idx_state, idx_target_);
+  int idx_state = Common::MapUtils::getMapIndexFromPos(lastVehicleState_->pos_x, lastVehicleState_->pos_y);
+  path_ = findShortestPath(idx_state, idx_target_);
 
   nav_msgs::msg::Path pathMsg;
   pathMsg.header.stamp = get_clock()->now();
-  pathMsg.header.frame_id = config_frames_odom_;
+  pathMsg.header.frame_id = config_frames_ekf_odom;
 
   for (int idx : path_) {
-    auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx, config_occgrid_width_, 
-      config_occgrid_height_, config_occgrid_resolution_);
+    auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx);
 
     geometry_msgs::msg::PoseStamped pose;
     pose.pose.position.x = x;
@@ -140,15 +137,14 @@ void Planner::publish_path()
   pub_path_->publish(pathMsg);
 }
 
-std::vector<int> Planner::findShortestPath(std::vector<int8_t>& occgrid, 
-  int idx_state, int idx_target) 
+std::vector<int> Planner::findShortestPath(int idx_state, int idx_target) 
 {
-  int width = config_occgrid_width_;
-  int height = config_occgrid_height_;
+  int width = config_occgrid_width;
+  int height = config_occgrid_height;
 
   // Dijkstra Algorithm  
+  std::vector<int8_t> occgrid = lastOccGrid_->data;
   int V = occgrid.size();
-  int8_t kBlocked = 75;
 
   // pq = {{distance, vertex}, ...}
   std::priority_queue<
@@ -189,7 +185,10 @@ std::vector<int> Planner::findShortestPath(std::vector<int8_t>& occgrid,
         int v = vy * width + vx;
 
         int8_t c = occgrid[v];
-        if (c >= kBlocked) continue;                       
+        if (c >= kBlocked) continue;
+        // check space around vehicle
+        if (!checkVehicleSpace(vx, vy, dx, dy)) continue;
+
         float step = (dx && dy) ? 1.4142f : 1.0f;           
         float risk_weight = 1.0f; 
         step *= (1.0f + risk_weight * (static_cast<float>(c) / 100.0f));      
@@ -214,6 +213,29 @@ std::vector<int> Planner::findShortestPath(std::vector<int8_t>& occgrid,
   }
   std::reverse(path.begin(), path.end());
   return path;
+}
+
+bool Planner::checkVehicleSpace(int vx, int vy, int dx, int dy) {
+  std::vector<int8_t> occgrid = lastOccGrid_->data;
+  int vvx = vx, vvx_ = vx;
+  int vvy = vy, vvy_ = vy;
+
+  while (true) {
+    if (dx) vvy += dx, vvy_ -= dx;
+    if (dy) vvx -= dy, vvx_ += dy;
+
+    if (!Common::MapUtils::checkGridBoundries(vvx, vvy)) return false;
+    if (!Common::MapUtils::checkGridBoundries(vvx_, vvy_)) return false;
+
+    int vv = vvy * config_occgrid_width + vvx;
+    int vv_ = vvy_ * config_occgrid_width + vvx_;
+    if ((occgrid[vv] > kBlocked) | (occgrid[vv_] > kBlocked)) return false;
+
+    float dist = config_occgrid_resolution * std::hypot(vy - vvy, vx - vvx);
+    // stop, if covered distance is greater than half width (plus buffer)
+    if (dist > (0.6 * config_vehicle_wheeltrack)) break;
+  }
+    return true;
 }
 
 int main(int argc, char * argv[])

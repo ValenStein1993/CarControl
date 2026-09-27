@@ -12,7 +12,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(car_msgs REQUIRED)
 find_package(common REQUIRED)
-find_package(yaml-cpp REQUIRED)
 find_package(nav_msgs REQUIRED)
 
 
@@ -29,7 +28,6 @@ ament_target_dependencies(planner
   
 target_link_libraries(
   planner
-  yaml-cpp::yaml-cpp
 )
 
 install(TARGETS

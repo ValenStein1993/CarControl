@@ -12,7 +12,6 @@
   <depend>rclcpp</depend>
   <depend>car_msgs</depend>
   <depend>common</depend>
-  <depend>yaml-cpp</depend>
   <depend>nav_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>Boost</depend>

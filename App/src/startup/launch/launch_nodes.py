@@ -15,12 +15,21 @@ def generate_launch_description():
         Node(
             package='localizer',
             executable='localizer',
-            parameters=[{'use_sim_time': True}],
+            parameters=[{
+                'use_sim_time': True,
+                'x_init': config['position']['x_init'],
+                'y_init': config['position']['y_init'],
+                'yaw_init': config['position']['yaw_init']
+            }],
         ),
         Node(
             package='planner',
             executable='planner',
-            parameters=[{'use_sim_time': True}],
+            parameters=[{
+                'use_sim_time': True,
+                'x_target': config['position']['x_target'],
+                'y_target': config['position']['y_target']
+            }],
         ),
         Node(
             package='mapper',
@@ -39,10 +48,10 @@ def generate_launch_description():
                 'use_sim_time': True, 
                 'publish_odom': config['topics']['vehicleStateCsm'],
                 'publish_tf': True,
-                'base_frame': config['frames']['vehBaseLidar'],
-                'odom_frame': config['frames']['odom'],
+                'base_frame': config['frames']['csm']['base_link'],
+                'odom_frame': config['frames']['csm']['odom'],
                 'map_frame': config['frames']['map'],
-                'laser_frame': config['frames']['lidar'],
+                'laser_frame': config['frames']['csm']['lidar'],
                 }],
         ),
     ])

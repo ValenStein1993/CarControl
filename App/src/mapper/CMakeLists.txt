@@ -14,7 +14,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(car_msgs REQUIRED)
 find_package(common REQUIRED)
-find_package(yaml-cpp REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(Boost REQUIRED)
@@ -35,7 +34,6 @@ ament_target_dependencies(mapper
 
 target_link_libraries(
   mapper
-  yaml-cpp::yaml-cpp
   Boost::headers
 )
 install(TARGETS

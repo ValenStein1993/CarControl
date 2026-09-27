@@ -1,7 +1,6 @@
 #include <cmath>
 #include <thread>
 #include <mutex>
-#include <yaml-cpp/yaml.h>
 
 #include "gazebo_msg_bridge/MessageBridge.hpp"
 #include <gz/plugin/Register.hh>
@@ -15,13 +14,7 @@
 #include "car_msgs/msg/vehicle_state.hpp"
 #include <sensor_msgs/msg/laser_scan.hpp>
 
-
-
-
-MessageBridge::MessageBridge() {
-    config_ = common::get_config();
-}
-
+MessageBridge::MessageBridge() = default;
 
 MessageBridge::~MessageBridge() {
     if (executor_) {
@@ -34,9 +27,8 @@ MessageBridge::~MessageBridge() {
 }
 
 
-void MessageBridge::Configure(
-    const gz::sim::Entity &_entity,
-    const std::shared_ptr<const sdf::Element> &_sdf,
+void MessageBridge::Configure(const gz::sim::Entity &_entity,
+    const std::shared_ptr<const sdf::Element> &_sdf, 
     gz::sim::EntityComponentManager &_ecm,
     gz::sim::EventManager &_eventMgr) {
 
@@ -57,13 +49,13 @@ void MessageBridge::Configure(
     gz_node_.Subscribe("/wheel_states", &MessageBridge::callback_jointState, this);
 
     ros_pub_measurements_ = ros_node_->create_publisher<car_msgs::msg::SensorMeasurements>(
-        config_["topics"]["sensorMeasurements"].as<std::string>(),
+        static_cast<std::string>(config_topics_sensorMeasurements),
         10
     );
 
     // subscribe to ROS motion control topic and publish via gazebo node
     ros_sub_motionControl_ = ros_node_->create_subscription<car_msgs::msg::MotionControl>(
-        config_["topics"]["motionControl"].as<std::string>(),
+        static_cast<std::string>(config_topics_motionControl),
         10,
         std::bind(&MessageBridge::callback_motionControl, this, std::placeholders::_1)
     );
@@ -72,20 +64,20 @@ void MessageBridge::Configure(
 
     // publish true vehicle state via ROS node
     ros_pub_vehicleState_ = ros_node_->create_publisher<car_msgs::msg::VehicleState>(
-        config_["topics"]["vehicleStateAct"].as<std::string>(),
+        static_cast<std::string>(config_topics_vehicleStateAct),
         10
     );
 
     // publish sensor calibration message
     ros_pub_calibration_ = ros_node_->create_publisher<car_msgs::msg::SensorCalibration>(
-        config_["topics"]["sensorCalibration"].as<std::string>(),
+        static_cast<std::string>(config_topics_sensorCalibration),
         10
     );
 
     // publish laser scan data from LiDAR to ROS
     gz_node_.Subscribe("/lidar_sensor", &MessageBridge::callback_laserScan, this);
     ros_pub_laserScan_ = ros_node_->create_publisher<sensor_msgs::msg::LaserScan>(
-        config_["topics"]["laserScan"].as<std::string>(),
+        static_cast<std::string>(config_topics_laserScan),
         10
     );
 }
@@ -175,7 +167,7 @@ void MessageBridge::PostUpdate(
     float rotSpeedSteering = 0.5 * (leftSteeringSpeed_ + rightSteeringSpeed_);
     
     msgMeasurements.wheelencoder_rotspeed = rotSpeed;
-    msgMeasurements.wheelencoder_translspeed = rotSpeed * config_["vehicle"]["wheels"]["radius"].as<float>();
+    msgMeasurements.wheelencoder_translspeed = rotSpeed * config_vehicle_wheels_radius;
     msgMeasurements.cjmcu103_angle = rotPositionSteering;
     msgMeasurements.cjmcu103_anglespeed = rotSpeedSteering;
 
@@ -184,10 +176,10 @@ void MessageBridge::PostUpdate(
     // Sensor Calibration Message
     car_msgs::msg::SensorCalibration calibrationMsg;
     calibrationMsg.is_calibrated = true;
-    calibrationMsg.mpu6050_var_accel_x = std::pow(config_["sensors"]["imu"]["stddev"]["accel"].as<float>(), 2);
-    calibrationMsg.mpu6050_var_gyro_z = std::pow(config_["sensors"]["imu"]["stddev"]["yaw_rate"].as<float>(), 2);
-    calibrationMsg.wheelencoder_var_rotspeed = std::pow(config_["sensors"]["wheelencoder"]["stddev"].as<float>(), 2);
-    calibrationMsg.cjmcu103_var_angle = std::pow(config_["sensors"]["potentiometer"]["stddev"].as<float>(), 2);
+    calibrationMsg.mpu6050_var_accel_x = std::pow(config_sensors_imu_stddev_accel, 2);
+    calibrationMsg.mpu6050_var_gyro_z = std::pow(config_sensors_imu_stddev_yaw_rate, 2);
+    calibrationMsg.wheelencoder_var_rotspeed = std::pow(config_sensors_wheelencoder_stddev, 2);
+    calibrationMsg.cjmcu103_var_angle = std::pow(config_sensors_potentiometer_stddev, 2);
 
     ros_pub_calibration_->publish(calibrationMsg);
 
@@ -212,7 +204,7 @@ void MessageBridge::PostUpdate(
     }
 
     msgLaserScan.header.stamp = timestamp;
-    msgLaserScan.header.frame_id = "lidar";
+    msgLaserScan.header.frame_id = config_frames_csm_lidar;
     msgLaserScan.angle_min = lastLaserScan.angle_min();
     msgLaserScan.angle_max = lastLaserScan.angle_max();
     msgLaserScan.angle_increment = lastLaserScan.angle_step();

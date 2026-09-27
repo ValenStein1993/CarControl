@@ -11,10 +11,14 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
+    config_abs = os.path.join(get_package_share_directory('common'), 'config', 'config.yaml')
+    with open(config_abs, 'r') as f:
+        config = yaml.safe_load(f)
+
     model_abs = get_package_share_directory('model')
     startup_abs = get_package_share_directory('startup_sim')
 
-    world_abs = os.path.join(model_abs, 'src', 'warehouse_world.sdf')
+    world_abs = os.path.join(model_abs, 'src', 'maze_world_demo.sdf')
     carmodel_abs = os.path.join(model_abs, 'src', 'carmodel.sdf')
 
     plugin_lib_abs = os.path.join(get_package_share_directory('gazebo_msg_bridge'), 'install', 'gazebo_msg_bridge', 'lib')
@@ -34,12 +38,13 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_spawn_model_path),
             launch_arguments={
-                'world': 'warehouse_world',
+                'world': 'maze_world_demo',
                 'file': carmodel_abs,
                 'entity_name': 'CarModel',
-                'x': '0.0',
-                'y': '0.0',
+                'x': f"{config['position']['x_init']}",
+                'y': f"{config['position']['y_init']}",
                 'z': '0.0',
+                'Y': f"{config['position']['yaw_init']}",
             }.items(),
         ),
         Node(
@@ -53,7 +58,7 @@ def generate_launch_description():
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
-            arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'base_link_lidar', 'lidar']
+            arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', config['frames']['csm']['base_link'], config['frames']['csm']['lidar']]
         ),
         Node(
             package='rviz2',

@@ -1,5 +1,4 @@
 #pragma once
-#include <yaml-cpp/yaml.h>
 #include <vector>
 
 #include "rclcpp/rclcpp.hpp"
@@ -17,12 +16,6 @@ class Mapper : public BaseNode {
     Mapper();
 	
   private:
-    float config_occgrid_resolution_; 
-    float config_sensors_lidar_stddev_;
-    std::string config_frames_odom_;
-    int config_occgrid_width_;
-    int config_occgrid_height_;
-
     car_msgs::msg::VehicleState::SharedPtr lastVehicleState_{};
 
   	rclcpp::TimerBase::SharedPtr timer_{};
@@ -37,8 +30,6 @@ class Mapper : public BaseNode {
     void callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg);
     void callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg);
     void publish_map();
-
-    void updateBinaryBayesFilter(int idx, float p);
 
 
 

@@ -13,7 +13,6 @@
 #define EKF_U 2 // input dimension, u = {a, theta};
 
 #include "tinyekf.h"
-#include <yaml-cpp/yaml.h>
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
@@ -61,6 +60,7 @@ class Localizer : public BaseNode {
   public:
     Localizer();
     VehicleState vehicleState_{};
+	VehicleState vehicleStateInit_{};
 	VehicleStateSpace stateSpace_{};
 	SensorConfig sensorConfig_{};
 	bool isReady_{false};
@@ -71,7 +71,6 @@ class Localizer : public BaseNode {
 
   private:
   	bool firstMessage_{true};
-	float config_vehicle_wheelbase_;
 	
   	rclcpp::Time lastTimestamp_{}; 
   	rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr pub_vehicleStateEkf_{};

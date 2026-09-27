@@ -1,3 +1,11 @@
+position:
+  x_init: -1.125
+  y_init: -1.35
+  yaw_init: 1.57
+  x_target: 1.125
+  y_target: 1.35
+
+
 topics:
   sensorMeasurements: /sensor/measurements
   sensorCalibration: /sensor/calibration
@@ -14,13 +22,18 @@ topics:
   occupancyGrid: /occupancy_grid
   globalPath: /global_path
 
+
 frames:
+  csm:
+    odom: csm_odom
+    base_link: csm_base_link
+    lidar: csm_lidar
+  ekf:
+    odom: ekf_odom
+    base_link: ekf_base_link
+    lidar: ekf_lidar
   map: map
-  odom: odom
   vehBase: base_link
-  vehBaseEkf: base_link_ekf
-  vehBaseLidar: base_link_lidar
-  lidar: lidar
 
 occgrid:
   resolution: 0.05

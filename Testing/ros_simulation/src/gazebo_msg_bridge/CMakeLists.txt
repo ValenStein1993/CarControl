@@ -10,8 +10,6 @@ find_package(gz-sim8 REQUIRED)
 find_package(car_msgs REQUIRED)
 find_package(gz-transport13 REQUIRED)
 find_package(common REQUIRED)
-find_package(yaml-cpp REQUIRED)
-
 
 
 add_library(
@@ -41,7 +39,6 @@ target_link_libraries(
     gazebo_msg_bridge
     gz-sim8::gz-sim8
     gz-transport13::gz-transport13
-    yaml-cpp::yaml-cpp
 )
 
 

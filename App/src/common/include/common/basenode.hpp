@@ -1,5 +1,4 @@
 #pragma once
-#include <yaml-cpp/yaml.h>
 #include <vector>
 #include <chrono>
 
@@ -12,14 +11,8 @@ class BaseNode : public rclcpp::Node {
         BaseNode(const std::string& node_name)
           : rclcpp::Node(node_name) 
         {
-            config_ = common::get_config();
 
         }
-
-        YAML::Node config_;
-
-        
-
 
         std::vector<rclcpp::TimerBase::SharedPtr> timers_;
 

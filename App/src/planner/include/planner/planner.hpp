@@ -1,5 +1,4 @@
 #pragma once
-#include <yaml-cpp/yaml.h>
 #include <vector>
 #include <utility>
 
@@ -13,6 +12,7 @@
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <nav_msgs/msg/path.hpp>
 
+constexpr int8_t kBlocked = 75;
 
 class Planner : public BaseNode {
   public:
@@ -20,13 +20,8 @@ class Planner : public BaseNode {
     VehicleState vehicleState_;
 	
   private:
-    std::string config_frames_odom_;
-    int config_occgrid_width_;
-    int config_occgrid_height_;
-    float config_occgrid_resolution_;
 
-
-    std::pair<int, int> target_{};
+    std::pair<float, float> target_{};
     int idx_target_{};
     std::vector<int> path_;
 
@@ -42,16 +37,13 @@ class Planner : public BaseNode {
     rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr sub_occGrid_;
 
 
-	void callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg);
-  void callback_nodeState(const car_msgs::msg::NodeState::SharedPtr msg);
-  void callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
-  void publish_motionControl();
-  void publish_path();
+    void callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg);
+    void callback_nodeState(const car_msgs::msg::NodeState::SharedPtr msg);
+    void callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+    void publish_motionControl();
+    void publish_path();
 
-  std::vector<std::vector<int>> buildAdjacentList();
-  std::vector<int> findShortestPath(
-    std::vector<int8_t>& occgrid, 
-    int idx_state, 
-    int idx_target);
+    std::vector<int> findShortestPath(int idx_state, int idx_target);
+    bool checkVehicleSpace(int ux, int uy, int dx, int dy);
 
 };
