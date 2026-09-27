@@ -18,7 +18,7 @@ def generate_launch_description():
     model_abs = get_package_share_directory('model')
     startup_abs = get_package_share_directory('startup_sim')
 
-    world_abs = os.path.join(model_abs, 'src', 'maze_world_demo.sdf')
+    world_abs = os.path.join(model_abs, 'src', 'warehouse_world.sdf')
     carmodel_abs = os.path.join(model_abs, 'src', 'carmodel.sdf')
 
     plugin_lib_abs = os.path.join(get_package_share_directory('gazebo_msg_bridge'), 'install', 'gazebo_msg_bridge', 'lib')
@@ -38,7 +38,7 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_spawn_model_path),
             launch_arguments={
-                'world': 'maze_world_demo',
+                'world': 'warehouse_world',
                 'file': carmodel_abs,
                 'entity_name': 'CarModel',
                 'x': f"{config['position']['x_init']}",
@@ -59,6 +59,11 @@ def generate_launch_description():
             package='tf2_ros',
             executable='static_transform_publisher',
             arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', config['frames']['csm']['base_link'], config['frames']['csm']['lidar']]
+        ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', config['frames']['ekf']['base_link'], config['frames']['ekf']['lidar']]
         ),
         Node(
             package='rviz2',

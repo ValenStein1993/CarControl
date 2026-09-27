@@ -69,7 +69,7 @@ void Planner::publish_motionControl()
     return;
   }
   
-  int lookAhead = 0.1;
+  float lookAhead = 0.1;
   float min_distance = std::numeric_limits<float>::max();
   int idx_minDistance = -1;
 
@@ -101,7 +101,7 @@ void Planner::publish_motionControl()
   float dx_body =  std::cos(yaw) * dx_global + std::sin(yaw) * dy_global;
   float dy_body = -std::sin(yaw) * dx_global + std::cos(yaw) * dy_global;
 
-  float speed = 0.05;
+  float speed = 0.1;
   float l = std::hypot(dx_body, dy_body);      
   float curvature = 2.0f * dy_body / (l * l); 
   float yaw_rate = speed * curvature;
@@ -187,7 +187,7 @@ std::vector<int> Planner::findShortestPath(int idx_state, int idx_target)
         int8_t c = occgrid[v];
         if (c >= kBlocked) continue;
         // check space around vehicle
-        if (!checkVehicleSpace(vx, vy, dx, dy)) continue;
+        if (!checkVehicleSpace(occgrid, vx, vy, dx, dy)) continue;
 
         float step = (dx && dy) ? 1.4142f : 1.0f;           
         float risk_weight = 1.0f; 
@@ -215,8 +215,7 @@ std::vector<int> Planner::findShortestPath(int idx_state, int idx_target)
   return path;
 }
 
-bool Planner::checkVehicleSpace(int vx, int vy, int dx, int dy) {
-  std::vector<int8_t> occgrid = lastOccGrid_->data;
+bool Planner::checkVehicleSpace(const std::vector<int8_t>& occgrid, int vx, int vy, int dx, int dy) {
   int vvx = vx, vvx_ = vx;
   int vvy = vy, vvy_ = vy;
 

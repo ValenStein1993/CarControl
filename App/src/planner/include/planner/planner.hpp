@@ -44,6 +44,6 @@ class Planner : public BaseNode {
     void publish_path();
 
     std::vector<int> findShortestPath(int idx_state, int idx_target);
-    bool checkVehicleSpace(int ux, int uy, int dx, int dy);
+    bool checkVehicleSpace(const std::vector<int8_t>& occgrid, int vx, int vy, int dx, int dy);
 
 };
