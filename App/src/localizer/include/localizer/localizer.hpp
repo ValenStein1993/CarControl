@@ -32,6 +32,7 @@
 using std::placeholders::_1;
 
 constexpr float ignoredMeasurementVariance = 1e12f;
+constexpr float var_modelAcc = 0.1;
 
 
 struct SensorConfig {

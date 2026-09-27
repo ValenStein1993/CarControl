@@ -146,11 +146,17 @@ void Localizer::callback_vehicleStateCsm(const nav_msgs::msg::Odometry::SharedPt
 		return;
 	}
 
-	float x = msg->pose.pose.position.x + vehicleStateInit_.x;
-    float y = msg->pose.pose.position.y + vehicleStateInit_.y;
-	float yaw = tf2::getYaw(msg->pose.pose.orientation) + vehicleStateInit_.phi;
+	float c = std::cos(vehicleStateInit_.phi);
+	float s = std::sin(vehicleStateInit_.phi);
 
-	//updateStateSpaceScan(x, y, yaw);
+	float x_csm = msg->pose.pose.position.x;
+	float y_csm = msg->pose.pose.position.y;
+
+	float x = vehicleStateInit_.x + c * x_csm - s * y_csm;
+	float y = vehicleStateInit_.y + s * x_csm + c * y_csm;
+	float yaw = normalizeAngle(tf2::getYaw(msg->pose.pose.orientation) + vehicleStateInit_.phi);
+	
+	updateStateSpaceScan(x, y, yaw);
 }
 
 
@@ -259,10 +265,12 @@ void Localizer::updateStateSpaceOdom(
 	stateSpace_.H[18] = 1 / config_vehicle_wheelbase * std::tan(stateSpace_.u[1]);
 
 	// ---- state covariance ----
+	stateSpace_.Q[0] = var_modelAcc;
+	stateSpace_.Q[5] = var_modelAcc;
 	// calculate Q from measurement noise W as Q = GWG with G as input jacobian
-	stateSpace_.Q[10] = std::pow(dt, 2) * sensorConfig_.var_accel_x;
-	// cov = (v/L/cos(theta)^2*dt)^2*var_theta
-	stateSpace_.Q[15] = std::pow(1 / config_vehicle_wheelbase * stateSpace_.fx[2] / std::pow(std::cos(angle), 2) * dt, 2) * sensorConfig_.var_angle;
+	stateSpace_.Q[10] = var_modelAcc + std::pow(dt, 2) * sensorConfig_.var_accel_x;
+	// cov = model accuracy + (v/L/cos(theta)^2*dt)^2*var_theta
+	stateSpace_.Q[15] = var_modelAcc + std::pow(1 / config_vehicle_wheelbase * stateSpace_.fx[2] / std::pow(std::cos(angle), 2) * dt, 2) * sensorConfig_.var_angle;
 
 	// ---- measurement covariance ----
 	stateSpace_.R[0] = ignoredMeasurementVariance;
@@ -283,6 +291,7 @@ void Localizer::updateStateSpaceOdom(
 	vehicleState_.y = stateSpace_.ekf.x[1];
 	vehicleState_.v = stateSpace_.ekf.x[2];
 	vehicleState_.phi = stateSpace_.ekf.x[3];
+
 }
 
 void Localizer::updateStateSpaceScan(float x, float y, float yaw) {
@@ -307,9 +316,9 @@ void Localizer::updateStateSpaceScan(float x, float y, float yaw) {
 	stateSpace_.H[11] = 1;
 
 	// ---- measurement covariance ----
-	stateSpace_.R[0] = 1e-8;
-	stateSpace_.R[6] = 1e-8;
-	stateSpace_.R[12] = 1e-8;
+	stateSpace_.R[0] = std::pow(config_sensors_lidar_stddev, 2);
+	stateSpace_.R[6] = std::pow(config_sensors_lidar_stddev, 2);
+	stateSpace_.R[12] = std::pow(config_sensors_lidar_stddev, 2);
 	stateSpace_.R[18] = ignoredMeasurementVariance;
 	stateSpace_.R[24] = ignoredMeasurementVariance;
 
