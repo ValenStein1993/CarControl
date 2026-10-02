@@ -32,7 +32,9 @@
 using std::placeholders::_1;
 
 constexpr float ignoredMeasurementVariance = 1e12f;
-constexpr float var_modelAcc = 0.1;
+constexpr float stddev_modelPos = 0.0001f;
+constexpr float stddev_modelOrntn = 2 * 3.141 / 180;
+
 
 
 struct SensorConfig {
@@ -60,7 +62,6 @@ struct VehicleStateSpace {
 class Localizer : public BaseNode {
   public:
     Localizer();
-    VehicleState vehicleState_{};
 	VehicleState vehicleStateInit_{};
 	VehicleStateSpace stateSpace_{};
 	SensorConfig sensorConfig_{};
@@ -68,13 +69,13 @@ class Localizer : public BaseNode {
 
 	void initStateSpace();
 	void updateStateSpaceOdom(float dt, float accel_x, float angle, float translSpeed, float gyro_z);
-	void updateStateSpaceScan(float x, float y, float yaw);
+	void updateStateSpaceScan(const nav_msgs::msg::Odometry::SharedPtr msg);
 
   private:
   	bool firstMessage_{true};
 	
   	rclcpp::Time lastTimestamp_{}; 
-  	rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr pub_vehicleStateEkf_{};
+  	rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_vehicleStateEkf_{};
 	rclcpp::Publisher<car_msgs::msg::NodeState>::SharedPtr pub_nodeState_{};
 	std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 

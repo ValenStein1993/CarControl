@@ -2,6 +2,8 @@
 #include <numbers>
 #include <cmath>
 #include <random>
+#include <tf2/utils.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include "mapper/mapper.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
@@ -21,6 +23,7 @@ Mapper::Mapper()
 {
     // init ocup map
     occgrid_.resize(config_occgrid_width * config_occgrid_height);
+    updateOccgrid_.resize(config_occgrid_width * config_occgrid_height);
 
     // populate occup map with init values
     init_logOdd_ = std::log(init_probOcc / (1 - init_probOcc));
@@ -31,7 +34,7 @@ Mapper::Mapper()
     pub_occGrid_ = create_publisher<nav_msgs::msg::OccupancyGrid>(
         static_cast<std::string>(config_topics_occupancyGrid), 10);
 
-    sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
+    sub_vehicleState_ = create_subscription<nav_msgs::msg::Odometry>(
         static_cast<std::string>(config_topics_vehicleStateEkf), 10, 
         std::bind(&Mapper::callback_vehicleState, this, _1));
     sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
@@ -46,11 +49,17 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
         return;
     }
 
+    float pos_x = lastVehicleState_->pose.pose.position.x;
+    float pos_y = lastVehicleState_->pose.pose.position.y;
+    float phi = tf2::getYaw(lastVehicleState_->pose.pose.orientation);
+
     float p_occ = 0.7f;
     float l_free = std::log((1 - p_occ) / p_occ);
     float l_occ = std::log(p_occ / (1 - p_occ));
     float l_min = -5.f;
     float l_max = 5.f;
+
+    std::fill(std::begin(updateOccgrid_), std::end(updateOccgrid_), false);
 
     for (size_t i = 0; i < msg->ranges.size(); ++i) {
         float range = msg->ranges[i];
@@ -60,18 +69,18 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
         bool hit = range < msg->range_max;
         float rmax = std::min(range, msg->range_max);
 
-        float theta = lastVehicleState_->yaw + msg->angle_min + i * msg->angle_increment;
+        float theta = phi + msg->angle_min + i * msg->angle_increment;
         float dx = std::cos(theta);
         float dy = std::sin(theta);
         float step = 0.5 * config_occgrid_resolution;
 
-        float x = lastVehicleState_->pos_x;
-        float y = lastVehicleState_->pos_y;
+        float x = pos_x;
+        float y = pos_y;
 
         int idx_hit = -1;
         if (hit) {
-            idx_hit = Common::MapUtils::getMapIndexFromPos(
-                lastVehicleState_->pos_x + dx*rmax, lastVehicleState_->pos_y + dy*rmax);
+            idx_hit = Common::MapUtils::getMapIndexFromPos(pos_x + dx*rmax, pos_y + dy*rmax);
+            updateOccgrid_[idx_hit] = true;
         }
 
         int last_idx = -1;
@@ -80,7 +89,7 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
             if (idx < 0) break;
 
             // continue if idx is hit cell or last cell
-            if (idx == last_idx || idx == idx_hit) continue;  
+            if (idx == last_idx || updateOccgrid_[idx]) continue;  
             // update binary bayes filter with free odd
             occgrid_[idx] = std::clamp(occgrid_[idx] + l_free - init_logOdd_, l_min, l_max);
             last_idx = idx;
@@ -93,7 +102,7 @@ void Mapper::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg
 }
 
 
-void Mapper::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg) {
+void Mapper::callback_vehicleState(const nav_msgs::msg::Odometry::SharedPtr msg) {
     lastVehicleState_ = msg;
 }
 

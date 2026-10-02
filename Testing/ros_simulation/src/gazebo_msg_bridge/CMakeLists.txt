@@ -10,7 +10,9 @@ find_package(gz-sim8 REQUIRED)
 find_package(car_msgs REQUIRED)
 find_package(gz-transport13 REQUIRED)
 find_package(common REQUIRED)
-
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 add_library(
     gazebo_msg_bridge
@@ -33,6 +35,9 @@ ament_target_dependencies(
     car_msgs
     gz-transport13
     common
+    tf2
+    tf2_geometry_msgs
+    nav_msgs
 )
 
 target_link_libraries(

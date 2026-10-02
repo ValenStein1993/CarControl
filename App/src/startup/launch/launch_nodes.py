@@ -52,6 +52,7 @@ def generate_launch_description():
                 'odom_frame': config['frames']['csm']['odom'],
                 'map_frame': config['frames']['map'],
                 'laser_frame': config['frames']['csm']['lidar'],
+                'do_compute_covariance': 1
                 }],
         ),
     ])

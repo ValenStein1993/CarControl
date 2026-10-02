@@ -6,11 +6,15 @@
 #include <climits>
 #include <utility>
 #include <numbers>
+#include <algorithm>
+#include <tf2/utils.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include "planner/planner.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
 #include "car_msgs/msg/motion_control.hpp"
+#include <sensor_msgs/msg/laser_scan.hpp>
 #include "common/config.hpp"
 #include "common/map_utils.hpp"
 
@@ -36,7 +40,7 @@ Planner::Planner()
   pub_path_ = create_publisher<nav_msgs::msg::Path>(
     static_cast<std::string>(config_topics_globalPath), 10);
 
-  sub_vehicleState_ = create_subscription<car_msgs::msg::VehicleState>(
+  sub_vehicleState_ = create_subscription<nav_msgs::msg::Odometry>(
     static_cast<std::string>(config_topics_vehicleStateEkf), 10, 
     std::bind(&Planner::callback_vehicleState, this, _1));
   sub_nodeState_ = create_subscription<car_msgs::msg::NodeState>(
@@ -45,9 +49,12 @@ Planner::Planner()
   sub_occGrid_ = create_subscription<nav_msgs::msg::OccupancyGrid>(
     static_cast<std::string>(config_topics_occupancyGrid), 10, 
     std::bind(&Planner::callback_occGrid, this, _1));
+  sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
+        static_cast<std::string>(config_topics_laserScan), 10, 
+        std::bind(&Planner::callback_laserscan, this, _1));
 }
 
-void Planner::callback_vehicleState(const car_msgs::msg::VehicleState::SharedPtr msg) 
+void Planner::callback_vehicleState(const nav_msgs::msg::Odometry::SharedPtr msg) 
 {
   lastVehicleState_ = msg;
 }
@@ -62,21 +69,28 @@ void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg
   lastOccGrid_ = msg;
 }
 
+void Planner::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
+  distAhead_ = msg->ranges[0.5 * msg->ranges.size()];
+}
+
 
 void Planner::publish_motionControl() 
 {
   if (!lastNodeState_ || !lastNodeState_->localizer_is_ready) {
     return;
   }
+
+  float pos_x = lastVehicleState_->pose.pose.position.x;
+  float pos_y = lastVehicleState_->pose.pose.position.y;
+  float phi = tf2::getYaw(lastVehicleState_->pose.pose.orientation);
   
-  float lookAhead = 0.1;
   float min_distance = std::numeric_limits<float>::max();
   int idx_minDistance = -1;
 
   // get closest grid node to current position
   for (size_t i = 0; i < path_.size(); ++i) {
     auto [x, y] = Common::MapUtils::getPosFromMapIndex(path_[i]);
-    float distance = std::hypot(x - lastVehicleState_->pos_x, y - lastVehicleState_->pos_y);
+    float distance = std::hypot(x - pos_x, y - pos_y);
     if (distance < min_distance) {
       min_distance = distance;
       idx_minDistance = i;
@@ -94,14 +108,15 @@ void Planner::publish_motionControl()
   }
 
   // pure pursuit algorithm
-  float dx_global = x_lookAhead - lastVehicleState_->pos_x;
-  float dy_global = y_lookAhead - lastVehicleState_->pos_y;
-  float yaw = lastVehicleState_->yaw;
+  float dx_global = x_lookAhead - pos_x;
+  float dy_global = y_lookAhead - pos_y;
+  float yaw = phi;
 
   float dx_body =  std::cos(yaw) * dx_global + std::sin(yaw) * dy_global;
   float dy_body = -std::sin(yaw) * dx_global + std::cos(yaw) * dy_global;
 
-  float speed = 0.1;
+  float speed = std::lerp(0, maxSpeed, std::clamp(
+    (distAhead_ - minDist) / (maxSpeedDist - minDist), 0.0f, 1.0f));
   float l = std::hypot(dx_body, dy_body);      
   float curvature = 2.0f * dy_body / (l * l); 
   float yaw_rate = speed * curvature;
@@ -119,8 +134,8 @@ void Planner::publish_path()
     return;
   }
 
-  int idx_state = Common::MapUtils::getMapIndexFromPos(lastVehicleState_->pos_x, lastVehicleState_->pos_y);
-  path_ = findShortestPath(idx_state, idx_target_);
+  int idx_state = Common::MapUtils::getMapIndexFromPos(lastVehicleState_->pose.pose.position.x, lastVehicleState_->pose.pose.position.y);
+  findShortestPath(idx_state, idx_target_);
 
   nav_msgs::msg::Path pathMsg;
   pathMsg.header.stamp = get_clock()->now();
@@ -137,8 +152,7 @@ void Planner::publish_path()
   pub_path_->publish(pathMsg);
 }
 
-std::vector<int> Planner::findShortestPath(int idx_state, int idx_target) 
-{
+void Planner::findShortestPath(int idx_state, int idx_target) {
   int width = config_occgrid_width;
   int height = config_occgrid_height;
 
@@ -212,7 +226,7 @@ std::vector<int> Planner::findShortestPath(int idx_state, int idx_target)
     v = parent[v];
   }
   std::reverse(path.begin(), path.end());
-  return path;
+  path_ = path;
 }
 
 bool Planner::checkVehicleSpace(const std::vector<int8_t>& occgrid, int vx, int vy, int dx, int dy) {

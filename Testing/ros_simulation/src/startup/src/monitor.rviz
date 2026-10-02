@@ -6,7 +6,23 @@ Panels:
       Expanded:
         - /Global Options1
         - /Status1
+        - /PathAct1
+        - /PathCsm1
         - /LaserScan1/Topic1
+        - /PathPlanned1
+        - /pos_ekf1
+        - /pos_ekf1/Shape1
+        - /pos_ekf1/Covariance1
+        - /pos_ekf1/Covariance1/Position1
+        - /pos_ekf1/Covariance1/Orientation1
+        - /pos_csm1
+        - /pos_csm1/Topic1
+        - /pos_csm1/Shape1
+        - /pos_csm1/Covariance1
+        - /pos_csm1/Covariance1/Position1
+        - /pos_csm1/Covariance1/Orientation1
+        - /pos_act1/Topic1
+        - /pos_act1/Shape1
       Splitter Ratio: 0.6294117569923401
     Tree Height: 707
   - Class: rviz_common/Selection
@@ -58,7 +74,7 @@ Visualization Manager:
     - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
-      Color: 25; 255; 0
+      Color: 61; 56; 70
       Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
@@ -114,7 +130,7 @@ Visualization Manager:
     - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
-      Color: 237; 51; 59
+      Color: 53; 132; 228
       Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
@@ -180,26 +196,33 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_link_ekf:
+        csm_base_link:
           Value: true
-        base_link_lidar:
+        csm_lidar:
           Value: true
-        lidar:
+        csm_odom:
+          Value: true
+        ekf_base_link:
+          Value: true
+        ekf_lidar:
+          Value: true
+        ekf_odom:
           Value: true
         map:
-          Value: true
-        odom:
           Value: true
       Marker Scale: 1
       Name: TF
-      Show Arrows: true
-      Show Axes: true
-      Show Names: true
+      Show Arrows: false
+      Show Axes: false
+      Show Names: false
       Tree:
         map:
-          odom:
-            base_link_ekf:
-              {}
+          csm_odom:
+            {}
+          ekf_odom:
+            ekf_base_link:
+              ekf_lidar:
+                {}
       Update Interval: 0
       Value: true
     - Alpha: 0.699999988079071
@@ -228,14 +251,14 @@ Visualization Manager:
     - Alpha: 1
       Buffer Length: 1
       Class: rviz_default_plugins/Path
-      Color: 25; 255; 0
+      Color: 145; 65; 172
       Enabled: true
       Head Diameter: 0.30000001192092896
       Head Length: 0.20000000298023224
       Length: 0.30000001192092896
       Line Style: Lines
       Line Width: 0.029999999329447746
-      Name: Path
+      Name: PathPlanned
       Offset:
         X: 0
         Y: 0
@@ -252,6 +275,123 @@ Visualization Manager:
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /global_path
+      Value: true
+    - Angle Tolerance: 0.10000000149011612
+      Class: rviz_default_plugins/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 246; 211; 45
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 2
+          Value: true
+        Position:
+          Alpha: 0.30000001192092896
+          Color: 255; 120; 0
+          Scale: 2
+          Value: true
+        Value: true
+      Enabled: true
+      Keep: 100
+      Name: pos_ekf
+      Position Tolerance: 0.10000000149011612
+      Shape:
+        Alpha: 0
+        Axes Length: 1
+        Axes Radius: 0.10000000149011612
+        Color: 255; 25; 0
+        Head Length: 0.009999999776482582
+        Head Radius: 0.009999999776482582
+        Shaft Length: 0.009999999776482582
+        Shaft Radius: 0.009999999776482582
+        Value: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /vehicle_state_ekf
+      Value: true
+    - Angle Tolerance: 0.10000000149011612
+      Class: rviz_default_plugins/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 153; 193; 241
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 2
+          Value: true
+        Position:
+          Alpha: 0.30000001192092896
+          Color: 143; 240; 164
+          Scale: 2
+          Value: true
+        Value: true
+      Enabled: true
+      Keep: 100
+      Name: pos_csm
+      Position Tolerance: 0.10000000149011612
+      Shape:
+        Alpha: 0
+        Axes Length: 1
+        Axes Radius: 0.10000000149011612
+        Color: 98; 160; 234
+        Head Length: 0.009999999776482582
+        Head Radius: 0.009999999776482582
+        Shaft Length: 0.009999999776482582
+        Shaft Radius: 0.009999999776482582
+        Value: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /vehicle_state_csm
+      Value: true
+    - Angle Tolerance: 0.10000000149011612
+      Class: rviz_default_plugins/Odometry
+      Covariance:
+        Orientation:
+          Alpha: 0.5
+          Color: 255; 255; 127
+          Color Style: Unique
+          Frame: Local
+          Offset: 1
+          Scale: 1
+          Value: true
+        Position:
+          Alpha: 0.30000001192092896
+          Color: 204; 51; 204
+          Scale: 1
+          Value: true
+        Value: true
+      Enabled: true
+      Keep: 100
+      Name: pos_act
+      Position Tolerance: 0.10000000149011612
+      Shape:
+        Alpha: 1
+        Axes Length: 1
+        Axes Radius: 0.10000000149011612
+        Color: 61; 56; 70
+        Head Length: 0.009999999776482582
+        Head Radius: 0.009999999776482582
+        Shaft Length: 0.009999999776482582
+        Shaft Radius: 0.009999999776482582
+        Value: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /vehicle_state_actual
       Value: true
   Enabled: true
   Global Options:
@@ -299,16 +439,16 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 9.451315879821777
+      Distance: 4.942951679229736
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.8686792254447937
-        Y: 0.08827702701091766
-        Z: 7.852974522393197e-05
+        X: -1.0920668840408325
+        Y: -1.0973634719848633
+        Z: -0.0010850903345271945
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false

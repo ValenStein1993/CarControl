@@ -23,22 +23,22 @@ Recorder::Recorder()
     pub_histVehicleStateAct_ = this->create_publisher<nav_msgs::msg::Path>(
         static_cast<std::string>(config_topics_histVehicleStateAct), 10);
 
-    sub_vehicleStateEkf_ = create_subscription<car_msgs::msg::VehicleState>(
+    sub_vehicleStateEkf_ = create_subscription<nav_msgs::msg::Odometry>(
         static_cast<std::string>(config_topics_vehicleStateEkf), 10, 
         std::bind(&Recorder::callback_vehicleStateEkf, this, _1));
     sub_vehicleStateCsm_ = create_subscription<nav_msgs::msg::Odometry>(
         static_cast<std::string>(config_topics_vehicleStateCsm), 10, 
         std::bind(&Recorder::callback_vehicleStateCsm, this, _1));
-    sub_vehicleStateAct_ = create_subscription<car_msgs::msg::VehicleState>(
+    sub_vehicleStateAct_ = create_subscription<nav_msgs::msg::Odometry>(
         static_cast<std::string>(config_topics_vehicleStateAct), 10, 
         std::bind(&Recorder::callback_vehicleStateAct, this, _1));
 }
 
-void Recorder::callback_vehicleStateEkf(const car_msgs::msg::VehicleState::SharedPtr msg) {
+void Recorder::callback_vehicleStateEkf(const nav_msgs::msg::Odometry::SharedPtr msg) {
     latest_poseEkf_.header.stamp = this->now();
     latest_poseEkf_.header.frame_id = static_cast<std::string>(config_frames_ekf_odom);
-    latest_poseEkf_.pose.position.x = msg->pos_x;
-    latest_poseEkf_.pose.position.y = msg->pos_y;
+    latest_poseEkf_.pose.position.x = msg->pose.pose.position.x;
+    latest_poseEkf_.pose.position.y = msg->pose.pose.position.y;
     latest_poseEkf_.pose.position.z = 0.0;
 }
 
@@ -50,11 +50,11 @@ void Recorder::callback_vehicleStateCsm(const nav_msgs::msg::Odometry::SharedPtr
     latest_poseCsm_.pose.position.z = 0.0;
 }
 
-void Recorder::callback_vehicleStateAct(const car_msgs::msg::VehicleState::SharedPtr msg) {
+void Recorder::callback_vehicleStateAct(const nav_msgs::msg::Odometry::SharedPtr msg) {
     latest_poseAct_.header.stamp = this->now();
     latest_poseAct_.header.frame_id = static_cast<std::string>(config_frames_map);
-    latest_poseAct_.pose.position.x = msg->pos_x;
-    latest_poseAct_.pose.position.y = msg->pos_y;
+    latest_poseAct_.pose.position.x = msg->pose.pose.position.x;
+    latest_poseAct_.pose.position.y = msg->pose.pose.position.y;
     latest_poseAct_.pose.position.z = 0.0;
 }
 

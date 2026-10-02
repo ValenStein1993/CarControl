@@ -25,13 +25,13 @@ class Recorder : public BaseNode {
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pub_histVehicleStateCsm_{};
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pub_histVehicleStateAct_{};
 
-    rclcpp::Subscription<car_msgs::msg::VehicleState>::SharedPtr sub_vehicleStateEkf_{};
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_vehicleStateEkf_{};
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_vehicleStateCsm_{};
-    rclcpp::Subscription<car_msgs::msg::VehicleState>::SharedPtr sub_vehicleStateAct_{};
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_vehicleStateAct_{};
 
-	void callback_vehicleStateEkf(const car_msgs::msg::VehicleState::SharedPtr msg);
+	void callback_vehicleStateEkf(const nav_msgs::msg::Odometry::SharedPtr msg);
   void callback_vehicleStateCsm(const nav_msgs::msg::Odometry::SharedPtr msg);
-	void callback_vehicleStateAct(const car_msgs::msg::VehicleState::SharedPtr msg);
+	void callback_vehicleStateAct(const nav_msgs::msg::Odometry::SharedPtr msg);
   void callback_histVehicleState();
 
 };

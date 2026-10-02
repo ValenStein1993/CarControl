@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project(planner)
+set(CMAKE_CXX_STANDARD 20)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -13,7 +14,9 @@ find_package(rclcpp REQUIRED)
 find_package(car_msgs REQUIRED)
 find_package(common REQUIRED)
 find_package(nav_msgs REQUIRED)
-
+find_package(sensor_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 
 add_executable(planner src/planner.cpp)
@@ -24,7 +27,11 @@ ament_target_dependencies(planner
   rclcpp 
   car_msgs 
   common
-  nav_msgs)
+  nav_msgs
+  sensor_msgs
+  tf2
+  tf2_geometry_msgs
+)
   
 target_link_libraries(
   planner

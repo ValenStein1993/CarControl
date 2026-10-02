@@ -7,6 +7,8 @@
 #include <gz/math/Quaternion.hh>
 #include <gz/sim/EntityComponentManager.hh>
 #include <gz/sim/Util.hh>
+#include "tf2/LinearMath/Quaternion.hpp"
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 #include "common/config.hpp"
 #include "car_msgs/msg/sensor_measurements.hpp"
@@ -63,7 +65,7 @@ void MessageBridge::Configure(const gz::sim::Entity &_entity,
     gz_pub_motionControl_ = gz_node_.Advertise<gz::msgs::Twist>("/cmd_vel");
 
     // publish true vehicle state via ROS node
-    ros_pub_vehicleState_ = ros_node_->create_publisher<car_msgs::msg::VehicleState>(
+    ros_pub_vehicleState_ = ros_node_->create_publisher<nav_msgs::msg::Odometry>(
         static_cast<std::string>(config_topics_vehicleStateAct),
         10
     );
@@ -184,13 +186,19 @@ void MessageBridge::PostUpdate(
     ros_pub_calibration_->publish(calibrationMsg);
 
     // Actual Vehicle State Message
-    car_msgs::msg::VehicleState msgState;
+    nav_msgs::msg::Odometry msgState;
     msgState.header.stamp = timestamp;
     
     const gz::math::Pose3d pose = gz::sim::worldPose(modelEntity_, _ecm);
-    msgState.pos_x = pose.Pos().X();
-    msgState.pos_y = pose.Pos().Y();
-    msgState.yaw = pose.Rot().Yaw();
+    msgState.pose.pose.position.x = pose.Pos().X();
+    msgState.pose.pose.position.y = pose.Pos().Y();
+
+    tf2::Quaternion q;
+	q.setRPY(0, 0, pose.Rot().Yaw());
+	msgState.pose.pose.orientation.x = q.x();
+	msgState.pose.pose.orientation.y = q.y();
+	msgState.pose.pose.orientation.z = q.z();
+	msgState.pose.pose.orientation.w = q.w();
 
     ros_pub_vehicleState_->publish(msgState);
 

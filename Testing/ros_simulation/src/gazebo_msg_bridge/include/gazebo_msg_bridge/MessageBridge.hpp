@@ -19,6 +19,7 @@
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
 #include <sensor_msgs/msg/laser_scan.hpp>
+#include <nav_msgs/msg/odometry.hpp>
 
 class MessageBridge:
     public gz::sim::System,
@@ -72,7 +73,7 @@ private:
     rclcpp::Subscription<car_msgs::msg::MotionControl>::SharedPtr ros_sub_motionControl_;
     rclcpp::Publisher<car_msgs::msg::SensorMeasurements>::SharedPtr ros_pub_measurements_;
     rclcpp::Publisher<car_msgs::msg::SensorCalibration>::SharedPtr ros_pub_calibration_;
-    rclcpp::Publisher<car_msgs::msg::VehicleState>::SharedPtr ros_pub_vehicleState_;
+    rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr ros_pub_vehicleState_;
     rclcpp::Publisher<sensor_msgs::msg::LaserScan>::SharedPtr ros_pub_laserScan_;
 
 

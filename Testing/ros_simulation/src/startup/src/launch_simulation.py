@@ -18,7 +18,7 @@ def generate_launch_description():
     model_abs = get_package_share_directory('model')
     startup_abs = get_package_share_directory('startup_sim')
 
-    world_abs = os.path.join(model_abs, 'src', 'warehouse_world.sdf')
+    world_abs = os.path.join(model_abs, 'src', 'maze_world_demo.sdf')
     carmodel_abs = os.path.join(model_abs, 'src', 'carmodel.sdf')
 
     plugin_lib_abs = os.path.join(get_package_share_directory('gazebo_msg_bridge'), 'install', 'gazebo_msg_bridge', 'lib')
@@ -38,7 +38,7 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_spawn_model_path),
             launch_arguments={
-                'world': 'warehouse_world',
+                'world': 'maze_world_demo',
                 'file': carmodel_abs,
                 'entity_name': 'CarModel',
                 'x': f"{config['position']['x_init']}",
