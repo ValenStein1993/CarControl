@@ -56,16 +56,6 @@ def generate_launch_description():
             output='screen',
         ),
         Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', config['frames']['csm']['base_link'], config['frames']['csm']['lidar']]
-        ),
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', config['frames']['ekf']['base_link'], config['frames']['ekf']['lidar']]
-        ),
-        Node(
             package='rviz2',
             executable='rviz2',
             name='rviz',

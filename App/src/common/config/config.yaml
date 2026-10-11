@@ -10,8 +10,13 @@ topics:
   sensorMeasurements: /sensor/measurements
   sensorCalibration: /sensor/calibration
   motionControl: /motion_control
-  vehicleStateEkf: /vehicle_state_ekf
-  vehicleStateCsm: /vehicle_state_csm
+  odomEkf: /odom
+  poseCrtgrphr: /tracked_pose
+  occupancyGrid: /occupancy_grid
+
+
+
+
   vehicleState: /vehicle_state_ekf
   vehicleStateAct: /vehicle_state_actual
   histVehicleStateEkf: /hist_vehicle_state_ekf
@@ -19,26 +24,20 @@ topics:
   histVehicleStateAct: /hist_vehicle_state_actual
   nodeState: /node_state
   laserScan: /scan
-  occupancyGrid: /occupancy_grid
   globalPath: /global_path
 
 
 frames:
-  csm:
-    odom: csm_odom
-    base_link: csm_base_link
-    lidar: csm_lidar
-  ekf:
-    odom: ekf_odom
-    base_link: ekf_base_link
-    lidar: ekf_lidar
   map: map
-  vehBase: base_link
+  odom: odom
+  vehicle:
+    chassis: base_link
+    lidar: lidar_link
+    imu: imu_link
+  
 
 occgrid:
   resolution: 0.01
-  width: 800
-  height: 800
 
 sensors:
   imu:

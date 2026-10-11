@@ -32,9 +32,8 @@
 using std::placeholders::_1;
 
 constexpr float ignoredMeasurementVariance = 1e12f;
-constexpr float stddev_modelPos = 0.0001f;
-constexpr float stddev_modelOrntn = 2 * 3.141 / 180;
-
+constexpr float stddev_modelPos = 0.001f;
+constexpr float stddev_modelOrntn = 1 * 3.141 / 180;
 
 
 struct SensorConfig {
@@ -62,7 +61,6 @@ struct VehicleStateSpace {
 class Localizer : public BaseNode {
   public:
     Localizer();
-	VehicleState vehicleStateInit_{};
 	VehicleStateSpace stateSpace_{};
 	SensorConfig sensorConfig_{};
 	bool isReady_{false};
@@ -75,21 +73,19 @@ class Localizer : public BaseNode {
   	bool firstMessage_{true};
 	
   	rclcpp::Time lastTimestamp_{}; 
-  	rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_vehicleStateEkf_{};
+  	rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_odomEkf_{};
 	rclcpp::Publisher<car_msgs::msg::NodeState>::SharedPtr pub_nodeState_{};
 	std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
 
     rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_{};
     rclcpp::Subscription<car_msgs::msg::SensorCalibration>::SharedPtr sub_calibration_{};
 	rclcpp::Subscription<car_msgs::msg::MotionControl>::SharedPtr sub_motionControl_{};
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr sub_vehicleStateCsm_{};
 
 
     void callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg);
     void callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg);
     void callback_motionControl(const car_msgs::msg::MotionControl::SharedPtr msg);
-	void callback_vehicleStateCsm(const nav_msgs::msg::Odometry::SharedPtr msg);
-	void publish_500ms();
+	void publish_odom();
 	float normalizeAngle(float angle);
 
 

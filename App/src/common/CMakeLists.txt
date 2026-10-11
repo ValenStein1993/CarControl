@@ -27,6 +27,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(nav_msgs REQUIRED)
 
 add_library(common INTERFACE)
 
@@ -38,6 +39,7 @@ target_include_directories(common INTERFACE
 target_link_libraries(common INTERFACE
   ament_index_cpp::ament_index_cpp
   rclcpp::rclcpp
+  nav_msgs::nav_msgs
 )
 
 add_dependencies(common common_config_header)

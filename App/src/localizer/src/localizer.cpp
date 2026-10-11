@@ -26,20 +26,12 @@ using namespace std::chrono_literals;
 Localizer::Localizer()
   : BaseNode("localizer") {
 
-	declare_parameter<float>("x_init", 0.0f);
-	declare_parameter<float>("y_init", 0.0f);
-	declare_parameter<float>("yaw_init", 0.0f);
-
-    get_parameter("x_init", vehicleStateInit_.x);
-	get_parameter("y_init", vehicleStateInit_.y);
-	get_parameter("yaw_init", vehicleStateInit_.phi);
-
 	initStateSpace();
 
-	add_timer(500ms, &Localizer::publish_500ms);
+	add_timer(500ms, &Localizer::publish_odom);
 
-	pub_vehicleStateEkf_ = create_publisher<nav_msgs::msg::Odometry>(
-		static_cast<std::string>(config_topics_vehicleStateEkf), 10);
+	pub_odomEkf_ = create_publisher<nav_msgs::msg::Odometry>(
+		static_cast<std::string>(config_topics_odomEkf), 10);
 	pub_nodeState_ = create_publisher<car_msgs::msg::NodeState>(
 		static_cast<std::string>(config_topics_nodeState), 10);
 
@@ -52,119 +44,49 @@ Localizer::Localizer()
 	sub_motionControl_ = create_subscription<car_msgs::msg::MotionControl>(
 		static_cast<std::string>(config_topics_motionControl), 10,
 		std::bind(&Localizer::callback_motionControl, this, _1));
-	sub_vehicleStateCsm_ = create_subscription<nav_msgs::msg::Odometry>(
-		static_cast<std::string>(config_topics_vehicleStateCsm), 10,
-		std::bind(&Localizer::callback_vehicleStateCsm, this, _1));
 
 	tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
 	
 }
 
-void Localizer::publish_500ms() {
+void Localizer::publish_odom() {
 	// Vehicle State
-	nav_msgs::msg::Odometry vehStateMsg;
-	vehStateMsg.header.frame_id = config_frames_ekf_odom;
+	nav_msgs::msg::Odometry odomEkfMsg;
+	odomEkfMsg.header.frame_id = config_frames_odom;
+	odomEkfMsg.child_frame_id = config_frames_vehicle_chassis;
+	odomEkfMsg.header.stamp = get_clock()->now();
 	
-	vehStateMsg.pose.pose.position.x = stateSpace_.ekf.x[0];
-	vehStateMsg.pose.pose.position.y = stateSpace_.ekf.x[1];
+	odomEkfMsg.pose.pose.position.x = stateSpace_.ekf.x[0];
+	odomEkfMsg.pose.pose.position.y = stateSpace_.ekf.x[1];
 	
 	tf2::Quaternion q;
 	q.setRPY(0, 0, stateSpace_.ekf.x[3]);
-	vehStateMsg.pose.pose.orientation.x = q.x();
-	vehStateMsg.pose.pose.orientation.y = q.y();
-	vehStateMsg.pose.pose.orientation.z = q.z();
-	vehStateMsg.pose.pose.orientation.w = q.w();
+	odomEkfMsg.pose.pose.orientation.x = q.x();
+	odomEkfMsg.pose.pose.orientation.y = q.y();
+	odomEkfMsg.pose.pose.orientation.z = q.z();
+	odomEkfMsg.pose.pose.orientation.w = q.w();
 
-	vehStateMsg.pose.covariance[0] = stateSpace_.ekf.P[0];
-	vehStateMsg.pose.covariance[1] = stateSpace_.ekf.P[1];
-	vehStateMsg.pose.covariance[5] = stateSpace_.ekf.P[3];
-	vehStateMsg.pose.covariance[6] = stateSpace_.ekf.P[4];
-	vehStateMsg.pose.covariance[7] = stateSpace_.ekf.P[5];
-	vehStateMsg.pose.covariance[11] = stateSpace_.ekf.P[7];
-	vehStateMsg.pose.covariance[30] = stateSpace_.ekf.P[12];
-	vehStateMsg.pose.covariance[31] = stateSpace_.ekf.P[13];
-	vehStateMsg.pose.covariance[35] = stateSpace_.ekf.P[15];
+	odomEkfMsg.pose.covariance[0] = stateSpace_.ekf.P[0];
+	odomEkfMsg.pose.covariance[1] = stateSpace_.ekf.P[1];
+	odomEkfMsg.pose.covariance[5] = stateSpace_.ekf.P[3];
+	odomEkfMsg.pose.covariance[6] = stateSpace_.ekf.P[4];
+	odomEkfMsg.pose.covariance[7] = stateSpace_.ekf.P[5];
+	odomEkfMsg.pose.covariance[11] = stateSpace_.ekf.P[7];
+	odomEkfMsg.pose.covariance[30] = stateSpace_.ekf.P[12];
+	odomEkfMsg.pose.covariance[31] = stateSpace_.ekf.P[13];
+	odomEkfMsg.pose.covariance[35] = stateSpace_.ekf.P[15];
 
-	vehStateMsg.twist.twist.linear.x = stateSpace_.ekf.x[2] * std::cos(stateSpace_.ekf.x[3]);
-	vehStateMsg.twist.twist.linear.y = stateSpace_.ekf.x[2] * std::sin(stateSpace_.ekf.x[3]);
+	odomEkfMsg.twist.twist.linear.x = stateSpace_.ekf.x[2] * std::cos(stateSpace_.ekf.x[3]);
+	odomEkfMsg.twist.twist.linear.y = stateSpace_.ekf.x[2] * std::sin(stateSpace_.ekf.x[3]);
 
-	pub_vehicleStateEkf_->publish(vehStateMsg);
+	pub_odomEkf_->publish(odomEkfMsg);
 
 	// Node State
 	car_msgs::msg::NodeState nodeStateMsg;
 	nodeStateMsg.localizer_is_ready = isReady_;
 
 	pub_nodeState_->publish(nodeStateMsg);
-
-	// transform map --> odom ekf
-	geometry_msgs::msg::TransformStamped mapOdomEkfTfMsg;
-
-	mapOdomEkfTfMsg.header.stamp = this->get_clock()->now();
-	mapOdomEkfTfMsg.header.frame_id = config_frames_map;
-	mapOdomEkfTfMsg.child_frame_id = config_frames_ekf_odom;
-	mapOdomEkfTfMsg.transform.translation.x = 0.0;
-	mapOdomEkfTfMsg.transform.translation.y = 0.0;
-	mapOdomEkfTfMsg.transform.translation.z = 0.0;
-
-	q.setRPY(0, 0, 0);
-	mapOdomEkfTfMsg.transform.rotation.x = q.x();
-	mapOdomEkfTfMsg.transform.rotation.y = q.y();
-	mapOdomEkfTfMsg.transform.rotation.z = q.z();
-	mapOdomEkfTfMsg.transform.rotation.w = q.w();
-
-	tf_broadcaster_->sendTransform(mapOdomEkfTfMsg);
-
-	// transform map --> odom csm
-	geometry_msgs::msg::TransformStamped mapOdomCsmTfMsg;
-
-	mapOdomCsmTfMsg.header.stamp = this->get_clock()->now();
-	mapOdomCsmTfMsg.header.frame_id = config_frames_map;
-	mapOdomCsmTfMsg.child_frame_id = config_frames_csm_odom;
-	mapOdomCsmTfMsg.transform.translation.x = vehicleStateInit_.x;
-	mapOdomCsmTfMsg.transform.translation.y = vehicleStateInit_.y;
-	mapOdomCsmTfMsg.transform.translation.z = 0.0;
-
-	q.setRPY(0, 0, vehicleStateInit_.phi);
-	mapOdomCsmTfMsg.transform.rotation.x = q.x();
-	mapOdomCsmTfMsg.transform.rotation.y = q.y();
-	mapOdomCsmTfMsg.transform.rotation.z = q.z();
-	mapOdomCsmTfMsg.transform.rotation.w = q.w();
-
-	tf_broadcaster_->sendTransform(mapOdomCsmTfMsg);
-
-	// transform odom --> base_link
-	geometry_msgs::msg::TransformStamped odomEkfTfMsg;
-
-	odomEkfTfMsg.header.stamp = this->get_clock()->now();
-	odomEkfTfMsg.header.frame_id = config_frames_ekf_odom;
-	odomEkfTfMsg.child_frame_id = config_frames_ekf_base_link;
-	odomEkfTfMsg.transform.translation.x = stateSpace_.ekf.x[0];
-	odomEkfTfMsg.transform.translation.y = stateSpace_.ekf.x[1];
-	odomEkfTfMsg.transform.translation.z = 0.0;
-
-	q.setRPY(0, 0, stateSpace_.ekf.x[3]);
-	odomEkfTfMsg.transform.rotation.x = q.x();
-	odomEkfTfMsg.transform.rotation.y = q.y();
-	odomEkfTfMsg.transform.rotation.z = q.z();
-	odomEkfTfMsg.transform.rotation.w = q.w();
-
-	// Send the transformation
-	tf_broadcaster_->sendTransform(odomEkfTfMsg);
-
-}
-
-void Localizer::callback_vehicleStateCsm(const nav_msgs::msg::Odometry::SharedPtr msg) {
-	if (!isReady_) {
-		return;
-	}
-
-	// Odom EKF has to run first
-	if (firstMessage_) {
-		return;
-	}
-
-	updateStateSpaceScan(msg);
 }
 
 
@@ -185,8 +107,8 @@ void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::S
     lastTimestamp_ = currentTimestamp;
 
 	// if vehicle is idle and there is no command to move, skip the update to avoid drift in the EKF
-	if (!lastMotionControl_ || (lastMotionControl_->speed == 0.0f && msg->wheelencoder_translspeed < 1e-8f)) {
-		RCLCPP_INFO(get_logger(), "Vehicle is not in motion, skip odometry.");
+	if (lastMotionControl_ && lastMotionControl_->speed == 0.0f && msg->wheelencoder_translspeed < 1e-8f) {
+		RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Vehicle is not in motion, skip odometry.");
 		return;
 	}
 
@@ -217,9 +139,9 @@ void Localizer::callback_motionControl(const car_msgs::msg::MotionControl::Share
 void Localizer::initStateSpace() {
 	const float pdiag[4] = {0, 0, 0, 0};
     ekf_initialize(&stateSpace_.ekf, pdiag);
-	stateSpace_.ekf.x[0] = vehicleStateInit_.x;
-	stateSpace_.ekf.x[1] = vehicleStateInit_.y;
-	stateSpace_.ekf.x[3] = vehicleStateInit_.phi;
+	stateSpace_.ekf.x[0] = 0.0f;
+	stateSpace_.ekf.x[1] = 0.0f;
+	stateSpace_.ekf.x[3] = 0.0f;
 }
 
 void Localizer::updateStateSpaceOdom(
@@ -288,94 +210,12 @@ void Localizer::updateStateSpaceOdom(
 	stateSpace_.R[18] = sensorConfig_.var_rotspeed;
 	stateSpace_.R[24] = sensorConfig_.var_gyro_z;
 
-
-		// R ueberpruefen!!! (korrigiert ekf_update die cov zu stark nach unten??)
-
-
 	// prediction step with model and inputs
 	ekf_predict(&stateSpace_.ekf, stateSpace_.fx, stateSpace_.F, stateSpace_.Q);
+
 	// update step with measurements
 	ekf_update(&stateSpace_.ekf, stateSpace_.z, stateSpace_.hx, stateSpace_.H, stateSpace_.R);
 
-	RCLCPP_INFO(get_logger(), "Px_ekf: %.9f, Py_ekf: %.9f, Pphi_ekf: %.9f", stateSpace_.ekf.P[0], stateSpace_.ekf.P[5], stateSpace_.ekf.P[15]);
-	// normalize yaw
-	stateSpace_.ekf.x[3] = normalizeAngle(stateSpace_.ekf.x[3]);
-}
-
-void Localizer::updateStateSpaceScan(const nav_msgs::msg::Odometry::SharedPtr msg) {
-	float c = std::cos(vehicleStateInit_.phi);
-	float s = std::sin(vehicleStateInit_.phi);
-
-	float x_csm = msg->pose.pose.position.x;
-	float y_csm = msg->pose.pose.position.y;
-	float yaw_csm = tf2::getYaw(msg->pose.pose.orientation);
-
-	// transform csm frame to world frame
-    Eigen::Matrix3d J;
-    J << c, -s, 0.0,
-         s,  c, 0.0,
-         0.0, 0.0, 1.0;
-
-    Eigen::Vector3d p_csm;
-    p_csm << x_csm, y_csm, yaw_csm;
-
-    Eigen::Vector3d p_world;
-    p_world << vehicleStateInit_.x, vehicleStateInit_.y, vehicleStateInit_.phi;
-    p_world += J * p_csm;
-
-    float x = p_world.x();
-    float y = p_world.y();
-    float yaw = normalizeAngle(p_world.z());
-
-	Eigen::Matrix3d P_csm = Eigen::Matrix3d::Zero();
-	P_csm(0,0) = msg->pose.covariance[0];
-	P_csm(0,1) = msg->pose.covariance[1];
-	P_csm(1,0) = msg->pose.covariance[6];
-	P_csm(1,1) = msg->pose.covariance[7];
-	P_csm(2,2) = msg->pose.covariance[35];
-
-    Eigen::Matrix3d P = J * P_csm * J.transpose();
-
-	RCLCPP_INFO(get_logger(), "Px_csm: %.9f, Py_csm: %.9f, Pphi_csm: %.9f", P(0,0), P(1,1), P(2,2));
-
-	stateSpace_.z[0] = x;
-	stateSpace_.z[1] = y;
-	stateSpace_.z[2] = yaw;
-	// x = {x, y, v, phi};
-	// z = {x, y, phi, v, phi_dot}
-
-	// ---- measurement equations ----
-	// zero all values to remove odom values
-	std::fill(std::begin(stateSpace_.hx), std::end(stateSpace_.hx), 0.0f);
-	stateSpace_.hx[0] = stateSpace_.ekf.x[0];
-	stateSpace_.hx[1] = stateSpace_.ekf.x[1];
-	stateSpace_.hx[2] = stateSpace_.ekf.x[3];
-
-	// ---- measurement jacobian ----
-	// zero all values to remove odom values
-	std::fill(std::begin(stateSpace_.H), std::end(stateSpace_.H), 0.0f);
-	stateSpace_.H[0] = 1;
-	stateSpace_.H[5] = 1;
-	stateSpace_.H[11] = 1;
-
-	// ---- measurement covariance ----
-	stateSpace_.R[0] = P(0,0);
-	stateSpace_.R[1] = P(0,1);
-	stateSpace_.R[2] = P(0,2);
-	stateSpace_.R[5] = P(1,0);
-	stateSpace_.R[6] = P(1,1);
-	stateSpace_.R[7] = P(1,2);
-	stateSpace_.R[10] = P(2,0);
-	stateSpace_.R[11] = P(2,1);
-	stateSpace_.R[12] = P(2,2);
-	stateSpace_.R[18] = ignoredMeasurementVariance;
-	stateSpace_.R[24] = ignoredMeasurementVariance;
-
-	// wrap yaw to avoid differences around +- pi
-	stateSpace_.z[2] = stateSpace_.hx[2] + normalizeAngle(stateSpace_.z[2] - stateSpace_.hx[2]);
-
-	ekf_update(&stateSpace_.ekf, stateSpace_.z, stateSpace_.hx, stateSpace_.H, stateSpace_.R);
-	
 	// normalize yaw
 	stateSpace_.ekf.x[3] = normalizeAngle(stateSpace_.ekf.x[3]);
 }

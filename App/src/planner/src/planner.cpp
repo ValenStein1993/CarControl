@@ -30,8 +30,6 @@ Planner::Planner()
   get_parameter("x_target", target_.first);
   get_parameter("y_target", target_.second);
 
-  idx_target_ = Common::MapUtils::getMapIndexFromPos(target_.first, target_.second);
-
   add_timer(500ms, &Planner::publish_motionControl);
   add_timer(500ms, &Planner::publish_path);
 
@@ -40,12 +38,9 @@ Planner::Planner()
   pub_path_ = create_publisher<nav_msgs::msg::Path>(
     static_cast<std::string>(config_topics_globalPath), 10);
 
-  sub_vehicleState_ = create_subscription<nav_msgs::msg::Odometry>(
-    static_cast<std::string>(config_topics_vehicleStateEkf), 10, 
-    std::bind(&Planner::callback_vehicleState, this, _1));
-  sub_nodeState_ = create_subscription<car_msgs::msg::NodeState>(
-    static_cast<std::string>(config_topics_nodeState), 10, 
-    std::bind(&Planner::callback_nodeState, this, _1));
+  sub_vehiclePose_ = create_subscription<geometry_msgs::msg::PoseStamped>(
+    static_cast<std::string>(config_topics_poseCrtgrphr), 10, 
+    std::bind(&Planner::callback_vehiclePose, this, _1));
   sub_occGrid_ = create_subscription<nav_msgs::msg::OccupancyGrid>(
     static_cast<std::string>(config_topics_occupancyGrid), 10, 
     std::bind(&Planner::callback_occGrid, this, _1));
@@ -54,19 +49,52 @@ Planner::Planner()
         std::bind(&Planner::callback_laserscan, this, _1));
 }
 
-void Planner::callback_vehicleState(const nav_msgs::msg::Odometry::SharedPtr msg) 
+void Planner::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg) 
 {
-  lastVehicleState_ = msg;
-}
-
-void Planner::callback_nodeState(const car_msgs::msg::NodeState::SharedPtr msg) 
-{
-  lastNodeState_ = msg;
+  lastVehiclePose_ = msg;
 }
 
 void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg) 
 {
   lastOccGrid_ = msg;
+  gridMetaData_ = &(msg->info);
+
+  if (!lastVehiclePose_) {
+      RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot adjust target: Vehicle pose is unavailable.");
+      return;
+  }
+
+  const auto& vehiclePos = lastVehiclePose_->pose.position;
+
+  float xTarget = target_.first;
+  float yTarget = target_.second;
+
+  float dx = xTarget - vehiclePos.x;
+  float dy = yTarget - vehiclePos.y;
+
+  float distance = std::hypot(dx, dy);
+
+  float dirX = dx / distance;
+  float dirY = dy / distance;
+
+  int idx = Common::MapUtils::getMapIndexFromPos(xTarget, yTarget, gridMetaData_);
+
+  const float step = gridMetaData_->resolution;
+  const int maxIterations = static_cast<int>(distance / step) + 1;
+
+  for (int i = 0; idx == -1 && i < maxIterations; ++i) {
+      xTarget -= dirX * step;
+      yTarget -= dirY * step;
+
+      idx = Common::MapUtils::getMapIndexFromPos(xTarget, yTarget, gridMetaData_);
+  }
+
+  if (idx == -1) {
+      RCLCPP_WARN(this->get_logger(),"Could not find a valid target position inside the map.");
+      return;
+  }
+
+  idx_target_ = idx;
 }
 
 void Planner::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
@@ -76,20 +104,33 @@ void Planner::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr ms
 
 void Planner::publish_motionControl() 
 {
-  if (!lastNodeState_ || !lastNodeState_->localizer_is_ready) {
+
+  if (!lastVehiclePose_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Vehicle pose is unavailable.");
     return;
   }
 
-  float pos_x = lastVehicleState_->pose.pose.position.x;
-  float pos_y = lastVehicleState_->pose.pose.position.y;
-  float phi = tf2::getYaw(lastVehicleState_->pose.pose.orientation);
+  if (path_.empty()) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Vehicle path is unavailable.");
+    return;
+  }
+
+  if (!lastOccGrid_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Map is unavailable.");
+    return;
+  }
+
+
+  float pos_x = lastVehiclePose_->pose.position.x;
+  float pos_y = lastVehiclePose_->pose.position.y;
+  float phi = tf2::getYaw(lastVehiclePose_->pose.orientation);
   
   float min_distance = std::numeric_limits<float>::max();
   int idx_minDistance = -1;
 
   // get closest grid node to current position
   for (size_t i = 0; i < path_.size(); ++i) {
-    auto [x, y] = Common::MapUtils::getPosFromMapIndex(path_[i]);
+    auto [x, y] = Common::MapUtils::getPosFromMapIndex(path_[i], gridMetaData_);
     float distance = std::hypot(x - pos_x, y - pos_y);
     if (distance < min_distance) {
       min_distance = distance;
@@ -100,9 +141,9 @@ void Planner::publish_motionControl()
   // find lookahead to closest node
   size_t idx_lookAhead;
   float x_lookAhead, y_lookAhead;
-  auto [x_minDistance, y_minDistance] = Common::MapUtils::getPosFromMapIndex(path_[idx_minDistance]);
+  auto [x_minDistance, y_minDistance] = Common::MapUtils::getPosFromMapIndex(path_[idx_minDistance], gridMetaData_);
   for (idx_lookAhead = idx_minDistance; idx_lookAhead < path_.size(); ++idx_lookAhead) {
-    std::tie(x_lookAhead, y_lookAhead) = Common::MapUtils::getPosFromMapIndex(path_[idx_lookAhead]);
+    std::tie(x_lookAhead, y_lookAhead) = Common::MapUtils::getPosFromMapIndex(path_[idx_lookAhead], gridMetaData_);
     float distance = std::hypot(x_lookAhead - x_minDistance, y_lookAhead - y_minDistance);
     if (distance > lookAhead) break;
   }
@@ -128,21 +169,30 @@ void Planner::publish_motionControl()
   pub_motionControl_->publish(msg);
 }
 
-void Planner::publish_path()
+void Planner::publish_path() 
 {
-  if (!lastVehicleState_ || !lastOccGrid_) {
+  if (!lastVehiclePose_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Vehicle pose is unavailable.");
     return;
   }
 
-  int idx_state = Common::MapUtils::getMapIndexFromPos(lastVehicleState_->pose.pose.position.x, lastVehicleState_->pose.pose.position.y);
-  findShortestPath(idx_state, idx_target_);
+  if (!lastOccGrid_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Map is unavailable.");
+    return;
+  }
+
+  int idx_pose = Common::MapUtils::getMapIndexFromPos(
+    lastVehiclePose_->pose.position.x, 
+    lastVehiclePose_->pose.position.y, 
+    gridMetaData_);
+  findShortestPath(idx_pose, idx_target_);
 
   nav_msgs::msg::Path pathMsg;
   pathMsg.header.stamp = get_clock()->now();
-  pathMsg.header.frame_id = config_frames_ekf_odom;
+  pathMsg.header.frame_id = config_frames_odom;
 
   for (int idx : path_) {
-    auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx);
+    auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx, gridMetaData_);
 
     geometry_msgs::msg::PoseStamped pose;
     pose.pose.position.x = x;
@@ -153,8 +203,8 @@ void Planner::publish_path()
 }
 
 void Planner::findShortestPath(int idx_state, int idx_target) {
-  int width = config_occgrid_width;
-  int height = config_occgrid_height;
+  int width = gridMetaData_->width;
+  int height = gridMetaData_->height;
 
   // Dijkstra Algorithm  
   std::vector<int8_t> occgrid = lastOccGrid_->data;
@@ -237,14 +287,14 @@ bool Planner::checkVehicleSpace(const std::vector<int8_t>& occgrid, int vx, int 
     if (dx) vvy += dx, vvy_ -= dx;
     if (dy) vvx -= dy, vvx_ += dy;
 
-    if (!Common::MapUtils::checkGridBoundries(vvx, vvy)) return false;
-    if (!Common::MapUtils::checkGridBoundries(vvx_, vvy_)) return false;
+    if (!Common::MapUtils::checkGridBoundries(vvx, vvy, gridMetaData_)) return false;
+    if (!Common::MapUtils::checkGridBoundries(vvx_, vvy_, gridMetaData_)) return false;
 
-    int vv = vvy * config_occgrid_width + vvx;
-    int vv_ = vvy_ * config_occgrid_width + vvx_;
+    int vv = vvy * gridMetaData_->width + vvx;
+    int vv_ = vvy_ * gridMetaData_->width + vvx_;
     if ((occgrid[vv] > kBlocked) | (occgrid[vv_] > kBlocked)) return false;
 
-    float dist = config_occgrid_resolution * std::hypot(vy - vvy, vx - vvx);
+    float dist = gridMetaData_->resolution * std::hypot(vy - vvy, vx - vvx);
     // stop, if covered distance is greater than half width (plus buffer)
     if (dist > (0.6 * config_vehicle_wheeltrack)) break;
   }

@@ -130,7 +130,7 @@ void MessageBridge::PostUpdate(
 
     // Sensor Measurements Message
     car_msgs::msg::SensorMeasurements msgMeasurements;
-    
+    msgMeasurements.header.frame_id = config_frames_vehicle_imu;
     msgMeasurements.header.stamp = timestamp;
     msgMeasurements.mpu6050_accel_x = lastImu_.linear_acceleration().x();
     msgMeasurements.mpu6050_accel_y = lastImu_.linear_acceleration().y();
@@ -187,6 +187,7 @@ void MessageBridge::PostUpdate(
 
     // Actual Vehicle State Message
     nav_msgs::msg::Odometry msgState;
+    msgState.header.frame_id = config_frames_map;
     msgState.header.stamp = timestamp;
     
     const gz::math::Pose3d pose = gz::sim::worldPose(modelEntity_, _ecm);
@@ -212,7 +213,7 @@ void MessageBridge::PostUpdate(
     }
 
     msgLaserScan.header.stamp = timestamp;
-    msgLaserScan.header.frame_id = config_frames_ekf_lidar;
+    msgLaserScan.header.frame_id = config_frames_vehicle_lidar;
     msgLaserScan.angle_min = lastLaserScan.angle_min();
     msgLaserScan.angle_max = lastLaserScan.angle_max();
     msgLaserScan.angle_increment = lastLaserScan.angle_step();
