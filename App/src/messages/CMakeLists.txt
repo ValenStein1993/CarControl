@@ -1,4 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 project(car_msgs)
 
 find_package(ament_cmake REQUIRED)
@@ -11,6 +14,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/VehicleState.msg"
   "msg/MotionControl.msg"
   "msg/NodeState.msg"
+  "msg/DebugPlanner.msg"
   DEPENDENCIES std_msgs
 )
 

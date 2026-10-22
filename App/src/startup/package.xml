@@ -11,7 +11,7 @@
 
   <exec_depend>planner</exec_depend>
   <exec_depend>mapper</exec_depend>
-  <exec_depend>localizer</exec_depend>
+  <exec_depend>odometry</exec_depend>
   <exec_depend>recorder</exec_depend>
 
   <export>

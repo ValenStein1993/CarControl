@@ -4,7 +4,7 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import SetEnvironmentVariable, IncludeLaunchDescription
+from launch.actions import SetEnvironmentVariable, IncludeLaunchDescription, ExecuteProcess
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution
 from launch_ros.substitutions import FindPackageShare
@@ -67,4 +67,10 @@ def generate_launch_description():
                 os.path.join(startup_abs, 'src', 'monitor.rviz')
             ]
         ),
+        ExecuteProcess(
+            cmd=[
+                'ros2', 'run', 'plotjuggler', 'plotjuggler',
+                '-l', os.path.join(startup_abs, 'src', 'debug_monitor.xml')
+            ],
+            output='screen')
     ])

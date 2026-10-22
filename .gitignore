@@ -21,3 +21,4 @@ Testing/ros_simulation/build
 Testing/ros_simulation/log
 build
 
+.vscode/browse.vc.db*

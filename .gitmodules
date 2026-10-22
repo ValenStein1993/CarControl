@@ -1,12 +1,12 @@
 [submodule "Controller/Libs/micro_ros_stm32cubemx_utils"]
 	path = Controller/Libs/micro_ros_stm32cubemx_utils
 	url = https://github.com/micro-ROS/micro_ros_stm32cubemx_utils.git
-[submodule "App/src/localizer/include/TinyEKF"]
-	path = App/src/localizer/include/TinyEKF
-	url = https://github.com/simondlevy/TinyEKF.git
 [submodule "App/src/external/csm"]
 	path = App/src/external/csm
 	url = https://github.com/AlexKaravaev/csm.git
 [submodule "App/src/external/ros2_laser_scan_matcher"]
 	path = App/src/external/ros2_laser_scan_matcher
 	url = git@github.com:ValenStein1993/ros2_laser_scan_matcher.git
+[submodule "App/src/odometry/include/TinyEKF"]
+	path = App/src/odometry/include/TinyEKF
+	url = https://github.com/simondlevy/TinyEKF.git

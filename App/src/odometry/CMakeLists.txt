@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
-project(localizer)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+project(odometry)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -20,12 +22,12 @@ find_package(nav_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 
-add_executable(localizer src/localizer.cpp)
+add_executable(odometry src/odometry.cpp)
 
-target_include_directories(localizer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/TinyEKF/src)
-target_include_directories(localizer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
+target_include_directories(odometry PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/TinyEKF/src)
+target_include_directories(odometry PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-ament_target_dependencies(localizer 
+ament_target_dependencies(odometry 
   rclcpp 
   car_msgs 
   common 
@@ -36,10 +38,10 @@ ament_target_dependencies(localizer
   tf2_geometry_msgs)
 
 target_link_libraries(
-  localizer
+  odometry
 )
 install(TARGETS
-  localizer
+  odometry
   DESTINATION lib/${PROJECT_NAME}
 )
 

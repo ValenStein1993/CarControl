@@ -1,12 +1,11 @@
 /*
- * localizer.hpp
+ * odometry.hpp
  *
  *  Created on: 27.07.2026
  *      Author: valen
  */
 
-#ifndef INC_LOCALIZER_HPP_
-#define INC_LOCALIZER_HPP_
+#pragma once
 
 #define EKF_N 4 // state dimension, x = {x, y, v, phi};
 #define EKF_M 5 // measurement dimension, z = {x, y, phi, v, phi_dot};
@@ -58,9 +57,9 @@ struct VehicleStateSpace {
 };
 
 
-class Localizer : public BaseNode {
+class Odometry : public BaseNode {
   public:
-    Localizer();
+    Odometry();
 	VehicleStateSpace stateSpace_{};
 	SensorConfig sensorConfig_{};
 	bool isReady_{false};
@@ -92,5 +91,3 @@ class Localizer : public BaseNode {
 	car_msgs::msg::MotionControl::SharedPtr lastMotionControl_;
 
 };
-
-#endif /* INC_LOCALIZER_HPP_ */

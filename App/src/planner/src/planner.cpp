@@ -30,9 +30,15 @@ Planner::Planner()
   get_parameter("x_target", target_.first);
   get_parameter("y_target", target_.second);
 
-  add_timer(500ms, &Planner::publish_motionControl);
-  add_timer(500ms, &Planner::publish_path);
+  add_timer(10ms, &Planner::publish_motionControl);
+  add_timer(100ms, &Planner::publish_path);
 
+  if (debug_) {
+    add_timer(100ms, &Planner::publish_debugMsg);
+  }
+
+  pub_debugPlanner_ = create_publisher<car_msgs::msg::DebugPlanner>(
+    static_cast<std::string>(config_topics_debugPlanner), 10);
   pub_motionControl_ = create_publisher<car_msgs::msg::MotionControl>(
     static_cast<std::string>(config_topics_motionControl), 10);
   pub_path_ = create_publisher<nav_msgs::msg::Path>(
@@ -167,7 +173,20 @@ void Planner::publish_motionControl()
   msg.speed = speed; 
 
   pub_motionControl_->publish(msg);
+
+  if (debug_) {
+    debugPlannerMsg_.yaw_rate = yaw_rate;
+    debugPlannerMsg_.speed = speed;
+    debugPlannerMsg_.steering_angle = std::atan(config_vehicle_wheelbase * curvature);
+  }
 }
+
+void Planner::publish_debugMsg()
+{
+  debugPlannerMsg_.header.stamp = get_clock()->now();
+  pub_debugPlanner_->publish(debugPlannerMsg_);
+}
+
 
 void Planner::publish_path() 
 {
@@ -296,7 +315,7 @@ bool Planner::checkVehicleSpace(const std::vector<int8_t>& occgrid, int vx, int 
 
     float dist = gridMetaData_->resolution * std::hypot(vy - vvy, vx - vvx);
     // stop, if covered distance is greater than half width (plus buffer)
-    if (dist > (0.6 * config_vehicle_wheeltrack)) break;
+    if (dist > (1 * config_vehicle_wheeltrack)) break;
   }
     return true;
 }

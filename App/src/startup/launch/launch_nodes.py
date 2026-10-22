@@ -7,6 +7,7 @@ from launch import LaunchDescription
 from launch_ros.actions import Node
 
 LOG_LEVEL = 'INFO'
+DEBUG = True
 
 def generate_launch_description():
     config_dir = os.path.join(get_package_share_directory('common'), 'config')
@@ -41,8 +42,8 @@ def generate_launch_description():
                        config['frames']['vehicle']['imu']]
         ),
         Node(
-            package='localizer',
-            executable='localizer',
+            package='odometry',
+            executable='odometry',
             parameters=[{
                 'use_sim_time': True,
             }],
@@ -57,7 +58,20 @@ def generate_launch_description():
             parameters=[{
                 'use_sim_time': True,
                 'x_target': float(x_target),
-                'y_target': float(y_target)
+                'y_target': float(y_target),
+                'debug': DEBUG
+            }],
+            arguments=[
+                '--ros-args',
+                '--log-level', LOG_LEVEL,
+            ],
+        ),
+        Node(
+            package='costmap',
+            executable='costmap',
+            parameters=[{
+                'use_sim_time': True,
+                'debug': DEBUG
             }],
             arguments=[
                 '--ros-args',

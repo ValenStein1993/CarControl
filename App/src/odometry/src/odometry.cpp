@@ -5,7 +5,7 @@
 #include <eigen3/Eigen/Dense>
 
 #include "rclcpp/rclcpp.hpp"
-#include "localizer/localizer.hpp"
+#include "odometry/odometry.hpp"
 #include "common/config.hpp"
 
 #include "car_msgs/msg/sensor_measurements.hpp"
@@ -23,12 +23,12 @@
 using std::placeholders::_1;
 using namespace std::chrono_literals;
 
-Localizer::Localizer()
-  : BaseNode("localizer") {
+Odometry::Odometry()
+  : BaseNode("odometry") {
 
 	initStateSpace();
 
-	add_timer(500ms, &Localizer::publish_odom);
+	add_timer(500ms, &Odometry::publish_odom);
 
 	pub_odomEkf_ = create_publisher<nav_msgs::msg::Odometry>(
 		static_cast<std::string>(config_topics_odomEkf), 10);
@@ -37,20 +37,20 @@ Localizer::Localizer()
 
 	sub_measurements_ = create_subscription<car_msgs::msg::SensorMeasurements>(
 		static_cast<std::string>(config_topics_sensorMeasurements), 10,
-		std::bind(&Localizer::callback_measurements, this, _1));
+		std::bind(&Odometry::callback_measurements, this, _1));
 	sub_calibration_ = create_subscription<car_msgs::msg::SensorCalibration>(
 		static_cast<std::string>(config_topics_sensorCalibration), 10,
-		std::bind(&Localizer::callback_calibration, this, _1));
+		std::bind(&Odometry::callback_calibration, this, _1));
 	sub_motionControl_ = create_subscription<car_msgs::msg::MotionControl>(
 		static_cast<std::string>(config_topics_motionControl), 10,
-		std::bind(&Localizer::callback_motionControl, this, _1));
+		std::bind(&Odometry::callback_motionControl, this, _1));
 
 	tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
 	
 }
 
-void Localizer::publish_odom() {
+void Odometry::publish_odom() {
 	// Vehicle State
 	nav_msgs::msg::Odometry odomEkfMsg;
 	odomEkfMsg.header.frame_id = config_frames_odom;
@@ -90,7 +90,7 @@ void Localizer::publish_odom() {
 }
 
 
-void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
+void Odometry::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
 	rclcpp::Time currentTimestamp = msg->header.stamp;
 
 	if (!isReady_) {
@@ -121,7 +121,7 @@ void Localizer::callback_measurements(const car_msgs::msg::SensorMeasurements::S
     );
 }
 
-void Localizer::callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg) {
+void Odometry::callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg) {
 	sensorConfig_.isCalibrated = msg->is_calibrated;
 	sensorConfig_.var_accel_x = msg->mpu6050_var_accel_x;
 	sensorConfig_.var_accel_y = msg->mpu6050_var_accel_y;
@@ -132,11 +132,11 @@ void Localizer::callback_calibration(const car_msgs::msg::SensorCalibration::Sha
 	isReady_ = sensorConfig_.isCalibrated;
 }
 
-void Localizer::callback_motionControl(const car_msgs::msg::MotionControl::SharedPtr msg) {
+void Odometry::callback_motionControl(const car_msgs::msg::MotionControl::SharedPtr msg) {
 	lastMotionControl_ = msg;
 }
 
-void Localizer::initStateSpace() {
+void Odometry::initStateSpace() {
 	const float pdiag[4] = {0, 0, 0, 0};
     ekf_initialize(&stateSpace_.ekf, pdiag);
 	stateSpace_.ekf.x[0] = 0.0f;
@@ -144,7 +144,7 @@ void Localizer::initStateSpace() {
 	stateSpace_.ekf.x[3] = 0.0f;
 }
 
-void Localizer::updateStateSpaceOdom(
+void Odometry::updateStateSpaceOdom(
 	float dt, 
 	float accel_x, 
 	float angle, 
@@ -220,7 +220,7 @@ void Localizer::updateStateSpaceOdom(
 	stateSpace_.ekf.x[3] = normalizeAngle(stateSpace_.ekf.x[3]);
 }
 
-float Localizer::normalizeAngle(float angle) {
+float Odometry::normalizeAngle(float angle) {
     angle = std::fmod(angle + std::numbers::pi, 2.0 * std::numbers::pi);
 
     if (angle < 0.0)
@@ -233,7 +233,7 @@ float Localizer::normalizeAngle(float angle) {
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<Localizer>());
+  rclcpp::spin(std::make_shared<Odometry>());
   rclcpp::shutdown();
   return 0;
 }

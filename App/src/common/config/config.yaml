@@ -13,6 +13,8 @@ topics:
   odomEkf: /odom
   poseCrtgrphr: /tracked_pose
   occupancyGrid: /occupancy_grid
+  debugPlanner: /debug/planner
+  costMap: /costmap
 
 
 
@@ -60,6 +62,7 @@ sensors:
     stddev: 0.0001
 
 vehicle:
+  max_steering: 0.9
   wheelbase: 0.14
   wheeltrack: 0.1
   chassis:

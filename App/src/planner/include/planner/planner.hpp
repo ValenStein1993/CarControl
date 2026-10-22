@@ -7,6 +7,7 @@
 #include "car_msgs/msg/vehicle_state.hpp"
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/node_state.hpp"
+#include "car_msgs/msg/debug_planner.hpp"
 #include "common/datatypes.hpp"
 #include "common/basenode.hpp"
 #include <nav_msgs/msg/occupancy_grid.hpp>
@@ -16,10 +17,10 @@
 #include <nav_msgs/msg/map_meta_data.hpp>
 
 
-constexpr int8_t kBlocked = 75;
-constexpr float lookAhead = 0.1;
+constexpr int8_t kBlocked = 65;
+constexpr float lookAhead = 0.05;
 constexpr float maxSpeed = 0.1;
-constexpr float maxSpeedDist = 1;
+constexpr float maxSpeedDist = 0.3;
 constexpr float minDist = 0.1;
 
 class Planner : public BaseNode {
@@ -34,10 +35,12 @@ class Planner : public BaseNode {
     std::vector<int> path_;
     float distAhead_;
 
+    car_msgs::msg::DebugPlanner debugPlannerMsg_;
     geometry_msgs::msg::PoseStamped::SharedPtr lastVehiclePose_;
     nav_msgs::msg::OccupancyGrid::SharedPtr lastOccGrid_;
     nav_msgs::msg::MapMetaData* gridMetaData_;
 
+    rclcpp::Publisher<car_msgs::msg::DebugPlanner>::SharedPtr pub_debugPlanner_;
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pub_path_;
 	
@@ -50,6 +53,7 @@ class Planner : public BaseNode {
     void callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
     void callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg);
 
+    void publish_debugMsg();
     void publish_motionControl();
     void publish_path();
 

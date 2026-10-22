@@ -11,9 +11,11 @@ class BaseNode : public rclcpp::Node {
         BaseNode(const std::string& node_name)
           : rclcpp::Node(node_name) 
         {
-
+            declare_parameter<bool>("debug", false);
+            get_parameter("debug", debug_);
         }
 
+        bool debug_;
         std::vector<rclcpp::TimerBase::SharedPtr> timers_;
 
         template <typename Rep, typename Period, typename Class>
