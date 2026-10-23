@@ -50,10 +50,10 @@ cv::Mat CostMap::occgridToCostmap(const nav_msgs::msg::OccupancyGrid::SharedPtr 
   dist *= config_occgrid_resolution;  
 
   cv::Mat cost;
-  cv::exp((dist - radius_vehTurn) * (-scale_cost), cost);
+  cv::exp((dist - radius_inscribed) * (-scale_cost), cost);
   cost *= (cost_inscribed - 1); 
   cost.setTo(0, dist > radius_inflation);
-  cost.setTo(cost_inscribed, dist <= radius_inflation);
+  cost.setTo(cost_inscribed, dist <= radius_inscribed);
  
   cost.setTo(cost_lethal, occupied);
   cv::Mat out;

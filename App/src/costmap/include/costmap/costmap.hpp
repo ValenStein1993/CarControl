@@ -20,10 +20,11 @@ constexpr uint8_t cost_lethal = 100;
 constexpr uint8_t cost_unknown = -1;
 
 constexpr int8_t p_occupied = 65;
-constexpr int8_t scale_cost = 3;
-constexpr int8_t radius_inflation = 0.2;
+constexpr int8_t cost_edge = 10;
 
-const float radius_vehTurn = config_vehicle_wheelbase / std::tan(config_vehicle_max_steering);
+const float radius_inscribed = 0.5 * config_vehicle_wheeltrack;
+const float radius_inflation = 5 * radius_inscribed;
+const float scale_cost = std::log(cost_inscribed / cost_edge) / (radius_inflation - radius_inscribed);
 
 
 class CostMap : public BaseNode {
