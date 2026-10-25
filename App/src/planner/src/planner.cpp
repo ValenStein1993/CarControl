@@ -22,7 +22,8 @@ using namespace std::chrono_literals;
 using std::placeholders::_1;
 
 Planner::Planner()
-  : BaseNode("planner") {
+  : BaseNode("planner"), 
+    idx_closestNode_{-1} {
 
   declare_parameter<float>("x_target", 0.0f);
 	declare_parameter<float>("y_target", 0.0f);
@@ -131,24 +132,24 @@ void Planner::publish_motionControl()
   float pos_y = lastVehiclePose_->pose.position.y;
   float phi = tf2::getYaw(lastVehiclePose_->pose.orientation);
   
-  float min_distance = std::numeric_limits<float>::max();
-  int idx_minDistance = -1;
-
+  float dist_closestNode = std::numeric_limits<float>::max();
+  int pIdx_closestNode;
   // get closest grid node to current position
   for (size_t i = 0; i < path_.size(); ++i) {
     auto [x, y] = Common::MapUtils::getPosFromMapIndex(path_[i], gridMetaData_);
     float distance = std::hypot(x - pos_x, y - pos_y);
-    if (distance < min_distance) {
-      min_distance = distance;
-      idx_minDistance = i;
+    if (distance < dist_closestNode) {
+      dist_closestNode = distance;
+      idx_closestNode_ = path_[i];
+      pIdx_closestNode = i;
     }
   }
 
   // find lookahead to closest node
   size_t idx_lookAhead;
   float x_lookAhead, y_lookAhead;
-  auto [x_minDistance, y_minDistance] = Common::MapUtils::getPosFromMapIndex(path_[idx_minDistance], gridMetaData_);
-  for (idx_lookAhead = idx_minDistance; idx_lookAhead < path_.size(); ++idx_lookAhead) {
+  auto [x_minDistance, y_minDistance] = Common::MapUtils::getPosFromMapIndex(path_[pIdx_closestNode], gridMetaData_);
+  for (idx_lookAhead = pIdx_closestNode; idx_lookAhead < path_.size(); ++idx_lookAhead) {
     std::tie(x_lookAhead, y_lookAhead) = Common::MapUtils::getPosFromMapIndex(path_[idx_lookAhead], gridMetaData_);
     float distance = std::hypot(x_lookAhead - x_minDistance, y_lookAhead - y_minDistance);
     if (distance > lookAhead) break;
@@ -200,11 +201,18 @@ void Planner::publish_path()
     return;
   }
 
-  int idx_pose = Common::MapUtils::getMapIndexFromPos(
-    lastVehiclePose_->pose.position.x, 
-    lastVehiclePose_->pose.position.y, 
-    gridMetaData_);
-  findShortestPath(idx_pose, idx_target_);
+  int idx_start;
+  if (idx_closestNode_ == -1) {
+    idx_start = Common::MapUtils::getMapIndexFromPos(
+      lastVehiclePose_->pose.position.x, 
+      lastVehiclePose_->pose.position.y, 
+      gridMetaData_);
+  }
+  else {
+    idx_start = idx_closestNode_;
+  }
+
+  findShortestPath(idx_start, idx_target_);
 
   nav_msgs::msg::Path pathMsg;
   pathMsg.header.stamp = get_clock()->now();

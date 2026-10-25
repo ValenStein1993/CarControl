@@ -34,6 +34,7 @@ class Planner : public BaseNode {
     int idx_target_{};
     std::vector<int> path_;
     float distAhead_;
+    int idx_closestNode_;
 
     car_msgs::msg::DebugPlanner debugPlannerMsg_;
     geometry_msgs::msg::PoseStamped::SharedPtr lastVehiclePose_;
