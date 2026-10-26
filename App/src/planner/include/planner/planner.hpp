@@ -22,6 +22,7 @@ constexpr float lookAhead = 0.05;
 constexpr float maxSpeed = 0.1;
 constexpr float maxSpeedDist = 0.3;
 constexpr float minDist = 0.1;
+constexpr float gain_cte = 1;
 
 class Planner : public BaseNode {
   public:
@@ -34,7 +35,7 @@ class Planner : public BaseNode {
     int idx_target_{};
     std::vector<int> path_;
     float distAhead_;
-    int idx_closestNode_;
+    int pIdx_closestNode_;
 
     car_msgs::msg::DebugPlanner debugPlannerMsg_;
     geometry_msgs::msg::PoseStamped::SharedPtr lastVehiclePose_;
@@ -58,7 +59,6 @@ class Planner : public BaseNode {
     void publish_motionControl();
     void publish_path();
 
-    void findShortestPath(int idx_state, int idx_target);
-    bool checkVehicleSpace(const std::vector<int8_t>& occgrid, int vx, int vy, int dx, int dy);
+    std::vector<int> findShortestPath(int idx_state, int idx_target);
 
 };

@@ -23,7 +23,7 @@ using std::placeholders::_1;
 
 Planner::Planner()
   : BaseNode("planner"), 
-    idx_closestNode_{-1} {
+    pIdx_closestNode_{-1} {
 
   declare_parameter<float>("x_target", 0.0f);
 	declare_parameter<float>("y_target", 0.0f);
@@ -127,47 +127,44 @@ void Planner::publish_motionControl()
     return;
   }
 
-
   float pos_x = lastVehiclePose_->pose.position.x;
   float pos_y = lastVehiclePose_->pose.position.y;
   float phi = tf2::getYaw(lastVehiclePose_->pose.orientation);
   
   float dist_closestNode = std::numeric_limits<float>::max();
-  int pIdx_closestNode;
   // get closest grid node to current position
   for (size_t i = 0; i < path_.size(); ++i) {
     auto [x, y] = Common::MapUtils::getPosFromMapIndex(path_[i], gridMetaData_);
     float distance = std::hypot(x - pos_x, y - pos_y);
     if (distance < dist_closestNode) {
       dist_closestNode = distance;
-      idx_closestNode_ = path_[i];
-      pIdx_closestNode = i;
+      pIdx_closestNode_ = i;
     }
   }
 
-  // find lookahead to closest node
-  size_t idx_lookAhead;
-  float x_lookAhead, y_lookAhead;
-  auto [x_minDistance, y_minDistance] = Common::MapUtils::getPosFromMapIndex(path_[pIdx_closestNode], gridMetaData_);
-  for (idx_lookAhead = pIdx_closestNode; idx_lookAhead < path_.size(); ++idx_lookAhead) {
-    std::tie(x_lookAhead, y_lookAhead) = Common::MapUtils::getPosFromMapIndex(path_[idx_lookAhead], gridMetaData_);
-    float distance = std::hypot(x_lookAhead - x_minDistance, y_lookAhead - y_minDistance);
-    if (distance > lookAhead) break;
+  // stanley controller
+  auto [x_closestNode, y_closestNode] = Common::MapUtils::getPosFromMapIndex(path_[pIdx_closestNode_], gridMetaData_);
+
+  float x_closestNodePrev = x_closestNode;
+  float y_closestNodePrev = y_closestNode;
+  float x_closestNodeNext = x_closestNode;
+  float y_closestNodeNext = y_closestNode;
+
+  if (pIdx_closestNode_ > 0) {
+    std::tie(x_closestNodePrev, y_closestNodePrev) = Common::MapUtils::getPosFromMapIndex(path_[pIdx_closestNode_ - 1], gridMetaData_);
   }
 
-  // pure pursuit algorithm
-  float dx_global = x_lookAhead - pos_x;
-  float dy_global = y_lookAhead - pos_y;
-  float yaw = phi;
+  if (pIdx_closestNode_ < (path_.size() - 1)) {
+    std::tie(x_closestNodeNext, y_closestNodeNext) = Common::MapUtils::getPosFromMapIndex(path_[pIdx_closestNode_ + 1], gridMetaData_);
+  }
 
-  float dx_body =  std::cos(yaw) * dx_global + std::sin(yaw) * dy_global;
-  float dy_body = -std::sin(yaw) * dx_global + std::cos(yaw) * dy_global;
-
+  float cte = (y_closestNode - pos_y) * std::cos(phi) - (x_closestNode - pos_x) * std::sin(phi);
+  float phi_target = std::atan2(y_closestNodeNext - y_closestNodePrev, x_closestNodeNext - x_closestNodePrev);
   float speed = std::lerp(0, maxSpeed, std::clamp(
-    (distAhead_ - minDist) / (maxSpeedDist - minDist), 0.0f, 1.0f));
-  float l = std::hypot(dx_body, dy_body);      
-  float curvature = 2.0f * dy_body / (l * l); 
-  float yaw_rate = speed * curvature;
+    (distAhead_ - minDist) / (maxSpeedDist - minDist), 0.0f, 1.0f));  
+  
+  float steering_angle = (phi_target - phi) + std::atan(gain_cte * cte / speed);
+  float yaw_rate = (speed / config_vehicle_wheelbase) * std::tan(steering_angle);
 
   car_msgs::msg::MotionControl msg;
   msg.yaw_rate = yaw_rate; 
@@ -178,7 +175,7 @@ void Planner::publish_motionControl()
   if (debug_) {
     debugPlannerMsg_.yaw_rate = yaw_rate;
     debugPlannerMsg_.speed = speed;
-    debugPlannerMsg_.steering_angle = std::atan(config_vehicle_wheelbase * curvature);
+    debugPlannerMsg_.steering_angle = steering_angle;
   }
 }
 
@@ -202,17 +199,22 @@ void Planner::publish_path()
   }
 
   int idx_start;
-  if (idx_closestNode_ == -1) {
+  if (pIdx_closestNode_ == -1) {
     idx_start = Common::MapUtils::getMapIndexFromPos(
       lastVehiclePose_->pose.position.x, 
       lastVehiclePose_->pose.position.y, 
       gridMetaData_);
+
+    path_ = findShortestPath(idx_start, idx_target_);
   }
   else {
-    idx_start = idx_closestNode_;
+    idx_start = path_[pIdx_closestNode_];
+    std::vector<int> path_update = findShortestPath(idx_start, idx_target_);
+
+    path_update.insert(path_update.begin(), path_.begin(), path_.begin() + pIdx_closestNode_);
+    path_ = path_update;
   }
 
-  findShortestPath(idx_start, idx_target_);
 
   nav_msgs::msg::Path pathMsg;
   pathMsg.header.stamp = get_clock()->now();
@@ -229,7 +231,7 @@ void Planner::publish_path()
   pub_path_->publish(pathMsg);
 }
 
-void Planner::findShortestPath(int idx_state, int idx_target) {
+std::vector<int> Planner::findShortestPath(int idx_state, int idx_target) {
   int width = gridMetaData_->width;
   int height = gridMetaData_->height;
 
@@ -277,8 +279,6 @@ void Planner::findShortestPath(int idx_state, int idx_target) {
 
         int8_t c = occgrid[v];
         if (c >= kBlocked) continue;
-        // check space around vehicle
-        if (!checkVehicleSpace(occgrid, vx, vy, dx, dy)) continue;
 
         float step = (dx && dy) ? 1.4142f : 1.0f;           
         float risk_weight = 1.0f; 
@@ -303,30 +303,9 @@ void Planner::findShortestPath(int idx_state, int idx_target) {
     v = parent[v];
   }
   std::reverse(path.begin(), path.end());
-  path_ = path;
+  return path;
 }
 
-bool Planner::checkVehicleSpace(const std::vector<int8_t>& occgrid, int vx, int vy, int dx, int dy) {
-  int vvx = vx, vvx_ = vx;
-  int vvy = vy, vvy_ = vy;
-
-  while (true) {
-    if (dx) vvy += dx, vvy_ -= dx;
-    if (dy) vvx -= dy, vvx_ += dy;
-
-    if (!Common::MapUtils::checkGridBoundries(vvx, vvy, gridMetaData_)) return false;
-    if (!Common::MapUtils::checkGridBoundries(vvx_, vvy_, gridMetaData_)) return false;
-
-    int vv = vvy * gridMetaData_->width + vvx;
-    int vv_ = vvy_ * gridMetaData_->width + vvx_;
-    if ((occgrid[vv] > kBlocked) | (occgrid[vv_] > kBlocked)) return false;
-
-    float dist = gridMetaData_->resolution * std::hypot(vy - vvy, vx - vvx);
-    // stop, if covered distance is greater than half width (plus buffer)
-    if (dist > (1 * config_vehicle_wheeltrack)) break;
-  }
-    return true;
-}
 
 int main(int argc, char * argv[])
 {
