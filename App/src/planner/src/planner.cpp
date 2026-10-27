@@ -32,7 +32,6 @@ Planner::Planner()
   get_parameter("y_target", target_.second);
 
   add_timer(10ms, &Planner::publish_motionControl);
-  add_timer(100ms, &Planner::publish_path);
 
   if (debug_) {
     add_timer(100ms, &Planner::publish_debugMsg);
@@ -52,20 +51,137 @@ Planner::Planner()
     static_cast<std::string>(config_topics_occupancyGrid), 10, 
     std::bind(&Planner::callback_occGrid, this, _1));
   sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
-        static_cast<std::string>(config_topics_laserScan), 10, 
-        std::bind(&Planner::callback_laserscan, this, _1));
+    static_cast<std::string>(config_topics_laserScan), 10, 
+    std::bind(&Planner::callback_laserscan, this, _1));
 }
 
-void Planner::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg) 
-{
+void Planner::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
   lastVehiclePose_ = msg;
 }
 
-void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg) 
-{
+void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg) {
   lastOccGrid_ = msg;
-  gridMetaData_ = &(msg->info);
+  nav_msgs::msg::MapMetaData* newGridMeta = &(msg->info);
+  // convert existing path to the new grid structure
+  path_ = transformPathToNewGrid(newGridMeta);
+  gridMetaData_ = newGridMeta;
 
+  setTargetPoint();
+  publish_path();
+
+}
+
+void Planner::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
+  distAhead_ = msg->ranges[0.5 * msg->ranges.size()];
+}
+
+void Planner::publish_motionControl() 
+{
+
+  if (!lastVehiclePose_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Vehicle pose is unavailable.");
+    return;
+  }
+
+  if (path_.empty()) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Vehicle path is unavailable.");
+    return;
+  }
+
+  if (!lastOccGrid_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Map is unavailable.");
+    return;
+  }
+
+  auto [speed, steering_angle] = calcSteering();
+  float yaw_rate = (speed / config_vehicle_wheelbase) * std::tan(steering_angle);
+
+  car_msgs::msg::MotionControl msg;
+  msg.yaw_rate = yaw_rate; 
+  msg.speed = speed; 
+
+  pub_motionControl_->publish(msg);
+
+  if (debug_) {
+    debugPlannerMsg_.yaw_rate = yaw_rate;
+    debugPlannerMsg_.speed = speed;
+    debugPlannerMsg_.steering_angle = steering_angle;
+    debugPlannerMsg_.pdx_cnode = pIdx_closestNode_;
+  }
+}
+
+void Planner::publish_debugMsg()
+{
+  debugPlannerMsg_.header.stamp = get_clock()->now();
+  pub_debugPlanner_->publish(debugPlannerMsg_);
+}
+
+
+void Planner::publish_path() 
+{
+  if (!lastVehiclePose_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Vehicle pose is unavailable.");
+    return;
+  }
+
+  if (!lastOccGrid_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Map is unavailable.");
+    return;
+  }
+
+  setClosestNode();
+
+  int idx_start;
+  if (pIdx_closestNode_ == -1) {
+    idx_start = Common::MapUtils::getMapIndexFromPos(
+      lastVehiclePose_->pose.position.x, 
+      lastVehiclePose_->pose.position.y, 
+      gridMetaData_);
+
+    path_ = findShortestPath(idx_start, idx_target_);
+  }
+  else {
+    idx_start = path_[pIdx_closestNode_];
+    std::vector<int> path_update = findShortestPath(idx_start, idx_target_);
+
+    path_update.insert(path_update.begin(), path_.begin(), path_.begin() + pIdx_closestNode_ + 1);
+    path_ = path_update;
+  }
+
+  nav_msgs::msg::Path pathMsg;
+  pathMsg.header.stamp = get_clock()->now();
+  pathMsg.header.frame_id = config_frames_odom;
+
+  for (int idx : path_) {
+    auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx, gridMetaData_);
+
+    geometry_msgs::msg::PoseStamped pose;
+    pose.pose.position.x = x;
+    pose.pose.position.y = y;
+    pathMsg.poses.push_back(pose);
+  }
+  pub_path_->publish(pathMsg);
+}
+
+std::vector<int> Planner::transformPathToNewGrid(const nav_msgs::msg::MapMetaData* newMeta) {
+  std::vector<int> transformed;
+
+  transformed.reserve(path_.size());
+
+  for (int idx : path_) {
+    // Convert old-grid cell position into world coordinates, then project into new grid
+    const auto [x_world, y_world] = Common::MapUtils::getPosFromMapIndex(idx, gridMetaData_);
+    const int newIdx = Common::MapUtils::getMapIndexFromPos(x_world, y_world, newMeta);
+
+    if (newIdx != -1) {
+      transformed.push_back(newIdx);
+    }
+  }
+
+  return transformed;
+}
+
+void Planner::setTargetPoint() {
   if (!lastVehiclePose_) {
       RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot adjust target: Vehicle pose is unavailable.");
       return;
@@ -104,35 +220,11 @@ void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg
   idx_target_ = idx;
 }
 
-void Planner::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
-  distAhead_ = msg->ranges[0.5 * msg->ranges.size()];
-}
-
-
-void Planner::publish_motionControl() 
-{
-
-  if (!lastVehiclePose_) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Vehicle pose is unavailable.");
-    return;
-  }
-
-  if (path_.empty()) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Vehicle path is unavailable.");
-    return;
-  }
-
-  if (!lastOccGrid_) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Map is unavailable.");
-    return;
-  }
-
+void Planner::setClosestNode() {
   float pos_x = lastVehiclePose_->pose.position.x;
   float pos_y = lastVehiclePose_->pose.position.y;
-  float phi = tf2::getYaw(lastVehiclePose_->pose.orientation);
   
   float dist_closestNode = std::numeric_limits<float>::max();
-  // get closest grid node to current position
   for (size_t i = 0; i < path_.size(); ++i) {
     auto [x, y] = Common::MapUtils::getPosFromMapIndex(path_[i], gridMetaData_);
     float distance = std::hypot(x - pos_x, y - pos_y);
@@ -141,6 +233,14 @@ void Planner::publish_motionControl()
       pIdx_closestNode_ = i;
     }
   }
+}
+
+std::pair<float, float> Planner::calcSteering() {
+  float pos_x = lastVehiclePose_->pose.position.x;
+  float pos_y = lastVehiclePose_->pose.position.y;
+  float phi = tf2::getYaw(lastVehiclePose_->pose.orientation);
+  
+  setClosestNode();
 
   // stanley controller
   auto [x_closestNode, y_closestNode] = Common::MapUtils::getPosFromMapIndex(path_[pIdx_closestNode_], gridMetaData_);
@@ -154,7 +254,7 @@ void Planner::publish_motionControl()
     std::tie(x_closestNodePrev, y_closestNodePrev) = Common::MapUtils::getPosFromMapIndex(path_[pIdx_closestNode_ - 1], gridMetaData_);
   }
 
-  if (pIdx_closestNode_ < (path_.size() - 1)) {
+  if (static_cast<size_t>(pIdx_closestNode_) < (path_.size() - 1)) {
     std::tie(x_closestNodeNext, y_closestNodeNext) = Common::MapUtils::getPosFromMapIndex(path_[pIdx_closestNode_ + 1], gridMetaData_);
   }
 
@@ -164,71 +264,8 @@ void Planner::publish_motionControl()
     (distAhead_ - minDist) / (maxSpeedDist - minDist), 0.0f, 1.0f));  
   
   float steering_angle = (phi_target - phi) + std::atan(gain_cte * cte / speed);
-  float yaw_rate = (speed / config_vehicle_wheelbase) * std::tan(steering_angle);
 
-  car_msgs::msg::MotionControl msg;
-  msg.yaw_rate = yaw_rate; 
-  msg.speed = speed; 
-
-  pub_motionControl_->publish(msg);
-
-  if (debug_) {
-    debugPlannerMsg_.yaw_rate = yaw_rate;
-    debugPlannerMsg_.speed = speed;
-    debugPlannerMsg_.steering_angle = steering_angle;
-  }
-}
-
-void Planner::publish_debugMsg()
-{
-  debugPlannerMsg_.header.stamp = get_clock()->now();
-  pub_debugPlanner_->publish(debugPlannerMsg_);
-}
-
-
-void Planner::publish_path() 
-{
-  if (!lastVehiclePose_) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Vehicle pose is unavailable.");
-    return;
-  }
-
-  if (!lastOccGrid_) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Map is unavailable.");
-    return;
-  }
-
-  int idx_start;
-  if (pIdx_closestNode_ == -1) {
-    idx_start = Common::MapUtils::getMapIndexFromPos(
-      lastVehiclePose_->pose.position.x, 
-      lastVehiclePose_->pose.position.y, 
-      gridMetaData_);
-
-    path_ = findShortestPath(idx_start, idx_target_);
-  }
-  else {
-    idx_start = path_[pIdx_closestNode_];
-    std::vector<int> path_update = findShortestPath(idx_start, idx_target_);
-
-    path_update.insert(path_update.begin(), path_.begin(), path_.begin() + pIdx_closestNode_);
-    path_ = path_update;
-  }
-
-
-  nav_msgs::msg::Path pathMsg;
-  pathMsg.header.stamp = get_clock()->now();
-  pathMsg.header.frame_id = config_frames_odom;
-
-  for (int idx : path_) {
-    auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx, gridMetaData_);
-
-    geometry_msgs::msg::PoseStamped pose;
-    pose.pose.position.x = x;
-    pose.pose.position.y = y;
-    pathMsg.poses.push_back(pose);
-  }
-  pub_path_->publish(pathMsg);
+  return {speed, steering_angle};
 }
 
 std::vector<int> Planner::findShortestPath(int idx_state, int idx_target) {

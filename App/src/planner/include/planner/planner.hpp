@@ -60,5 +60,9 @@ class Planner : public BaseNode {
     void publish_path();
 
     std::vector<int> findShortestPath(int idx_state, int idx_target);
+    void setTargetPoint();
+    std::vector<int> transformPathToNewGrid(const nav_msgs::msg::MapMetaData* newMeta);
+    void setClosestNode();
+    std::pair<float, float> calcSteering();
 
 };
