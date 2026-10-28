@@ -17,6 +17,7 @@
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include "common/config.hpp"
 #include "common/map_utils.hpp"
+#include "common/config_app.hpp"
 
 using namespace std::chrono_literals;
 using std::placeholders::_1;
@@ -48,7 +49,7 @@ Planner::Planner()
     static_cast<std::string>(config_topics_poseCrtgrphr), 10, 
     std::bind(&Planner::callback_vehiclePose, this, _1));
   sub_occGrid_ = create_subscription<nav_msgs::msg::OccupancyGrid>(
-    static_cast<std::string>(config_topics_occupancyGrid), 10, 
+    static_cast<std::string>(config_topics_costMap), 10, 
     std::bind(&Planner::callback_occGrid, this, _1));
   sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
     static_cast<std::string>(config_topics_laserScan), 10, 
@@ -101,13 +102,6 @@ void Planner::publish_motionControl()
   msg.speed = speed; 
 
   pub_motionControl_->publish(msg);
-
-  if (debug_) {
-    debugPlannerMsg_.yaw_rate = yaw_rate;
-    debugPlannerMsg_.speed = speed;
-    debugPlannerMsg_.steering_angle = steering_angle;
-    debugPlannerMsg_.pdx_cnode = pIdx_closestNode_;
-  }
 }
 
 void Planner::publish_debugMsg()
@@ -258,13 +252,27 @@ std::pair<float, float> Planner::calcSteering() {
     std::tie(x_closestNodeNext, y_closestNodeNext) = Common::MapUtils::getPosFromMapIndex(path_[pIdx_closestNode_ + 1], gridMetaData_);
   }
 
-  float cte = (y_closestNode - pos_y) * std::cos(phi) - (x_closestNode - pos_x) * std::sin(phi);
+  // stanley controller
   float phi_target = std::atan2(y_closestNodeNext - y_closestNodePrev, x_closestNodeNext - x_closestNodePrev);
+  float cte = (pos_y - y_closestNode) * std::cos(phi_target) - (pos_x - x_closestNode) * std::sin(phi_target);
   float speed = std::lerp(0, maxSpeed, std::clamp(
     (distAhead_ - minDist) / (maxSpeedDist - minDist), 0.0f, 1.0f));  
-  
-  float steering_angle = (phi_target - phi) + std::atan(gain_cte * cte / speed);
+  float heading_error = phi_target - phi;
+  float steering_angle = std::clamp(
+    static_cast<float>(heading_error + std::atan2(gain_cte * -cte ,(speed + 0.001))),
+    -config_vehicle_max_steering, 
+    config_vehicle_max_steering);
 
+  float yaw_rate = (speed / config_vehicle_wheelbase) * std::tan(steering_angle);
+
+  if (debug_) {
+    debugPlannerMsg_.yaw_rate = yaw_rate;
+    debugPlannerMsg_.speed = speed;
+    debugPlannerMsg_.steering_angle = steering_angle;
+    debugPlannerMsg_.pdx_cnode = pIdx_closestNode_;
+    debugPlannerMsg_.cte = std::atan(gain_cte * cte / speed);
+    debugPlannerMsg_.heading_error = heading_error;
+  }
   return {speed, steering_angle};
 }
 
@@ -315,7 +323,7 @@ std::vector<int> Planner::findShortestPath(int idx_state, int idx_target) {
         int v = vy * width + vx;
 
         int8_t c = occgrid[v];
-        if (c >= kBlocked) continue;
+        if (c >= cost_inscribed) continue;
 
         float step = (dx && dy) ? 1.4142f : 1.0f;           
         float risk_weight = 1.0f; 

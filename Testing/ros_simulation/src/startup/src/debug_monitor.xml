@@ -3,26 +3,40 @@
  <tabbed_widget name="Main Window" parent="main_window">
   <Tab containers="1" tab_name="tab1">
    <Container>
-    <DockSplitter count="3" orientation="-" sizes="0.333803;0.332394;0.333803">
+    <DockSplitter count="5" orientation="-" sizes="0.200565;0.199153;0.200565;0.199153;0.200565">
      <DockArea name="...">
       <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
-       <range bottom="0.000000" left="318.957685" right="348.602307" top="0.000000"/>
+       <range bottom="-0.000052" left="32.000186" right="36.999624" top="0.002126"/>
        <limitY/>
        <curve color="#1f77b4" name="/debug/planner/speed"/>
       </plot>
      </DockArea>
      <DockArea name="...">
       <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
-       <range bottom="1.293472" left="318.957685" right="348.602307" top="1.341681"/>
+       <range bottom="-0.103646" left="32.000186" right="36.999624" top="0.387888"/>
        <limitY/>
        <curve color="#d62728" name="/debug/planner/steering_angle"/>
       </plot>
      </DockArea>
      <DockArea name="...">
       <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
-       <range bottom="0.836216" left="318.957685" right="348.602307" top="1.020700"/>
+       <range bottom="-0.000188" left="32.000186" right="36.999624" top="0.005998"/>
        <limitY/>
        <curve color="#1ac938" name="/debug/planner/yaw_rate"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+       <range bottom="-1.582495" left="32.000186" right="36.999624" top="-1.091159"/>
+       <limitY/>
+       <curve color="#1f77b4" name="/debug/planner/cte"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+       <range bottom="1.478773" left="32.000186" right="36.999624" top="1.482140"/>
+       <limitY/>
+       <curve color="#d62728" name="/debug/planner/heading_error"/>
       </plot>
      </DockArea>
     </DockSplitter>
@@ -31,7 +45,7 @@
   <currentTabIndex index="0"/>
  </tabbed_widget>
  <use_relative_time_offset enabled="1"/>
- <streaming_buffer_size value="30"/>
+ <streaming_buffer_size value="5"/>
  <!-- - - - - - - - - - - - - - - -->
  <!-- - - - - - - - - - - - - - - -->
  <Plugins>

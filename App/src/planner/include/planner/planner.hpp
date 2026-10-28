@@ -17,12 +17,10 @@
 #include <nav_msgs/msg/map_meta_data.hpp>
 
 
-constexpr int8_t kBlocked = 65;
-constexpr float lookAhead = 0.05;
-constexpr float maxSpeed = 0.1;
+constexpr float maxSpeed = 0.02;
 constexpr float maxSpeedDist = 0.3;
 constexpr float minDist = 0.1;
-constexpr float gain_cte = 1;
+constexpr float gain_cte = 0.5;
 
 class Planner : public BaseNode {
   public:

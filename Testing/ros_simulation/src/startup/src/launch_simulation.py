@@ -31,7 +31,7 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_launch_path),
             launch_arguments={
-                'gz_args': world_abs,
+                'gz_args': f'-s -r "{world_abs}"',
                 'on_exit_shutdown': 'True'
             }.items(),
         ),

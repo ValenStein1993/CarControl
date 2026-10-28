@@ -68,6 +68,13 @@ install(
   EXPORT common_targets
 )
 
+install(
+  DIRECTORY config/
+  DESTINATION include/common
+  FILES_MATCHING
+  PATTERN "*.hpp"
+)
+
 
 ament_export_targets(common_targets)
 ament_export_dependencies(ament_index_cpp)

@@ -13,11 +13,7 @@
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include "common/config.hpp"
 #include "common/basenode.hpp"
-
-constexpr uint8_t cost_free = 0;
-constexpr uint8_t cost_inscribed = 98;
-constexpr uint8_t cost_lethal = 100;
-constexpr uint8_t cost_unknown = -1;
+#include "common/config_app.hpp"
 
 constexpr int8_t p_occupied = 65;
 constexpr int8_t cost_edge = 10;
