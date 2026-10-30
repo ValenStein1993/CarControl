@@ -34,7 +34,13 @@ namespace Common::MapUtils
         return {posX, posY};
     }
 
-    inline bool checkGridBoundries(int vx, int vy, const nav_msgs::msg::MapMetaData* mapMetaData) {
+    inline bool checkGridBoundries(float x, float y, const nav_msgs::msg::MapMetaData* mapMetaData) {
+        const auto width = mapMetaData->width;
+
+        const auto idx = getMapIndexFromPos(x, y, mapMetaData);
+        const auto vx = idx % width;
+        const auto vy = idx / width;
+
         if (vx < 0 || vy < 0 || vx >= mapMetaData->width || vy >= mapMetaData->height) return false;
         return true;
     }

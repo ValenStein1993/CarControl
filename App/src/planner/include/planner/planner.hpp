@@ -21,6 +21,13 @@ constexpr float maxSpeed = 0.02;
 constexpr float maxSpeedDist = 0.3;
 constexpr float minDist = 0.1;
 constexpr float gain_cte = 0.5;
+constexpr int n_binsAngle = 72;
+
+struct GridNode {
+    float x, y, theta;
+    float dist;
+    int idx;
+};
 
 class Planner : public BaseNode {
   public:
@@ -33,12 +40,14 @@ class Planner : public BaseNode {
     int idx_target_{};
     std::vector<int> path_;
     float distAhead_;
-    int pIdx_closestNode_;
+    GridNode closestNode_;
+    bool mapReady_;
 
     car_msgs::msg::DebugPlanner debugPlannerMsg_;
     geometry_msgs::msg::PoseStamped::SharedPtr lastVehiclePose_;
     nav_msgs::msg::OccupancyGrid::SharedPtr lastOccGrid_;
     nav_msgs::msg::MapMetaData* gridMetaData_;
+    sensor_msgs::msg::LaserScan::SharedPtr lastLaserScan_;
 
     rclcpp::Publisher<car_msgs::msg::DebugPlanner>::SharedPtr pub_debugPlanner_;
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;
@@ -57,10 +66,11 @@ class Planner : public BaseNode {
     void publish_motionControl();
     void publish_path();
 
-    std::vector<int> findShortestPath(int idx_state, int idx_target);
+    std::vector<int> findShortestPath(float x_start, float y_start, float theta_start, int idx_target);
     void setTargetPoint();
     std::vector<int> transformPathToNewGrid(const nav_msgs::msg::MapMetaData* newMeta);
     void setClosestNode();
     std::pair<float, float> calcSteering();
+    bool checkMapReady();
 
 };
