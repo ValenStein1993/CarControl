@@ -19,6 +19,8 @@
 #include "common/config.hpp"
 #include "common/map_utils.hpp"
 #include "common/config_app.hpp"
+#include "common/datatypes.hpp"
+
 
 using namespace std::chrono_literals;
 using std::placeholders::_1;
@@ -28,6 +30,17 @@ int angleBin(float theta) {
   float t = std::remainder(theta, 2.0f * std::numbers::pi_v<float>);
   if (t < 0) t += 2.0f * std::numbers::pi_v<float>;
   return static_cast<int>(t / (2.0f * std::numbers::pi_v<float>) * n_binsAngle) % n_binsAngle;
+}
+
+Pose motion(const Pose& p, float s, float phi) {
+  if (phi == 0.0f) {
+    return {p.x + s * std::cos(p.th), p.y + s * std::sin(p.th), p.th};
+  }
+  const float R = config_vehicle_wheelbase / std::tan(phi);
+  const float dth = s / R;
+  return {p.x + R * (std::sin(p.th + dth) - std::sin(p.th)),
+          p.y - R * (std::cos(p.th + dth) - std::cos(p.th)),
+          p.th + dth};
 }
 
 
@@ -42,16 +55,6 @@ Planner::Planner()
   get_parameter("x_target", target_.first);
   get_parameter("y_target", target_.second);
 
-  add_timer(10ms, &Planner::publish_motionControl);
-
-  if (debug_) {
-    add_timer(100ms, &Planner::publish_debugMsg);
-  }
-
-  pub_debugPlanner_ = create_publisher<car_msgs::msg::DebugPlanner>(
-    static_cast<std::string>(config_topics_debugPlanner), 10);
-  pub_motionControl_ = create_publisher<car_msgs::msg::MotionControl>(
-    static_cast<std::string>(config_topics_motionControl), 10);
   pub_path_ = create_publisher<nav_msgs::msg::Path>(
     static_cast<std::string>(config_topics_globalPath), 10);
 
@@ -63,11 +66,15 @@ Planner::Planner()
     std::bind(&Planner::callback_occGrid, this, _1));
   sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
     static_cast<std::string>(config_topics_laserScan), 10, 
-    std::bind(&Planner::callback_laserscan, this, _1));
+    std::bind(&Planner::callback_laserScan, this, _1));
 }
 
 void Planner::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
   lastVehiclePose_ = msg;
+}
+
+void Planner::callback_laserScan(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
+  lastLaserScan_ = msg;
 }
 
 void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg) {
@@ -86,48 +93,8 @@ void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg
   }
 }
 
-void Planner::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
-  lastLaserScan_ = msg;
-  distAhead_ = msg->ranges[0.5 * msg->ranges.size()];
-}
 
-void Planner::publish_motionControl() 
-{
-
-  if (!lastVehiclePose_) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Vehicle pose is unavailable.");
-    return;
-  }
-
-  if (path_.empty()) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Vehicle path is unavailable.");
-    return;
-  }
-
-  if (!lastOccGrid_) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Map is unavailable.");
-    return;
-  }
-
-  auto [speed, steering_angle] = calcSteering();
-  float yaw_rate = (speed / config_vehicle_wheelbase) * std::tan(steering_angle);
-
-  car_msgs::msg::MotionControl msg;
-  msg.yaw_rate = yaw_rate; 
-  msg.speed = speed; 
-
-  pub_motionControl_->publish(msg);
-}
-
-void Planner::publish_debugMsg()
-{
-  debugPlannerMsg_.header.stamp = get_clock()->now();
-  pub_debugPlanner_->publish(debugPlannerMsg_);
-}
-
-
-void Planner::publish_path() 
-{
+void Planner::publish_path() {
   if (!lastVehiclePose_) {
     RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Vehicle pose is unavailable.");
     return;
@@ -262,36 +229,6 @@ void Planner::setClosestNode() {
   closestNode_.theta = std::atan2(y_closestNodeNext - y_closestNodePrev, x_closestNodeNext - x_closestNodePrev);
 }
 
-std::pair<float, float> Planner::calcSteering() {
-  float pos_x = lastVehiclePose_->pose.position.x;
-  float pos_y = lastVehiclePose_->pose.position.y;
-  float phi = tf2::getYaw(lastVehiclePose_->pose.orientation);
-  
-  setClosestNode();
-
-  // stanley controller
-  float cte = (pos_y - closestNode_.y) * std::cos(closestNode_.theta) - (pos_x - closestNode_.x) * std::sin(closestNode_.theta);
-  float speed = std::lerp(0, maxSpeed, std::clamp(
-    (distAhead_ - minDist) / (maxSpeedDist - minDist), 0.0f, 1.0f));  
-  float heading_error = closestNode_.theta - phi;
-  float steering_angle = std::clamp(
-    static_cast<float>(heading_error + std::atan2(gain_cte * -cte ,(speed + 0.001))),
-    -config_vehicle_max_steering, 
-    config_vehicle_max_steering);
-
-  float yaw_rate = (speed / config_vehicle_wheelbase) * std::tan(steering_angle);
-
-  if (debug_) {
-    debugPlannerMsg_.yaw_rate = yaw_rate;
-    debugPlannerMsg_.speed = speed;
-    debugPlannerMsg_.steering_angle = steering_angle;
-    debugPlannerMsg_.pdx_cnode = closestNode_.idx;
-    debugPlannerMsg_.cte = std::atan(gain_cte * cte / speed);
-    debugPlannerMsg_.heading_error = heading_error;
-  }
-  return {speed, steering_angle};
-}
-
 std::vector<int> Planner::findShortestPath(float x_start, float y_start, float theta_start, int idx_target) {
   // hybrid-A* Algorithm  
 
@@ -299,36 +236,33 @@ std::vector<int> Planner::findShortestPath(float x_start, float y_start, float t
   std::tie(x_tar, y_tar) = Common::MapUtils::getPosFromMapIndex(idx_target, gridMetaData_);
   int idx_found = -1;
 
-  float stepsize = 1.5 * gridMetaData_->resolution;
-  std::vector<int8_t> occgrid = lastOccGrid_->data;
+  float stepsize = 5 * gridMetaData_->resolution;
 
-  // pq = {{distance, vertex}, ...}
+  // pq = {{heuristic, distance, idx vertex}, ...}
   std::priority_queue<
-    std::pair<float, int>, 
-    std::vector<std::pair<float, int>>, 
-    std::greater<std::pair<float, int>>> pq;
+    std::tuple<float, float, int>, 
+    std::vector<std::tuple<float, float, int>>, 
+    std::greater<std::tuple<float, float, int>>> pq;
 
-  std::map<int, GridNode> nodes; 
+  std::unordered_map<int, GridNode> nodes; 
 
   // add start vertex to queue and dict
   int idx_start = Common::MapUtils::getMapIndexFromPos(x_start, y_start, gridMetaData_) * n_binsAngle + angleBin(theta_start);
-  pq.emplace(0, idx_start);
+  pq.emplace(0.0, 0.0, idx_start);
 
   GridNode n{x_start, y_start, theta_start, 0.0f, -1};
   nodes[idx_start] = n; 
 
   while (!pq.empty()) {
     // select closest vertex u from the queue
-    auto top = pq.top();
+    auto [h_u, d_u, idx_u] = pq.top();
     pq.pop();
 
-    float d_u = top.first;  
-    int idx_u = top.second; 
     GridNode n_u = nodes[idx_u];
+    Pose p_u{n_u.x, n_u.y, n_u.theta};
 
     // continue when checked vertex is stale
-    if (d_u > n_u.dist)
-        continue;
+    if (d_u > n_u.dist) continue;
 
     // stop when target node is found
     //if (idx_u == idx_target)
@@ -341,24 +275,14 @@ std::vector<int> Planner::findShortestPath(float x_start, float y_start, float t
     }
 
     // forward expansion to neighbors
-    float v_x, v_y, v_theta;
     for (int dir : {-1, 1}) {
-      for (float theta : {-config_vehicle_max_steering, 0.0f, config_vehicle_max_steering}) {
+      for (float phi : {-config_vehicle_max_steering, 0.0f, config_vehicle_max_steering}) {
         float s = dir * stepsize;
-        if (theta == 0.0f) {
-          v_x = n_u.x + s * std::cos(n_u.theta);
-          v_y = n_u.y + s * std::sin(n_u.theta);
-          v_theta = n_u.theta;
-        }
-        else {
-          float rad_turn = config_vehicle_wheelbase / std::tan(theta);                  
-          float dTheta = s / rad_turn;
-          v_x = n_u.x + rad_turn * (std::sin(n_u.theta + dTheta) - std::sin(n_u.theta));
-          v_y = n_u.y - rad_turn * (std::cos(n_u.theta + dTheta) - std::cos(n_u.theta));
-          v_theta = n_u.theta + dTheta;
-        }
+        
+        float avgCost;
+        if (!checkObstacles(p_u, s, phi, avgCost)) continue;
 
-        if (!Common::MapUtils::checkGridBoundries(v_x, v_y, gridMetaData_)) continue;
+        auto [v_x, v_y, v_theta] = motion(p_u, s, phi);
 
         // 2d index
         int idx_v = Common::MapUtils::getMapIndexFromPos(v_x, v_y, gridMetaData_);
@@ -366,21 +290,19 @@ std::vector<int> Planner::findShortestPath(float x_start, float y_start, float t
         int idx_t = angleBin(v_theta);
         int idx_vt = idx_v * n_binsAngle + idx_t;
 
-        int8_t c = occgrid[idx_v];
-
-        if (c >= cost_inscribed) continue;
         float risk_weight = 1.0f; 
-        float step = stepsize * (1.0f + risk_weight * c / 100.0f);
+        float step = stepsize * (1.0f + risk_weight * avgCost / 100.0f);
         if (dir == -1) step *= 2.0f;          // reverse penalty
-        if (theta != 0.0f) step *= 1.1f;      // small turning penalty
+        if (phi != 0.0f) step *= 1.1f;      // small turning penalty
 
         float d_v = n_u.dist + step;
 
-        // if distance to v through u is shorter, update distance and parent
-        if (!nodes.contains(idx_vt) || d_v < nodes[idx_vt].dist) {
-          GridNode n{v_x, v_y, v_theta, d_v, idx_u};
-          nodes[idx_vt] = n; 
-          pq.emplace(d_v, idx_vt);
+        auto it = nodes.find(idx_vt);
+        if (it == nodes.end() || d_v < it->second.dist) {
+          nodes.insert_or_assign(idx_vt, GridNode{v_x, v_y, v_theta, d_v, idx_u});
+
+          float h = std::hypot(v_x - x_tar, v_y - y_tar);
+          pq.emplace(d_v + h, d_v, idx_vt);
         }
       }
     }
@@ -391,6 +313,7 @@ std::vector<int> Planner::findShortestPath(float x_start, float y_start, float t
   if (idx_found == -1) {
     return path;
   }
+
   int idx_c = idx_found;
 
   while (idx_c != -1) {
@@ -420,6 +343,25 @@ bool Planner::checkMapReady() {
   }
 
   return !(scanHasObs ^ mapHasObs);
+}
+
+bool Planner::checkObstacles(Pose& start, float s, float phi, float& avgCost) {
+  const int n = std::max(1, static_cast<int>(std::ceil(std::abs(s) / (0.5f * gridMetaData_->resolution))));
+
+  float sum = 0.0f;
+  for (int i = 1; i <= n; ++i) {
+    const Pose p = motion(start, s * i / n, phi);
+
+    if (!Common::MapUtils::checkGridBoundries(p.x, p.y, gridMetaData_)) return false;
+    const int idx = Common::MapUtils::getMapIndexFromPos(p.x, p.y, gridMetaData_);
+
+    int c = lastOccGrid_->data[idx];
+    if (c < 0) c = 50;                       // unknown: treat as moderately costly (or return false)
+    if (c >= cost_inscribed) return false;   // blocked
+    sum += c;
+  }
+  avgCost = sum / n;
+  return true;
 }
 
 int main(int argc, char * argv[])

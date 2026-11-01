@@ -107,6 +107,18 @@ def generate_launch_description():
                 '-r', f"/map:={config['topics']['occupancyGrid']}",
             ],
         ),
+        Node(
+            package='controller',
+            executable='controller',
+            parameters=[{
+                'use_sim_time': True,
+                'debug': DEBUG
+            }],
+            arguments=[
+                '--ros-args',
+                '--log-level', LOG_LEVEL,
+            ],
+        ),
     ])
 
     

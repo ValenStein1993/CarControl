@@ -8,31 +8,25 @@
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/node_state.hpp"
 #include "car_msgs/msg/debug_planner.hpp"
-#include "common/datatypes.hpp"
 #include "common/basenode.hpp"
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <nav_msgs/msg/path.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
 #include <nav_msgs/msg/map_meta_data.hpp>
+#include "common/datatypes.hpp"
 
 
 constexpr float maxSpeed = 0.02;
 constexpr float maxSpeedDist = 0.3;
 constexpr float minDist = 0.1;
 constexpr float gain_cte = 0.5;
-constexpr int n_binsAngle = 72;
+constexpr int n_binsAngle = 36;
 
-struct GridNode {
-    float x, y, theta;
-    float dist;
-    int idx;
-};
 
 class Planner : public BaseNode {
   public:
     Planner();
-    VehicleState vehicleState_;
 	
   private:
 
@@ -43,34 +37,30 @@ class Planner : public BaseNode {
     GridNode closestNode_;
     bool mapReady_;
 
-    car_msgs::msg::DebugPlanner debugPlannerMsg_;
     geometry_msgs::msg::PoseStamped::SharedPtr lastVehiclePose_;
+    sensor_msgs::msg::LaserScan::SharedPtr lastLaserScan_;
     nav_msgs::msg::OccupancyGrid::SharedPtr lastOccGrid_;
     nav_msgs::msg::MapMetaData* gridMetaData_;
-    sensor_msgs::msg::LaserScan::SharedPtr lastLaserScan_;
 
-    rclcpp::Publisher<car_msgs::msg::DebugPlanner>::SharedPtr pub_debugPlanner_;
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pub_path_;
 	
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_vehiclePose_;
-    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr sub_occGrid_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_laserScan_;
+    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr sub_occGrid_;
 
 
     void callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
+    void callback_laserScan(const sensor_msgs::msg::LaserScan::SharedPtr msg);
     void callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
-    void callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg);
 
-    void publish_debugMsg();
-    void publish_motionControl();
     void publish_path();
 
     std::vector<int> findShortestPath(float x_start, float y_start, float theta_start, int idx_target);
     void setTargetPoint();
     std::vector<int> transformPathToNewGrid(const nav_msgs::msg::MapMetaData* newMeta);
     void setClosestNode();
-    std::pair<float, float> calcSteering();
     bool checkMapReady();
+    bool checkObstacles(Pose& start, float s, float phi, float& avgCost);
 
 };

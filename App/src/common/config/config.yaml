@@ -14,7 +14,10 @@ topics:
   poseCrtgrphr: /tracked_pose
   occupancyGrid: /occupancy_grid
   debugPlanner: /debug/planner
+  debugController: /debug/controller
   costMap: /costmap
+  globalPath: /global_path
+
 
 
 
