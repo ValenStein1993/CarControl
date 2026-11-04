@@ -33,10 +33,14 @@ Controller::Controller()
     add_timer(100ms, &Controller::publish_debugMsg);
   }
 
+  add_timer(100ms, &Controller::publish_closestNode);
+
   pub_debug_ = create_publisher<car_msgs::msg::DebugController>(
     static_cast<std::string>(config_topics_debugController), 10);
   pub_motionControl_ = create_publisher<car_msgs::msg::MotionControl>(
     static_cast<std::string>(config_topics_motionControl), 10);
+  pub_closestNode_ = create_publisher<geometry_msgs::msg::PoseStamped>(
+    static_cast<std::string>(config_topics_closestNode), 10);
 
   sub_vehiclePose_ = create_subscription<geometry_msgs::msg::PoseStamped>(
     static_cast<std::string>(config_topics_poseCrtgrphr), 10, 
@@ -47,10 +51,39 @@ Controller::Controller()
   sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
     static_cast<std::string>(config_topics_laserScan), 10, 
     std::bind(&Controller::callback_laserscan, this, _1));
+
+  tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+  tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 }
 
 void Controller::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
-  lastVehiclePose_ = msg;
+
+  std::string vehicle_base_frame = "base_link";
+  std::string front_axle_frame = "front_axle_link";
+
+  if (!tf_buffer_->canTransform(vehicle_base_frame, front_axle_frame, tf2::TimePointZero)) {
+    return;
+  }
+
+  const auto base_to_front_axle = tf_buffer_->lookupTransform(
+      vehicle_base_frame, front_axle_frame, tf2::TimePointZero);
+
+  tf2::Transform map_to_chassis;
+  tf2::fromMsg(msg->pose, map_to_chassis);
+
+  tf2::Transform chassis_to_front_axle_tf;
+  tf2::fromMsg(base_to_front_axle.transform, chassis_to_front_axle_tf);
+
+  const tf2::Transform map_to_front_axle = map_to_chassis * chassis_to_front_axle_tf;
+
+  geometry_msgs::msg::PoseStamped front_axle_pose;
+  front_axle_pose.header = msg->header;
+  front_axle_pose.pose.position.x = map_to_front_axle.getOrigin().x();
+  front_axle_pose.pose.position.y = map_to_front_axle.getOrigin().y();
+  front_axle_pose.pose.position.z = map_to_front_axle.getOrigin().z();
+  front_axle_pose.pose.orientation = tf2::toMsg(map_to_front_axle.getRotation());
+  lastVehiclePose_ = std::make_shared<geometry_msgs::msg::PoseStamped>(front_axle_pose);
+
   publish_motionControl();
 }
 
@@ -62,6 +95,26 @@ void Controller::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr
 void Controller::callback_path(const nav_msgs::msg::Path::SharedPtr msg) {
   lastPath_ = msg;
   publish_motionControl();
+}
+
+void Controller::publish_closestNode() {
+  if (!lastPath_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot publish closest node: Vehicle path is unavailable.");
+    return;
+  }
+
+  geometry_msgs::msg::PoseStamped msg;
+  msg.header.stamp = get_clock()->now();
+  msg.header.frame_id = lastPath_->header.frame_id;
+  msg.pose.position.x = closestNode_.x;
+  msg.pose.position.y = closestNode_.y;
+  msg.pose.position.z = 0.0;
+  
+  tf2::Quaternion q;
+  q.setRPY(0, 0, closestNode_.theta);
+  msg.pose.orientation = tf2::toMsg(q);
+
+  pub_closestNode_->publish(msg);
 }
 
 void Controller::publish_motionControl() 
@@ -144,8 +197,9 @@ std::pair<float, float> Controller::calcSteering() {
   float speed = std::lerp(0, maxSpeed, std::clamp(
     (distAhead_ - minDist) / (maxSpeedDist - minDist), 0.0f, 1.0f));  
   float heading_error = closestNode_.theta - pos_th;
+  float cte_error = std::atan2(gain_cte * -cte ,(speed + 0.001));
   float phi = std::clamp(
-    static_cast<float>(heading_error + std::atan2(gain_cte * -cte ,(speed + 0.001))),
+    static_cast<float>(heading_error + cte_error),
     -config_vehicle_max_steering, 
     config_vehicle_max_steering);
 
@@ -153,10 +207,12 @@ std::pair<float, float> Controller::calcSteering() {
 
   if (debug_) {
     debugMsg_.yaw_rate = yaw_rate;
+    debugMsg_.yaw = pos_th;
+    debugMsg_.cn_yaw = closestNode_.theta;
     debugMsg_.speed = speed;
     debugMsg_.steering_angle = phi;
     debugMsg_.pdx_cnode = closestNode_.idx;
-    debugMsg_.cte = std::atan(gain_cte * cte / speed);
+    debugMsg_.cte = cte_error;
     debugMsg_.heading_error = heading_error;
   }
   return {speed, phi};

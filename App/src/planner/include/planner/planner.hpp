@@ -1,9 +1,10 @@
 #pragma once
 #include <vector>
 #include <utility>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
 
 #include "rclcpp/rclcpp.hpp"
-
 #include "car_msgs/msg/vehicle_state.hpp"
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/node_state.hpp"
@@ -21,7 +22,7 @@ constexpr float maxSpeed = 0.02;
 constexpr float maxSpeedDist = 0.3;
 constexpr float minDist = 0.1;
 constexpr float gain_cte = 0.5;
-constexpr int n_binsAngle = 36;
+constexpr int n_binsAngle = 72;
 
 
 class Planner : public BaseNode {
@@ -31,8 +32,8 @@ class Planner : public BaseNode {
   private:
 
     std::pair<float, float> target_{};
-    int idx_target_{};
-    std::vector<int> path_;
+    Pose targetNode_;
+    std::vector<std::tuple<float, float>> path_;
     float distAhead_;
     GridNode closestNode_;
     bool mapReady_;
@@ -41,6 +42,9 @@ class Planner : public BaseNode {
     sensor_msgs::msg::LaserScan::SharedPtr lastLaserScan_;
     nav_msgs::msg::OccupancyGrid::SharedPtr lastOccGrid_;
     nav_msgs::msg::MapMetaData* gridMetaData_;
+
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pub_path_;
@@ -56,9 +60,8 @@ class Planner : public BaseNode {
 
     void publish_path();
 
-    std::vector<int> findShortestPath(float x_start, float y_start, float theta_start, int idx_target);
-    void setTargetPoint();
-    std::vector<int> transformPathToNewGrid(const nav_msgs::msg::MapMetaData* newMeta);
+    std::vector<std::tuple<float, float>> findShortestPath(GridNode startNode);
+    void setTargetNode();
     void setClosestNode();
     bool checkMapReady();
     bool checkObstacles(Pose& start, float s, float phi, float& avgCost);

@@ -17,6 +17,7 @@ topics:
   debugController: /debug/controller
   costMap: /costmap
   globalPath: /global_path
+  closestNode: /closest_node
 
 
 
@@ -39,6 +40,7 @@ frames:
     chassis: base_link
     lidar: lidar_link
     imu: imu_link
+    front_axle: front_axle_link
   
 
 occgrid:
@@ -57,7 +59,7 @@ sensors:
     pos_chassis:
       x: 0
       y: 0
-      z: 0.3
+      z: 0.1
     stddev: 0.005
   potentiometer:
     stddev: 0.0001

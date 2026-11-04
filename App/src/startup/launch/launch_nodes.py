@@ -42,6 +42,15 @@ def generate_launch_description():
                        config['frames']['vehicle']['imu']]
         ),
         Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments=[str(0.5 * (config['vehicle']['chassis']['main']['length'] + config['vehicle']['chassis']['front']['length'])), 
+                       '0.0', '0.0', 
+                       '0.0', '0.0', '0.0', 
+                       config['frames']['vehicle']['chassis'], 
+                       config['frames']['vehicle']['front_axle']]
+        ),
+        Node(
             package='odometry',
             executable='odometry',
             parameters=[{

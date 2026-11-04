@@ -46,7 +46,7 @@ Pose motion(const Pose& p, float s, float phi) {
 
 Planner::Planner()
   : BaseNode("planner"), 
-    closestNode_{0.0f, 0.0f, 0.0f, -1, -1},
+    closestNode_{0.0f, 0.0f, 0.0f, 0.0f, -1},
     mapReady_{false} {
 
   declare_parameter<float>("x_target", 0.0f);
@@ -54,6 +54,8 @@ Planner::Planner()
 
   get_parameter("x_target", target_.first);
   get_parameter("y_target", target_.second);
+
+  add_timer(10000ms, &Planner::publish_path);
 
   pub_path_ = create_publisher<nav_msgs::msg::Path>(
     static_cast<std::string>(config_topics_globalPath), 10);
@@ -67,10 +69,41 @@ Planner::Planner()
   sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
     static_cast<std::string>(config_topics_laserScan), 10, 
     std::bind(&Planner::callback_laserScan, this, _1));
+
+  tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+  tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
 }
 
 void Planner::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
-  lastVehiclePose_ = msg;
+    if (!msg) {
+      return;
+    }
+
+    constexpr std::string_view vehicle_base_frame = "base_link";
+    constexpr std::string_view front_axle_frame = "front_axle_link";
+
+    if (!tf_buffer_->canTransform(std::string(vehicle_base_frame), std::string(front_axle_frame), tf2::TimePointZero)) {
+      return;
+    }
+
+    const auto base_to_front_axle = tf_buffer_->lookupTransform(
+        std::string(vehicle_base_frame), std::string(front_axle_frame), tf2::TimePointZero);
+
+    tf2::Transform map_to_chassis;
+    tf2::fromMsg(msg->pose, map_to_chassis);
+
+    tf2::Transform chassis_to_front_axle_tf;
+    tf2::fromMsg(base_to_front_axle.transform, chassis_to_front_axle_tf);
+
+    const tf2::Transform map_to_front_axle = map_to_chassis * chassis_to_front_axle_tf;
+
+    geometry_msgs::msg::PoseStamped front_axle_pose;
+    front_axle_pose.header = msg->header;
+    front_axle_pose.pose.position.x = map_to_front_axle.getOrigin().x();
+    front_axle_pose.pose.position.y = map_to_front_axle.getOrigin().y();
+    front_axle_pose.pose.position.z = map_to_front_axle.getOrigin().z();
+    front_axle_pose.pose.orientation = tf2::toMsg(map_to_front_axle.getRotation());
+    lastVehiclePose_ = std::make_shared<geometry_msgs::msg::PoseStamped>(front_axle_pose);
 }
 
 void Planner::callback_laserScan(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
@@ -79,20 +112,13 @@ void Planner::callback_laserScan(const sensor_msgs::msg::LaserScan::SharedPtr ms
 
 void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg) {
   lastOccGrid_ = msg;
-  nav_msgs::msg::MapMetaData* newGridMeta = &(msg->info);
-  // convert existing path to the new grid structure
-  path_ = transformPathToNewGrid(newGridMeta);
-  gridMetaData_ = newGridMeta;
+  gridMetaData_ = &(msg->info);
 
   if (!mapReady_) mapReady_ = checkMapReady();
-
-  // calculate path only if map is ready
-  if (mapReady_) {
-    setTargetPoint();
-    publish_path();
-  }
+  if (mapReady_) setTargetNode();
+  if (path_.empty()) publish_path();
+  
 }
-
 
 void Planner::publish_path() {
   if (!lastVehiclePose_) {
@@ -100,32 +126,34 @@ void Planner::publish_path() {
     return;
   }
 
-  if (!lastOccGrid_) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Map is unavailable.");
+  if (!mapReady_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Map is not ready.");
     return;
   }
 
   setClosestNode();
 
   if (closestNode_.idx == -1) {
+    GridNode startNode{static_cast<float>(lastVehiclePose_->pose.position.x), 
+      static_cast<float>(lastVehiclePose_->pose.position.y),
+      static_cast<float>(tf2::getYaw(lastVehiclePose_->pose.orientation)), 0.0f, -1};
 
-    path_ = findShortestPath(lastVehiclePose_->pose.position.x, lastVehiclePose_->pose.position.y,
-       tf2::getYaw(lastVehiclePose_->pose.orientation), idx_target_);
+    path_ = findShortestPath(startNode);
   }
   else {
-    std::vector<int> path_update = findShortestPath(closestNode_.x, closestNode_.y, closestNode_.theta, idx_target_);
+    std::vector<std::tuple<float, float>> path_update = findShortestPath(closestNode_);
 
-    path_update.insert(path_update.begin(), path_.begin(), path_.begin() + closestNode_.idx + 1);
-    path_ = path_update;
+    if (!path_update.empty()) {
+      path_update.insert(path_update.begin(), path_.begin(), path_.begin() + closestNode_.idx + 1);
+      path_ = path_update;
+    }
   }
 
   nav_msgs::msg::Path pathMsg;
   pathMsg.header.stamp = get_clock()->now();
   pathMsg.header.frame_id = config_frames_odom;
 
-  for (int idx : path_) {
-    auto [x, y] = Common::MapUtils::getPosFromMapIndex(idx, gridMetaData_);
-
+  for (const auto& [x, y] : path_) {
     geometry_msgs::msg::PoseStamped pose;
     pose.pose.position.x = x;
     pose.pose.position.y = y;
@@ -134,25 +162,7 @@ void Planner::publish_path() {
   pub_path_->publish(pathMsg);
 }
 
-std::vector<int> Planner::transformPathToNewGrid(const nav_msgs::msg::MapMetaData* newMeta) {
-  std::vector<int> transformed;
-
-  transformed.reserve(path_.size());
-
-  for (int idx : path_) {
-    // Convert old-grid cell position into world coordinates, then project into new grid
-    const auto [x_world, y_world] = Common::MapUtils::getPosFromMapIndex(idx, gridMetaData_);
-    const int newIdx = Common::MapUtils::getMapIndexFromPos(x_world, y_world, newMeta);
-
-    if (newIdx != -1) {
-      transformed.push_back(newIdx);
-    }
-  }
-
-  return transformed;
-}
-
-void Planner::setTargetPoint() {
+void Planner::setTargetNode() {
   if (!lastVehiclePose_) {
       RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot adjust target: Vehicle pose is unavailable.");
       return;
@@ -188,7 +198,7 @@ void Planner::setTargetPoint() {
       return;
   }
 
-  idx_target_ = idx;
+  targetNode_ = {xTarget, yTarget, 0.0f};
 }
 
 void Planner::setClosestNode() {
@@ -205,11 +215,11 @@ void Planner::setClosestNode() {
   }
 
   for (size_t i = init_search; i < path_.size(); ++i) {
-    auto [x, y] = Common::MapUtils::getPosFromMapIndex(path_[i], gridMetaData_);
+    auto [x, y] = path_[i];
     float distance = std::hypot(x - pos_x, y - pos_y);
     if (distance < dist_closestNode) {
       dist_closestNode = distance;
-      closestNode_ = {x, y, 0.0f, -1, static_cast<int>(i)};
+      closestNode_ = {x, y, 0.0f, 0.0f, static_cast<int>(i)};
     }
   }
 
@@ -219,21 +229,19 @@ void Planner::setClosestNode() {
   float y_closestNodeNext = closestNode_.y;
 
   if (closestNode_.idx > 0) {
-    std::tie(x_closestNodePrev, y_closestNodePrev) = Common::MapUtils::getPosFromMapIndex(path_[closestNode_.idx - 1], gridMetaData_);
+    std::tie(x_closestNodePrev, y_closestNodePrev) = path_[closestNode_.idx - 1];
   }
 
   if (static_cast<size_t>(closestNode_.idx) < (path_.size() - 1)) {
-    std::tie(x_closestNodeNext, y_closestNodeNext) = Common::MapUtils::getPosFromMapIndex(path_[closestNode_.idx + 1], gridMetaData_);
+    std::tie(x_closestNodeNext, y_closestNodeNext) = path_[closestNode_.idx + 1];
   }
 
   closestNode_.theta = std::atan2(y_closestNodeNext - y_closestNodePrev, x_closestNodeNext - x_closestNodePrev);
 }
 
-std::vector<int> Planner::findShortestPath(float x_start, float y_start, float theta_start, int idx_target) {
+std::vector<std::tuple<float, float>> Planner::findShortestPath(GridNode startNode) {
   // hybrid-A* Algorithm  
-
-  float x_tar, y_tar;
-  std::tie(x_tar, y_tar) = Common::MapUtils::getPosFromMapIndex(idx_target, gridMetaData_);
+  startNode.idx = -1;
   int idx_found = -1;
 
   float stepsize = 5 * gridMetaData_->resolution;
@@ -244,14 +252,14 @@ std::vector<int> Planner::findShortestPath(float x_start, float y_start, float t
     std::vector<std::tuple<float, float, int>>, 
     std::greater<std::tuple<float, float, int>>> pq;
 
-  std::unordered_map<int, GridNode> nodes; 
+  std::unordered_map<int, GridNode> nodes;
 
   // add start vertex to queue and dict
-  int idx_start = Common::MapUtils::getMapIndexFromPos(x_start, y_start, gridMetaData_) * n_binsAngle + angleBin(theta_start);
+  int idx_start = Common::MapUtils::getMapIndexFromPos(startNode.x, startNode.y, gridMetaData_) 
+    * n_binsAngle + angleBin(startNode.theta);
   pq.emplace(0.0, 0.0, idx_start);
 
-  GridNode n{x_start, y_start, theta_start, 0.0f, -1};
-  nodes[idx_start] = n; 
+  nodes[idx_start] = startNode; 
 
   while (!pq.empty()) {
     // select closest vertex u from the queue
@@ -267,8 +275,8 @@ std::vector<int> Planner::findShortestPath(float x_start, float y_start, float t
     // stop when target node is found
     //if (idx_u == idx_target)
     //  break;
-    float dx = n_u.x - x_tar;
-    float dy = n_u.y - y_tar;
+    float dx = n_u.x - targetNode_.x;
+    float dy = n_u.y - targetNode_.y;
     if (std::hypot(dx, dy) < 3*stepsize) {  
         idx_found = idx_u;
         break;
@@ -301,7 +309,7 @@ std::vector<int> Planner::findShortestPath(float x_start, float y_start, float t
         if (it == nodes.end() || d_v < it->second.dist) {
           nodes.insert_or_assign(idx_vt, GridNode{v_x, v_y, v_theta, d_v, idx_u});
 
-          float h = std::hypot(v_x - x_tar, v_y - y_tar);
+          float h = std::hypot(v_x - targetNode_.x, v_y - targetNode_.y);
           pq.emplace(d_v + h, d_v, idx_vt);
         }
       }
@@ -309,15 +317,15 @@ std::vector<int> Planner::findShortestPath(float x_start, float y_start, float t
   }
 
   // construct path
-  std::vector<int> path;
+  std::vector<std::tuple<float, float>> path;
   if (idx_found == -1) {
     return path;
   }
 
   int idx_c = idx_found;
 
-  while (idx_c != -1) {
-    path.push_back(idx_c / n_binsAngle);
+  while (idx_c != startNode.idx) {
+    path.push_back(std::make_tuple(nodes.at(idx_c).x, nodes.at(idx_c).y));
     idx_c = nodes.at(idx_c).idx;
   }
   std::reverse(path.begin(), path.end());

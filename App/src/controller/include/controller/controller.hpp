@@ -1,6 +1,8 @@
 #pragma once
 #include <vector>
 #include <utility>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -20,7 +22,7 @@
 constexpr float maxSpeed = 0.02;
 constexpr float maxSpeedDist = 0.3;
 constexpr float minDist = 0.1;
-constexpr float gain_cte = 0.5;
+constexpr float gain_cte = 2.0;
 
 
 class Controller : public BaseNode {
@@ -39,6 +41,10 @@ class Controller : public BaseNode {
 
     rclcpp::Publisher<car_msgs::msg::DebugController>::SharedPtr pub_debug_;
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_closestNode_;
+
+    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 	
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_vehiclePose_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_laserScan_;
@@ -51,6 +57,7 @@ class Controller : public BaseNode {
 
     void publish_debugMsg();
     void publish_motionControl();
+    void publish_closestNode();
 
     void setClosestNode();
     std::pair<float, float> calcSteering();
