@@ -48,4 +48,13 @@ MAP_BUILDER.use_trajectory_builder_2d = true
 TRAJECTORY_BUILDER_2D.num_accumulated_range_data = 1
 TRAJECTORY_BUILDER_2D.use_imu_data = false
 TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = true
+TRAJECTORY_BUILDER_2D.motion_filter.max_time_seconds = 2.0
+TRAJECTORY_BUILDER_2D.motion_filter.max_distance_meters = 0.02
+TRAJECTORY_BUILDER_2D.motion_filter.max_angle_radians = math.rad(1)
+TRAJECTORY_BUILDER_2D.submaps.grid_options_2d.resolution = 0.02
+TRAJECTORY_BUILDER_2D.voxel_filter_size = 0.01
+TRAJECTORY_BUILDER_2D.min_range = 0.05 
+TRAJECTORY_BUILDER_2D.submaps.range_data_inserter.probability_grid_range_data_inserter.hit_probability = 0.6
+TRAJECTORY_BUILDER_2D.submaps.range_data_inserter.probability_grid_range_data_inserter.miss_probability = 0.45
+
 return options

@@ -19,10 +19,9 @@
 
 
 constexpr float maxSpeed = 0.02;
-constexpr float maxSpeedDist = 0.3;
-constexpr float minDist = 0.1;
 constexpr float gain_cte = 0.5;
-constexpr int n_binsAngle = 72;
+constexpr int n_binsAngle = 36;
+constexpr float latticeRes = 0.05f;
 
 
 class Planner : public BaseNode {
@@ -33,7 +32,7 @@ class Planner : public BaseNode {
 
     std::pair<float, float> target_{};
     Pose targetNode_;
-    std::vector<std::tuple<float, float>> path_;
+    std::vector<Pose> path_; 
     float distAhead_;
     GridNode closestNode_;
     bool mapReady_;
@@ -60,7 +59,7 @@ class Planner : public BaseNode {
 
     void publish_path();
 
-    std::vector<std::tuple<float, float>> findShortestPath(GridNode startNode);
+    std::vector<Pose> findShortestPath(GridNode startNode);
     void setTargetNode();
     void setClosestNode();
     bool checkMapReady();

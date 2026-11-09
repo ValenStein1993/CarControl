@@ -47,7 +47,7 @@ cv::Mat CostMap::occgridToCostmap(const nav_msgs::msg::OccupancyGrid::SharedPtr 
   cv::Mat freeMask = ~occupied; 
   cv::Mat dist; 
   cv::distanceTransform(freeMask, dist, cv::DIST_L2, cv::DIST_MASK_PRECISE);
-  dist *= config_occgrid_resolution;  
+  dist *= msg->info.resolution;
 
   cv::Mat cost;
   cv::exp((dist - radius_inscribed) * (-scale_cost), cost);

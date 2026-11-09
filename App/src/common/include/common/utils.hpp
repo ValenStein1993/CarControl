@@ -1,6 +1,7 @@
 #pragma once
 #include "common/config.hpp"
 #include <cmath>
+#include <utility>
 #include <nav_msgs/msg/map_meta_data.hpp>
 
 
@@ -43,6 +44,16 @@ namespace Common::MapUtils
 
         if (vx < 0 || vy < 0 || vx >= mapMetaData->width || vy >= mapMetaData->height) return false;
         return true;
+    }
+
+}
+
+
+namespace Common::MathUtils
+{
+    // wraps an angle [rad] to [-pi, pi]
+    inline float wrapAngle(float a) {
+        return std::atan2(std::sin(a), std::cos(a));
     }
 
 }

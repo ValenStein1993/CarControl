@@ -18,12 +18,14 @@
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <geometry_msgs/msg/point.hpp>
 #include "common/config.hpp"
-#include "common/map_utils.hpp"
+#include "common/utils.hpp"
 #include "common/config_app.hpp"
 #include "common/datatypes.hpp"
 
 using namespace std::chrono_literals;
 using std::placeholders::_1;
+
+using Common::MathUtils::wrapAngle;
 
 Controller::Controller()
   : BaseNode("controller"),
@@ -57,7 +59,6 @@ Controller::Controller()
 }
 
 void Controller::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
-
   std::string vehicle_base_frame = "base_link";
   std::string front_axle_frame = "front_axle_link";
 
@@ -93,7 +94,17 @@ void Controller::callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr
 }
 
 void Controller::callback_path(const nav_msgs::msg::Path::SharedPtr msg) {
+  const int idx = closestNode_.idx;
+  bool keepIdx = false;
+  if (lastPath_ && idx >= 0 &&
+      static_cast<size_t>(idx) < lastPath_->poses.size() &&
+      static_cast<size_t>(idx) + 1 < msg->poses.size()) {
+    const auto& a = lastPath_->poses[idx].pose.position;
+    const auto& b = msg->poses[idx].pose.position;
+    keepIdx = std::hypot(a.x - b.x, a.y - b.y) < 1e-4;
+  }
   lastPath_ = msg;
+  if (!keepIdx) closestNode_.idx = -1;
   publish_motionControl();
 }
 
@@ -145,74 +156,121 @@ void Controller::publish_debugMsg() {
   pub_debug_->publish(debugMsg_);
 }
 
-void Controller::setClosestNode() {
-  float pos_x = lastVehiclePose_->pose.position.x;
-  float pos_y = lastVehiclePose_->pose.position.y;
-  
-  float dist_closestNode = std::numeric_limits<float>::max();
-  int init_search;
-  if (closestNode_.idx == -1) {
-    init_search = 0;
-  }
-  else {
-    init_search = closestNode_.idx;
-  }
 
-  for (size_t i = init_search; i < lastPath_->poses.size(); ++i) {
-    geometry_msgs::msg::Point p = lastPath_->poses[i].pose.position;
-    float distance = std::hypot(p.x - pos_x, p.y - pos_y);
-    if (distance < dist_closestNode) {
-      dist_closestNode = distance;
-      closestNode_ = {static_cast<float>(p.x), static_cast<float>(p.y), 0.0f, -1, static_cast<int>(i)};
+int Controller::getDrivingDir(int i) const {
+  const auto& a = lastPath_->poses[i].pose;
+  const auto& b = lastPath_->poses[i + 1].pose.position;
+  const double yaw = tf2::getYaw(a.orientation);
+  // Dot product between yaw and vector to next point tells if forward or reverse direction 
+  const double dot = (b.x - a.position.x) * std::cos(yaw) + (b.y - a.position.y) * std::sin(yaw);
+  return dot >= 0.0 ? 1 : -1;
+}
+
+int Controller::getSegmentEnd(int first) const {
+  // last segment index before the next direction change
+  const int nSeg = static_cast<int>(lastPath_->poses.size()) - 1;
+  int dir = 0;
+  int last = first;
+  for (int i = first; i < nSeg; ++i) {
+    const int d = getDrivingDir(i);
+    if (dir == 0) dir = d;
+    else if (d != dir) break;
+    last = i;
+  }
+  return last;
+}
+
+std::optional<PathProjection> Controller::projectOnPath(float pos_x, float pos_y, int first, int last) const {
+  // projects (pos_x, pos_y) onto segments [first, last] of the path
+  const auto& poses = lastPath_->poses;
+
+  float bestDist = std::numeric_limits<float>::max();
+  std::optional<PathProjection> best;
+
+  for (int i = first; i <= last; ++i) {
+
+    const float ax = poses[i].pose.position.x;
+    const float ay = poses[i].pose.position.y;
+    const float dx = poses[i + 1].pose.position.x - ax;
+    const float dy = poses[i + 1].pose.position.y - ay;
+    const float len2 = dx * dx + dy * dy;
+
+    const float t = std::clamp(((pos_x - ax) * dx + (pos_y - ay) * dy) / len2, 0.0f, 1.0f);
+    const float qx = ax + t * dx;
+    const float qy = ay + t * dy;
+    const float dist = std::hypot(pos_x - qx, pos_y - qy);
+
+    if (dist < bestDist) {
+      bestDist = dist;
+      const float yaw_a = tf2::getYaw(poses[i].pose.orientation);
+      const float yaw_b = tf2::getYaw(poses[i + 1].pose.orientation);
+      best = PathProjection{qx, qy, std::atan2(dy, dx),
+        wrapAngle(yaw_a + t * wrapAngle(yaw_b - yaw_a)), t, i, getDrivingDir(i)};
     }
   }
-
-  float x_pPrev = closestNode_.x;
-  float y_pPrev = closestNode_.y;
-  float x_pNext = closestNode_.x;
-  float y_pNext = closestNode_.y;
-
-  if (closestNode_.idx > 0) {
-    x_pPrev = lastPath_->poses[closestNode_.idx - 1].pose.position.x;
-    y_pPrev = lastPath_->poses[closestNode_.idx - 1].pose.position.y;
-  }
-
-  if (static_cast<size_t>(closestNode_.idx) < (lastPath_->poses.size() - 1)) {
-    x_pNext = lastPath_->poses[closestNode_.idx + 1].pose.position.x;
-    y_pNext = lastPath_->poses[closestNode_.idx + 1].pose.position.y;
-  }
-
-  closestNode_.theta = std::atan2(y_pNext - y_pPrev, x_pNext - x_pPrev);
+  return best;
 }
 
 std::pair<float, float> Controller::calcSteering() {
-  float pos_x = lastVehiclePose_->pose.position.x;
-  float pos_y = lastVehiclePose_->pose.position.y;
-  float pos_th = tf2::getYaw(lastVehiclePose_->pose.orientation);
-  
-  setClosestNode();
+  const int nSeg = static_cast<int>(lastPath_->poses.size()) - 1;
+  if (nSeg < 1) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Path has less than 2 points: stopping.");
+    return {0.0f, 0.0f};
+  }
 
-  // stanley controller
-  float cte = (pos_y - closestNode_.y) * std::cos(closestNode_.theta) - (pos_x - closestNode_.x) * std::sin(closestNode_.theta);
-  float speed = std::lerp(0, maxSpeed, std::clamp(
-    (distAhead_ - minDist) / (maxSpeedDist - minDist), 0.0f, 1.0f));  
-  float heading_error = closestNode_.theta - pos_th;
-  float cte_error = std::atan2(gain_cte * -cte ,(speed + 0.001));
-  float phi = std::clamp(
-    static_cast<float>(heading_error + cte_error),
-    -config_vehicle_max_steering, 
-    config_vehicle_max_steering);
+  const float x_front = lastVehiclePose_->pose.position.x;
+  const float y_front = lastVehiclePose_->pose.position.y;
+  const float yaw = tf2::getYaw(lastVehiclePose_->pose.orientation);
+  const float x_rear = x_front - config_vehicle_wheelbase * std::cos(yaw);
+  const float y_rear = y_front - config_vehicle_wheelbase * std::sin(yaw);
 
-  float yaw_rate = (speed / config_vehicle_wheelbase) * std::tan(phi);
+  auto projectRun = [&](int first) {
+    const int last = getSegmentEnd(first);
+    auto p = projectOnPath(x_front, y_front, first, last);
+    //if (p && p->dir == -1) p = projectOnPath(x_rear, y_rear, first, last);
+    return std::make_pair(p, last);
+  };
+
+  int first = std::clamp(closestNode_.idx, 0, nSeg - 1);
+  auto [proj, last] = projectRun(first);
+
+  // reference point passed the goal or end of the segment
+  while (proj && proj->idx == last && proj->t >= 1.0f) {
+    if (last + 1 >= nSeg) {
+      closestNode_ = {proj->x, proj->y, proj->heading, 0.0f, proj->idx};
+      RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Goal reached: stopping.");
+      return {0.0f, 0.0f};
+    }
+    first = last + 1;
+    std::tie(proj, last) = projectRun(first);
+  }
+
+  closestNode_ = {proj->x, proj->y, proj->heading, 0.0f, proj->idx};
+  const int dir = proj->dir;
+  const float x_ref = dir == 1 ? x_front : x_rear;
+  const float y_ref = dir == 1 ? y_front : y_rear;
+
+  const float cte = (y_ref - proj->y) * std::cos(proj->tangent) -
+    (x_ref - proj->x) * std::sin(proj->tangent);
+
+  const float heading_error = wrapAngle(proj->heading - yaw);
+  const float cte_error = std::atan2(-gain_cte * cte, soft_cte + maxSpeed);
+
+  float phi = heading_error + cte_error;
+  if (dir == -1) phi = -phi;
+  phi = std::clamp(phi, -config_vehicle_max_steering, config_vehicle_max_steering);
+
+  const float speed = dir * maxSpeed;
+  const float yaw_rate = (speed / config_vehicle_wheelbase) * std::tan(phi);
 
   if (debug_) {
     debugMsg_.yaw_rate = yaw_rate;
-    debugMsg_.yaw = pos_th;
-    debugMsg_.cn_yaw = closestNode_.theta;
+    debugMsg_.yaw = yaw;
+    debugMsg_.cn_yaw = proj->heading;
     debugMsg_.speed = speed;
     debugMsg_.steering_angle = phi;
-    debugMsg_.pdx_cnode = closestNode_.idx;
-    debugMsg_.cte = cte_error;
+    debugMsg_.pdx_cnode = proj->idx;
+    debugMsg_.cte = cte;
     debugMsg_.heading_error = heading_error;
   }
   return {speed, phi};

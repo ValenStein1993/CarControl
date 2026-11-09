@@ -350,7 +350,7 @@
             <left_steering_joint>left_steering_joint</left_steering_joint>
             <right_steering_joint>right_steering_joint</right_steering_joint>
             <kingpin_width>{{ vehicle.chassis.main.width }}</kingpin_width>       <!-- matches wheel_separation -->
-            <steering_limit>0.6</steering_limit>     <!-- must match joint limits -->
+            <steering_limit>{{ vehicle.max_steering }}</steering_limit>     <!-- must match joint limits -->
             <wheel_base>{{ vehicle.wheelbase }}</wheel_base>             <!-- distance front to rear axle -->
             <wheel_separation>{{ vehicle.wheeltrack }}</wheel_separation>
             <wheel_radius>{{ vehicle.wheels.radius }}</wheel_radius>

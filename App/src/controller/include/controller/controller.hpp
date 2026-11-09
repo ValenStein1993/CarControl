@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <utility>
+#include <optional>
 #include <tf2_ros/buffer.h>
 #include <tf2_ros/transform_listener.h>
 
@@ -19,11 +20,23 @@
 #include "common/datatypes.hpp"
 
 
-constexpr float maxSpeed = 0.02;
+constexpr float maxSpeed = 0.03;
 constexpr float maxSpeedDist = 0.3;
 constexpr float minDist = 0.1;
 constexpr float gain_cte = 2.0;
+// Stanley softening constant [m/s]: limits the cross-track term at low speed
+constexpr float soft_cte = 0.1;
 
+
+// projection of a point onto the planned path
+struct PathProjection {
+  float x, y;     // projected point on the path
+  float tangent;  // direction of travel along the segment
+  float heading;  // planned vehicle heading, interpolated along the segment
+  float t;        // position on the segment [0, 1]
+  int idx;        // index of the segment start pose
+  int dir;        // +1 forward, -1 reverse
+};
 
 class Controller : public BaseNode {
   public:
@@ -59,7 +72,10 @@ class Controller : public BaseNode {
     void publish_motionControl();
     void publish_closestNode();
 
-    void setClosestNode();
+    int getDrivingDir(int i) const;
+    bool isDegenerate(int i) const;
+    int getSegmentEnd(int first) const;
+    std::optional<PathProjection> projectOnPath(float pos_x, float pos_y, int first, int last) const;
     std::pair<float, float> calcSteering();
 
 };

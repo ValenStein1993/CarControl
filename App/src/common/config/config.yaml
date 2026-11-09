@@ -44,7 +44,7 @@ frames:
   
 
 occgrid:
-  resolution: 0.01
+  resolution: 0.02
 
 sensors:
   imu:
