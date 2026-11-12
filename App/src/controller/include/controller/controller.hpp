@@ -11,6 +11,7 @@
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/node_state.hpp"
 #include "car_msgs/msg/debug_controller.hpp"
+#include "car_msgs/msg/sensor_measurements.hpp"
 #include "common/basenode.hpp"
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <nav_msgs/msg/path.hpp>
@@ -22,8 +23,10 @@
 
 constexpr float maxSpeed = 0.03;
 constexpr float maxSpeedDist = 0.3;
-constexpr float minDist = 0.1;
+constexpr float phiTol = 0.02;  // [rad] steering angle tolerance for speed reduction
+constexpr float phiErrMax = 0.2; // [rad] steering angle error for
 constexpr float gain_cte = 2.0;
+
 // Stanley softening constant [m/s]: limits the cross-track term at low speed
 constexpr float soft_cte = 0.1;
 
@@ -46,6 +49,7 @@ class Controller : public BaseNode {
 
     float distAhead_;
     GridNode closestNode_;
+    float steeringAngleAct_;
 
     car_msgs::msg::DebugController debugMsg_;
     geometry_msgs::msg::PoseStamped::SharedPtr lastVehiclePose_;
@@ -62,11 +66,13 @@ class Controller : public BaseNode {
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_vehiclePose_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_laserScan_;
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr sub_path_;
+    rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_;
 
 
     void callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
     void callback_path(const nav_msgs::msg::Path::SharedPtr msg);
     void callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg);
+    void callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg);
 
     void publish_debugMsg();
     void publish_motionControl();
@@ -74,8 +80,8 @@ class Controller : public BaseNode {
 
     int getDrivingDir(int i) const;
     bool isDegenerate(int i) const;
-    int getSegmentEnd(int first) const;
-    std::optional<PathProjection> projectOnPath(float pos_x, float pos_y, int first, int last) const;
+    int getSegmentEnd(int first, int dir) const;
+    std::optional<PathProjection> projectOnPath(int first, int last, int dir) const;
     std::pair<float, float> calcSteering();
 
 };

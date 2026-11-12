@@ -21,6 +21,8 @@
 #include "common/utils.hpp"
 #include "common/config_app.hpp"
 #include "common/datatypes.hpp"
+#include "car_msgs/msg/sensor_measurements.hpp"
+
 
 using namespace std::chrono_literals;
 using std::placeholders::_1;
@@ -53,6 +55,9 @@ Controller::Controller()
   sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
     static_cast<std::string>(config_topics_laserScan), 10, 
     std::bind(&Controller::callback_laserscan, this, _1));
+  sub_measurements_ = create_subscription<car_msgs::msg::SensorMeasurements>(
+		static_cast<std::string>(config_topics_sensorMeasurements), 10,
+		std::bind(&Controller::callback_measurements, this, _1));
 
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -106,6 +111,10 @@ void Controller::callback_path(const nav_msgs::msg::Path::SharedPtr msg) {
   lastPath_ = msg;
   if (!keepIdx) closestNode_.idx = -1;
   publish_motionControl();
+}
+
+void Controller::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
+  steeringAngleAct_ = msg->cjmcu103_angle;
 }
 
 void Controller::publish_closestNode() {
@@ -166,34 +175,54 @@ int Controller::getDrivingDir(int i) const {
   return dot >= 0.0 ? 1 : -1;
 }
 
-int Controller::getSegmentEnd(int first) const {
+int Controller::getSegmentEnd(int first, int dir) const {
   // last segment index before the next direction change
   const int nSeg = static_cast<int>(lastPath_->poses.size()) - 1;
-  int dir = 0;
   int last = first;
   for (int i = first; i < nSeg; ++i) {
     const int d = getDrivingDir(i);
-    if (dir == 0) dir = d;
-    else if (d != dir) break;
+    if (d != dir) break;
     last = i;
   }
   return last;
 }
 
-std::optional<PathProjection> Controller::projectOnPath(float pos_x, float pos_y, int first, int last) const {
-  // projects (pos_x, pos_y) onto segments [first, last] of the path
+std::optional<PathProjection> Controller::projectOnPath(int first, int last, int dir) const {
+  // Projects the tracked axle onto segments [first, last] of its path.
+  // The published path belongs to the front axle. Stanley tracks the leading axle:
+  //   forward (dir = 1):  front axle on the published path
+  //   reverse (dir = -1): rear axle on the path shifted by -L along the planned heading
   const auto& poses = lastPath_->poses;
+  const float L = config_vehicle_wheelbase;
+
+  auto transformPoint = [&](const geometry_msgs::msg::Pose& p) {
+    const float theta = tf2::getYaw(p.orientation);
+    const float offset = (dir == 1) ? 0.0f : -L;
+    return Pose{static_cast<float>(p.position.x) + offset * std::cos(theta),
+                static_cast<float>(p.position.y) + offset * std::sin(theta),
+                theta};
+  };
+
+  // same axle on the vehicle side
+  const Pose vehicle = transformPoint(lastVehiclePose_->pose);
+  const float pos_x = vehicle.x;
+  const float pos_y = vehicle.y;
 
   float bestDist = std::numeric_limits<float>::max();
   std::optional<PathProjection> best;
 
   for (int i = first; i <= last; ++i) {
 
-    const float ax = poses[i].pose.position.x;
-    const float ay = poses[i].pose.position.y;
-    const float dx = poses[i + 1].pose.position.x - ax;
-    const float dy = poses[i + 1].pose.position.y - ay;
+    const Pose a = transformPoint(poses[i].pose);
+    const Pose b = transformPoint(poses[i + 1].pose);
+    const float ax = a.x;
+    const float ay = a.y;
+    const float bx = b.x;
+    const float by = b.y;
+    const float dx = bx - ax;
+    const float dy = by - ay;
     const float len2 = dx * dx + dy * dy;
+    if (len2 < 1e-10f) continue;  // duplicate points -> avoid division by zero
 
     const float t = std::clamp(((pos_x - ax) * dx + (pos_y - ay) * dy) / len2, 0.0f, 1.0f);
     const float qx = ax + t * dx;
@@ -202,10 +231,8 @@ std::optional<PathProjection> Controller::projectOnPath(float pos_x, float pos_y
 
     if (dist < bestDist) {
       bestDist = dist;
-      const float yaw_a = tf2::getYaw(poses[i].pose.orientation);
-      const float yaw_b = tf2::getYaw(poses[i + 1].pose.orientation);
       best = PathProjection{qx, qy, std::atan2(dy, dx),
-        wrapAngle(yaw_a + t * wrapAngle(yaw_b - yaw_a)), t, i, getDrivingDir(i)};
+        wrapAngle(a.th + t * wrapAngle(b.th - a.th)), t, i, dir};
     }
   }
   return best;
@@ -225,9 +252,9 @@ std::pair<float, float> Controller::calcSteering() {
   const float y_rear = y_front - config_vehicle_wheelbase * std::sin(yaw);
 
   auto projectRun = [&](int first) {
-    const int last = getSegmentEnd(first);
-    auto p = projectOnPath(x_front, y_front, first, last);
-    //if (p && p->dir == -1) p = projectOnPath(x_rear, y_rear, first, last);
+    const int dir = getDrivingDir(first);
+    const int last = getSegmentEnd(first, dir);
+    auto p = projectOnPath(first, last, dir);
     return std::make_pair(p, last);
   };
 
@@ -253,25 +280,30 @@ std::pair<float, float> Controller::calcSteering() {
   const float cte = (y_ref - proj->y) * std::cos(proj->tangent) -
     (x_ref - proj->x) * std::sin(proj->tangent);
 
-  const float heading_error = wrapAngle(proj->heading - yaw);
+
+  const float yaw_target = proj->tangent + (dir == -1 ? std::numbers::pi_v<float> : 0.0f);
+  const float heading_error = wrapAngle(yaw_target - yaw);
   const float cte_error = std::atan2(-gain_cte * cte, soft_cte + maxSpeed);
 
   float phi = heading_error + cte_error;
   if (dir == -1) phi = -phi;
   phi = std::clamp(phi, -config_vehicle_max_steering, config_vehicle_max_steering);
 
-  const float speed = dir * maxSpeed;
+  const float delta_phi = std::abs(phi - steeringAngleAct_);
+  const float ratio = std::clamp((delta_phi - phiTol) / (phiErrMax - phiTol), 0.0f, 1.0f);
+  const float speed = std::max(dir * maxSpeed * (1.0f - ratio), 0.001f);
+
   const float yaw_rate = (speed / config_vehicle_wheelbase) * std::tan(phi);
 
   if (debug_) {
     debugMsg_.yaw_rate = yaw_rate;
     debugMsg_.yaw = yaw;
-    debugMsg_.cn_yaw = proj->heading;
+    debugMsg_.cn_yaw = phi;
     debugMsg_.speed = speed;
-    debugMsg_.steering_angle = phi;
+    debugMsg_.steering_angle = steeringAngleAct_;
     debugMsg_.pdx_cnode = proj->idx;
     debugMsg_.cte = cte;
-    debugMsg_.heading_error = heading_error;
+    debugMsg_.heading_error = delta_phi;
   }
   return {speed, phi};
 }

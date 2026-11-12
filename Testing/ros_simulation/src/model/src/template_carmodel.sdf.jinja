@@ -280,8 +280,8 @@
             <axis>
                 <xyz expressed_in='__model__'>0 0 1</xyz>
                 <limit>
-                    <lower>{{ -vehicle.max_steering }}</lower>  <!-- ~34 degrees -->
-                    <upper>{{ vehicle.max_steering }}</upper>
+                    <lower>{{ 1.5 * -vehicle.max_steering }}</lower>  
+                    <upper>{{ 1.5 * vehicle.max_steering }}</upper>
                     <effort>1</effort> 
                 </limit>
             </axis>
@@ -294,8 +294,8 @@
             <axis>
                 <xyz expressed_in='__model__'>0 0 1</xyz>
                 <limit>
-                    <lower>{{ -vehicle.max_steering }}</lower>
-                    <upper>{{ vehicle.max_steering }}</upper>
+                    <lower>{{ 1.5 * -vehicle.max_steering }}</lower>
+                    <upper>{{ 1.5 * vehicle.max_steering }}</upper>
                     <effort>1</effort> 
                 </limit>
             </axis>
@@ -343,14 +343,14 @@
             </axis>
         </joint>
         <plugin
-            filename="gz-sim-ackermann-steering-system"
-            name="gz::sim::systems::AckermannSteering">
+            filename="carcontrol_ackermann_steering"
+            name="carcontrol::AckermannSteering">
             <left_joint>left_backwheel_joint</left_joint>
             <right_joint>right_backwheel_joint</right_joint>
             <left_steering_joint>left_steering_joint</left_steering_joint>
             <right_steering_joint>right_steering_joint</right_steering_joint>
             <kingpin_width>{{ vehicle.chassis.main.width }}</kingpin_width>       <!-- matches wheel_separation -->
-            <steering_limit>{{ vehicle.max_steering }}</steering_limit>     <!-- must match joint limits -->
+            <steering_limit>{{ 1.5 * vehicle.max_steering }}</steering_limit>     <!-- must match joint limits -->
             <wheel_base>{{ vehicle.wheelbase }}</wheel_base>             <!-- distance front to rear axle -->
             <wheel_separation>{{ vehicle.wheeltrack }}</wheel_separation>
             <wheel_radius>{{ vehicle.wheels.radius }}</wheel_radius>

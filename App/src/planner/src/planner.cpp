@@ -33,13 +33,15 @@ int angleBin(float theta) {
 }
 
 Pose motion(const Pose& p, float s, float phi) {
+  // bicycle model for front axle
   if (phi == 0.0f) {
     return {p.x + s * std::cos(p.th), p.y + s * std::sin(p.th), p.th};
   }
-  const float R = config_vehicle_wheelbase / std::tan(phi);
+  const float R = config_vehicle_wheelbase / std::sin(phi);
   const float dth = s / R;
-  return {p.x + R * (std::sin(p.th + dth) - std::sin(p.th)),
-          p.y - R * (std::cos(p.th + dth) - std::cos(p.th)),
+  const float a = p.th + phi;
+  return {p.x + R * (std::sin(a + dth) - std::sin(a)),
+          p.y - R * (std::cos(a + dth) - std::cos(a)),
           p.th + dth};
 }
 
@@ -297,16 +299,18 @@ std::vector<Pose> Planner::findShortestPath(GridNode startNode) {
         float s = dir * stepsize;
         
         float avgCost;
-        if (!checkObstacles(p_u, s, phi, avgCost)) continue;
+        Pose p_v;
+        float s_moved = moveVehicle(p_u, s, phi, p_v, avgCost);
 
-        auto [v_x, v_y, v_theta] = motion(p_u, s, phi);
+        // check if vehicle moved at all (collision or out of map)
+        if (s_moved == 0.0f) continue; 
 
         // 3d lattice index (x, y, theta)
-        int idx_vt = stateIdx(v_x, v_y, v_theta);
+        int idx_vt = stateIdx(p_v.x, p_v.y, p_v.th);
         if (idx_vt == -1 || idx_vt == idx_u) continue;
 
         float risk_weight = 1.0f; 
-        float step = stepsize * (1.0f + risk_weight * avgCost / 100.0f);
+        float step = s_moved * (1.0f + risk_weight * avgCost / 100.0f);
         if (dir == -1) step *= 2.0f;          // reverse penalty
         if (phi != 0.0f) step *= 1.1f;      // small turning penalty
 
@@ -314,9 +318,9 @@ std::vector<Pose> Planner::findShortestPath(GridNode startNode) {
 
         auto it = nodes.find(idx_vt);
         if (it == nodes.end() || d_v < it->second.dist) {
-          nodes.insert_or_assign(idx_vt, GridNode{v_x, v_y, v_theta, d_v, idx_u});
+          nodes.insert_or_assign(idx_vt, GridNode{p_v.x, p_v.y, p_v.th, d_v, idx_u});
 
-          float h = std::hypot(v_x - targetNode_.x, v_y - targetNode_.y);
+          float h = std::hypot(p_v.x - targetNode_.x, p_v.y - targetNode_.y);
           pq.emplace(d_v + h, d_v, idx_vt);
         }
       }
@@ -361,23 +365,45 @@ bool Planner::checkMapReady() {
   return !(scanHasObs ^ mapHasObs);
 }
 
-bool Planner::checkObstacles(Pose& start, float s, float phi, float& avgCost) {
-  const int n = std::max(1, static_cast<int>(std::ceil(std::abs(s) / (0.5f * gridMetaData_->resolution))));
+float Planner::moveVehicle(Pose& start, float s, float phi, Pose& end, float& avgCost) {
+  Pose p;
+  float x_check, y_check;
 
   float sum = 0.0f;
-  for (int i = 1; i <= n; ++i) {
-    const Pose p = motion(start, s * i / n, phi);
+  const int n = std::max(1, static_cast<int>(std::ceil(std::abs(s) / (0.5f * gridMetaData_->resolution))));
 
-    if (!Common::MapUtils::checkGridBoundries(p.x, p.y, gridMetaData_)) return false;
-    const int idx = Common::MapUtils::getMapIndexFromPos(p.x, p.y, gridMetaData_);
+  int i = 0;
+  while (i < n) {
+    p = motion(start, s * (i + 1) / n, phi);
 
-    int c = lastOccGrid_->data[idx];
-    if (c < 0) c = 50;                       // unknown: treat as moderately costly (or return false)
-    if (c >= cost_inscribed) return false;   // blocked
+    if (s < 0.0f) {
+      x_check = p.x - config_vehicle_wheelbase * std::cos(p.th);
+      y_check = p.y - config_vehicle_wheelbase * std::sin(p.th);
+    } 
+    else {
+      x_check = p.x;
+      y_check = p.y;
+    } 
+
+    // check if reference point is inside the map
+    if (!Common::MapUtils::checkGridBoundries(x_check, y_check, gridMetaData_)) break;
+
+    const int idx_c = Common::MapUtils::getMapIndexFromPos(x_check, y_check, gridMetaData_);
+    int c = lastOccGrid_->data[idx_c];
+
+    // check if reference point is in collision with obstacles
+    if (c >= cost_inscribed) break;  
+
+    // unknown: treat as moderately costly
+    if (c < 0) c = 50; 
+
     sum += c;
+    i++;
+    end = p;
   }
-  avgCost = sum / n;
-  return true;
+
+  avgCost = sum / std::max(1, i);
+  return std::abs(s * i / n);
 }
 
 int main(int argc, char * argv[])

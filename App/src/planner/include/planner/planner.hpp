@@ -63,6 +63,6 @@ class Planner : public BaseNode {
     void setTargetNode();
     void setClosestNode();
     bool checkMapReady();
-    bool checkObstacles(Pose& start, float s, float phi, float& avgCost);
+    float moveVehicle(Pose& start, float s, float phi, Pose& end, float& avgCost);
 
 };
