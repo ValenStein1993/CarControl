@@ -335,7 +335,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /closest_node
+        Value: /closest_node_disp
       Value: true
   Enabled: true
   Global Options:
@@ -383,7 +383,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.8207716941833496
+      Distance: 6.012058734893799
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1

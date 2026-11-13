@@ -12,6 +12,8 @@
 #include "car_msgs/msg/node_state.hpp"
 #include "car_msgs/msg/debug_controller.hpp"
 #include "car_msgs/msg/sensor_measurements.hpp"
+#include "car_msgs/msg/path_node.hpp"
+
 #include "common/basenode.hpp"
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <nav_msgs/msg/path.hpp>
@@ -58,7 +60,9 @@ class Controller : public BaseNode {
 
     rclcpp::Publisher<car_msgs::msg::DebugController>::SharedPtr pub_debug_;
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;
-    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_closestNode_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_closestNodeDisp_;
+    rclcpp::Publisher<car_msgs::msg::PathNode>::SharedPtr pub_closestNode_;
+
 
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_;

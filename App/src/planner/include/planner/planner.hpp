@@ -9,6 +9,8 @@
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/node_state.hpp"
 #include "car_msgs/msg/debug_planner.hpp"
+#include "car_msgs/msg/path_node.hpp"
+
 #include "common/basenode.hpp"
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <nav_msgs/msg/path.hpp>
@@ -34,8 +36,9 @@ class Planner : public BaseNode {
     Pose targetNode_;
     std::vector<Pose> path_; 
     float distAhead_;
-    GridNode closestNode_;
+    GridNode updateNode_;
     bool mapReady_;
+
 
     geometry_msgs::msg::PoseStamped::SharedPtr lastVehiclePose_;
     sensor_msgs::msg::LaserScan::SharedPtr lastLaserScan_;
@@ -51,17 +54,19 @@ class Planner : public BaseNode {
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_vehiclePose_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_laserScan_;
     rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr sub_occGrid_;
+    rclcpp::Subscription<car_msgs::msg::PathNode>::SharedPtr sub_closestNode_;
 
 
     void callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
     void callback_laserScan(const sensor_msgs::msg::LaserScan::SharedPtr msg);
     void callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+    void callback_closestNode(const car_msgs::msg::PathNode::SharedPtr msg);
 
     void publish_path();
 
     std::vector<Pose> findShortestPath(GridNode startNode);
     void setTargetNode();
-    void setClosestNode();
+    void setUpdateNode();
     bool checkMapReady();
     float moveVehicle(Pose& start, float s, float phi, Pose& end, float& avgCost);
 

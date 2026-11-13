@@ -48,7 +48,7 @@ Pose motion(const Pose& p, float s, float phi) {
 
 Planner::Planner()
   : BaseNode("planner"), 
-    closestNode_{0.0f, 0.0f, 0.0f, 0.0f, -1},
+    updateNode_{0.0f, 0.0f, 0.0f, 0.0f, -1},
     mapReady_{false} {
 
   declare_parameter<float>("x_target", 0.0f);
@@ -71,6 +71,9 @@ Planner::Planner()
   sub_laserScan_ = create_subscription<sensor_msgs::msg::LaserScan>(
     static_cast<std::string>(config_topics_laserScan), 10, 
     std::bind(&Planner::callback_laserScan, this, _1));
+  sub_closestNode_ = create_subscription<car_msgs::msg::PathNode>(
+    static_cast<std::string>(config_topics_closestNode), 10, 
+    std::bind(&Planner::callback_closestNode, this, _1));
 
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -118,6 +121,14 @@ void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg
   
 }
 
+void Planner::callback_closestNode(const car_msgs::msg::PathNode::SharedPtr msg) {
+
+  if (!path_.empty()) {
+    const Pose& p_u = path_[msg->idx + 1];
+    updateNode_ = {p_u.x, p_u.y, p_u.th, 0.0f, msg->idx + 1};
+  }
+}
+
 void Planner::publish_path() {
   if (!lastVehiclePose_) {
     RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Vehicle pose is unavailable.");
@@ -129,9 +140,7 @@ void Planner::publish_path() {
     return;
   }
 
-  setClosestNode();
-
-  if (closestNode_.idx == -1) {
+  if (updateNode_.idx == -1) {
     GridNode startNode{static_cast<float>(lastVehiclePose_->pose.position.x), 
       static_cast<float>(lastVehiclePose_->pose.position.y),
       static_cast<float>(tf2::getYaw(lastVehiclePose_->pose.orientation)), 0.0f, -1};
@@ -139,10 +148,10 @@ void Planner::publish_path() {
     path_ = findShortestPath(startNode);
   }
   else {
-    std::vector<Pose> path_update = findShortestPath(closestNode_);
+    std::vector<Pose> path_update = findShortestPath(updateNode_);
 
     if (!path_update.empty()) {
-      path_update.insert(path_update.begin(), path_.begin(), path_.begin() + closestNode_.idx);
+      path_update.insert(path_update.begin(), path_.begin(), path_.begin() + updateNode_.idx);
       path_ = path_update;
     }
   }
@@ -203,34 +212,6 @@ void Planner::setTargetNode() {
   targetNode_ = {xTarget, yTarget, 0.0f};
 }
 
-void Planner::setClosestNode() {
-  float pos_x = lastVehiclePose_->pose.position.x;
-  float pos_y = lastVehiclePose_->pose.position.y;
-  
-  if (path_.empty()) {
-    closestNode_.idx = -1;  // nothing to resume from -> plan from the vehicle pose
-    return;
-  }
-
-  float dist_closestNode = std::numeric_limits<float>::max();
-  int init_search;
-  if (closestNode_.idx == -1) {
-    init_search = 0;
-  }
-  else {
-    init_search = closestNode_.idx;
-  }
-
-  for (size_t i = init_search; i < path_.size(); ++i) {
-    const Pose& p = path_[i];
-    float distance = std::hypot(p.x - pos_x, p.y - pos_y);
-    if (distance < dist_closestNode) {
-      dist_closestNode = distance;
-      // stored vehicle heading (not the path tangent, which is flipped on reverse segments)
-      closestNode_ = {p.x, p.y, p.th, 0.0f, static_cast<int>(i)};
-    }
-  }
-}
 
 std::vector<Pose> Planner::findShortestPath(GridNode startNode) {
   // hybrid-A* Algorithm  

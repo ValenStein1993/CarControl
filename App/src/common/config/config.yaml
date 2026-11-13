@@ -19,6 +19,7 @@ topics:
   costMap: /costmap
   globalPath: /global_path
   closestNode: /closest_node
+  closestNodeDisp: /closest_node_disp
 
 
 

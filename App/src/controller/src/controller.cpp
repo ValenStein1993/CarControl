@@ -43,7 +43,9 @@ Controller::Controller()
     static_cast<std::string>(config_topics_debugController), 10);
   pub_motionControl_ = create_publisher<car_msgs::msg::MotionControl>(
     static_cast<std::string>(config_topics_motionControl), 10);
-  pub_closestNode_ = create_publisher<geometry_msgs::msg::PoseStamped>(
+  pub_closestNodeDisp_ = create_publisher<geometry_msgs::msg::PoseStamped>(
+    static_cast<std::string>(config_topics_closestNodeDisp), 10);
+  pub_closestNode_ = create_publisher<car_msgs::msg::PathNode>(
     static_cast<std::string>(config_topics_closestNode), 10);
 
   sub_vehiclePose_ = create_subscription<geometry_msgs::msg::PoseStamped>(
@@ -134,8 +136,19 @@ void Controller::publish_closestNode() {
   q.setRPY(0, 0, closestNode_.theta);
   msg.pose.orientation = tf2::toMsg(q);
 
-  pub_closestNode_->publish(msg);
+  pub_closestNodeDisp_->publish(msg);
+
+  car_msgs::msg::PathNode pathNodeMsg;
+  pathNodeMsg.header.stamp = get_clock()->now();
+  pathNodeMsg.header.frame_id = lastPath_->header.frame_id;
+  pathNodeMsg.x = closestNode_.x;
+  pathNodeMsg.y = closestNode_.y;
+  pathNodeMsg.th = closestNode_.theta;
+  pathNodeMsg.idx = closestNode_.idx;
+
+  pub_closestNode_->publish(pathNodeMsg);
 }
+  
 
 void Controller::publish_motionControl() 
 {
@@ -279,7 +292,6 @@ std::pair<float, float> Controller::calcSteering() {
 
   const float cte = (y_ref - proj->y) * std::cos(proj->tangent) -
     (x_ref - proj->x) * std::sin(proj->tangent);
-
 
   const float yaw_target = proj->tangent + (dir == -1 ? std::numbers::pi_v<float> : 0.0f);
   const float heading_error = wrapAngle(yaw_target - yaw);
