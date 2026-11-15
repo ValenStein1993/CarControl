@@ -8,8 +8,8 @@
 #include "car_msgs/msg/vehicle_state.hpp"
 #include "car_msgs/msg/motion_control.hpp"
 #include "car_msgs/msg/node_state.hpp"
-#include "car_msgs/msg/debug_planner.hpp"
 #include "car_msgs/msg/path_node.hpp"
+#include "car_msgs/msg/debug_planner.hpp"
 
 #include "common/basenode.hpp"
 #include <nav_msgs/msg/occupancy_grid.hpp>
@@ -25,6 +25,10 @@ constexpr float gain_cte = 0.5;
 constexpr int n_binsAngle = 36;
 constexpr float latticeRes = 0.05f;
 
+struct GridNodeDist {
+    GridNode node;
+    float dist;
+};
 
 class Planner : public BaseNode {
   public:
@@ -36,18 +40,20 @@ class Planner : public BaseNode {
     Pose targetNode_;
     std::vector<Pose> path_; 
     float distAhead_;
-    GridNode updateNode_;
     bool mapReady_;
 
-
+    car_msgs::msg::DebugPlanner debugMsg_;
+    
     geometry_msgs::msg::PoseStamped::SharedPtr lastVehiclePose_;
     sensor_msgs::msg::LaserScan::SharedPtr lastLaserScan_;
     nav_msgs::msg::OccupancyGrid::SharedPtr lastOccGrid_;
     nav_msgs::msg::MapMetaData* gridMetaData_;
+    car_msgs::msg::PathNode::SharedPtr lastClosestNode_;
 
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 
+    rclcpp::Publisher<car_msgs::msg::DebugPlanner>::SharedPtr pub_debug_;
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pub_path_;
 	
@@ -62,12 +68,13 @@ class Planner : public BaseNode {
     void callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
     void callback_closestNode(const car_msgs::msg::PathNode::SharedPtr msg);
 
+    void publish_debugMsg();
     void publish_path();
 
-    std::vector<Pose> findShortestPath(GridNode startNode);
+    std::vector<Pose> findShortestPath(PathNode startNode);
     void setTargetNode();
-    void setUpdateNode();
     bool checkMapReady();
     float moveVehicle(Pose& start, float s, float phi, Pose& end, float& avgCost);
+    PathNode getUpdateNode();
 
 };

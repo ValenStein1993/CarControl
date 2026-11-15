@@ -10,4 +10,5 @@
 constexpr uint8_t cost_free = 0;
 constexpr uint8_t cost_inscribed = 98;
 constexpr uint8_t cost_lethal = 100;
-constexpr uint8_t cost_unknown = -1;
+constexpr uint8_t cost_unknown = 50;
+constexpr uint8_t cost_update = 50;

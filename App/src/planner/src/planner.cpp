@@ -15,6 +15,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "car_msgs/msg/vehicle_state.hpp"
 #include "car_msgs/msg/motion_control.hpp"
+#include "car_msgs/msg/debug_planner.hpp"
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include "common/config.hpp"
 #include "common/utils.hpp"
@@ -33,22 +34,21 @@ int angleBin(float theta) {
 }
 
 Pose motion(const Pose& p, float s, float phi) {
-  // bicycle model for front axle
+  // kinematic bicycle model for the REAR axle:
+  // the rear axle moves along the heading th on a circle with R = L / tan(phi)
   if (phi == 0.0f) {
     return {p.x + s * std::cos(p.th), p.y + s * std::sin(p.th), p.th};
   }
-  const float R = config_vehicle_wheelbase / std::sin(phi);
+  const float R = config_vehicle_wheelbase / std::tan(phi);
   const float dth = s / R;
-  const float a = p.th + phi;
-  return {p.x + R * (std::sin(a + dth) - std::sin(a)),
-          p.y - R * (std::cos(a + dth) - std::cos(a)),
+  return {p.x + R * (std::sin(p.th + dth) - std::sin(p.th)),
+          p.y - R * (std::cos(p.th + dth) - std::cos(p.th)),
           p.th + dth};
 }
 
 
 Planner::Planner()
   : BaseNode("planner"), 
-    updateNode_{0.0f, 0.0f, 0.0f, 0.0f, -1},
     mapReady_{false} {
 
   declare_parameter<float>("x_target", 0.0f);
@@ -57,8 +57,14 @@ Planner::Planner()
   get_parameter("x_target", target_.first);
   get_parameter("y_target", target_.second);
 
+  if (debug_) {
+    add_timer(100ms, &Planner::publish_debugMsg);
+  }
+
   add_timer(1000ms, &Planner::publish_path);
 
+  pub_debug_ = create_publisher<car_msgs::msg::DebugPlanner>(
+    static_cast<std::string>(config_topics_debugPlanner), 10);
   pub_path_ = create_publisher<nav_msgs::msg::Path>(
     static_cast<std::string>(config_topics_globalPath), 10);
 
@@ -80,31 +86,29 @@ Planner::Planner()
 }
 
 void Planner::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
-  std::string vehicle_base_frame = "base_link";
-  std::string front_axle_frame = "front_axle_link";
+  const std::string vehicle_base_frame{config_frames_vehicle_chassis};
+  const std::string rear_axle_frame{config_frames_vehicle_rear_axle};
 
-  if (!tf_buffer_->canTransform(vehicle_base_frame, front_axle_frame, tf2::TimePointZero)) {
+  if (!tf_buffer_->canTransform(vehicle_base_frame, rear_axle_frame, tf2::TimePointZero)) {
     return;
   }
 
-  const auto base_to_front_axle = tf_buffer_->lookupTransform(
-      vehicle_base_frame, front_axle_frame, tf2::TimePointZero);
+  const auto base_to_rear_axle = tf_buffer_->lookupTransform(
+      vehicle_base_frame, rear_axle_frame, tf2::TimePointZero);
 
   tf2::Transform map_to_chassis;
   tf2::fromMsg(msg->pose, map_to_chassis);
 
-  tf2::Transform chassis_to_front_axle_tf;
-  tf2::fromMsg(base_to_front_axle.transform, chassis_to_front_axle_tf);
+  tf2::Transform chassis_to_rear_axle;
+  tf2::fromMsg(base_to_rear_axle.transform, chassis_to_rear_axle);
 
-  const tf2::Transform map_to_front_axle = map_to_chassis * chassis_to_front_axle_tf;
+  // the path is planned for the rear axle
+  const tf2::Transform map_to_rear_axle = map_to_chassis * chassis_to_rear_axle;
 
-  geometry_msgs::msg::PoseStamped front_axle_pose;
-  front_axle_pose.header = msg->header;
-  front_axle_pose.pose.position.x = map_to_front_axle.getOrigin().x();
-  front_axle_pose.pose.position.y = map_to_front_axle.getOrigin().y();
-  front_axle_pose.pose.position.z = map_to_front_axle.getOrigin().z();
-  front_axle_pose.pose.orientation = tf2::toMsg(map_to_front_axle.getRotation());
-  lastVehiclePose_ = std::make_shared<geometry_msgs::msg::PoseStamped>(front_axle_pose);
+  geometry_msgs::msg::PoseStamped rear_axle_pose;
+  rear_axle_pose.header = msg->header;
+  tf2::toMsg(map_to_rear_axle, rear_axle_pose.pose);
+  lastVehiclePose_ = std::make_shared<geometry_msgs::msg::PoseStamped>(rear_axle_pose);
 }
 
 void Planner::callback_laserScan(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
@@ -122,36 +126,29 @@ void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg
 }
 
 void Planner::callback_closestNode(const car_msgs::msg::PathNode::SharedPtr msg) {
-
-  if (!path_.empty()) {
-    const Pose& p_u = path_[msg->idx + 1];
-    updateNode_ = {p_u.x, p_u.y, p_u.th, 0.0f, msg->idx + 1};
-  }
+  lastClosestNode_ = msg;
 }
 
 void Planner::publish_path() {
-  if (!lastVehiclePose_) {
-    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Vehicle pose is unavailable.");
-    return;
-  }
-
   if (!mapReady_) {
     RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Map is not ready.");
     return;
   }
 
-  if (updateNode_.idx == -1) {
-    GridNode startNode{static_cast<float>(lastVehiclePose_->pose.position.x), 
-      static_cast<float>(lastVehiclePose_->pose.position.y),
-      static_cast<float>(tf2::getYaw(lastVehiclePose_->pose.orientation)), 0.0f, -1};
+  if (!lastVehiclePose_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Vehicle pose is unavailable.");
+    return;
+  }
 
-    path_ = findShortestPath(startNode);
+  PathNode updateNode = getUpdateNode();
+  std::vector<Pose> path_update = findShortestPath(updateNode);
+
+  if (updateNode.idx == -1) {
+    path_ = path_update;
   }
   else {
-    std::vector<Pose> path_update = findShortestPath(updateNode_);
-
     if (!path_update.empty()) {
-      path_update.insert(path_update.begin(), path_.begin(), path_.begin() + updateNode_.idx);
+      path_update.insert(path_update.begin(), path_.begin(), path_.begin() + updateNode.idx);
       path_ = path_update;
     }
   }
@@ -171,6 +168,40 @@ void Planner::publish_path() {
     pathMsg.poses.push_back(pose);
   }
   pub_path_->publish(pathMsg);
+
+  if (debug_) {
+    debugMsg_.length_path = path_.size();
+    debugMsg_.idx_update_node = updateNode.idx;
+  }
+}
+
+void Planner::publish_debugMsg() {
+  debugMsg_.header.stamp = get_clock()->now();
+  pub_debug_->publish(debugMsg_);
+}
+
+PathNode Planner::getUpdateNode() {
+  if (!lastClosestNode_ || path_.empty()) {
+    return PathNode{Pose{static_cast<float>(lastVehiclePose_->pose.position.x),
+                         static_cast<float>(lastVehiclePose_->pose.position.y),
+                         static_cast<float>(tf2::getYaw(lastVehiclePose_->pose.orientation))}, -1};
+  }
+
+  const int n = static_cast<int>(path_.size());
+  const int idx_startSearch = lastClosestNode_->idx + 1;
+  if (idx_startSearch >= n) {
+    return PathNode{Pose{lastClosestNode_->x, lastClosestNode_->y, lastClosestNode_->th},
+                    lastClosestNode_->idx};
+  }
+
+  int idx_update = idx_startSearch;
+  for (int i = idx_startSearch; i < n; ++i) {
+    int idx_map = Common::MapUtils::getMapIndexFromPos(path_[i].x, path_[i].y, gridMetaData_);
+    if (idx_map >= 0 && lastOccGrid_->data[idx_map] >= cost_update) break;
+    idx_update = i;
+  }
+  idx_update = std::min(idx_update, n - 1); 
+  return PathNode{path_[idx_update], idx_update};
 }
 
 void Planner::setTargetNode() {
@@ -213,7 +244,7 @@ void Planner::setTargetNode() {
 }
 
 
-std::vector<Pose> Planner::findShortestPath(GridNode startNode) {
+std::vector<Pose> Planner::findShortestPath(PathNode startNode) {
   // hybrid-A* Algorithm  
   startNode.idx = -1;
   int idx_found = -1;
@@ -239,26 +270,26 @@ std::vector<Pose> Planner::findShortestPath(GridNode startNode) {
     std::vector<std::tuple<float, float, int>>, 
     std::greater<std::tuple<float, float, int>>> pq;
 
-  std::unordered_map<int, GridNode> nodes;
+  // lattice index -> node (pose + lattice index of the parent) and cost-to-come
+  std::unordered_map<int, GridNodeDist> nodes;
 
   // add start vertex to queue and dict
-  int idx_start = stateIdx(startNode.x, startNode.y, startNode.theta);
+  int idx_start = stateIdx(startNode.pose.x, startNode.pose.y, startNode.pose.th);
   if (idx_start == -1) {
     RCLCPP_WARN(get_logger(), "Cannot find path: start pose is outside the map.");
     return {};
   }
-  startNode.dist = 0.0f;
   pq.emplace(0.0, 0.0, idx_start);
 
-  nodes[idx_start] = startNode; 
+  nodes[idx_start] = GridNodeDist{{startNode.pose, startNode.idx}, 0.0f};
 
   while (!pq.empty()) {
     // select closest vertex u from the queue
     auto [h_u, d_u, idx_u] = pq.top();
     pq.pop();
 
-    const GridNode n_u = nodes.at(idx_u);
-    Pose p_u{n_u.x, n_u.y, n_u.theta};
+    const GridNodeDist n_u = nodes.at(idx_u);
+    Pose p_u = n_u.node.pose;
 
     // continue when checked vertex is stale
     if (d_u > n_u.dist) continue;
@@ -266,8 +297,8 @@ std::vector<Pose> Planner::findShortestPath(GridNode startNode) {
     // stop when target node is found
     //if (idx_u == idx_target)
     //  break;
-    float dx = n_u.x - targetNode_.x;
-    float dy = n_u.y - targetNode_.y;
+    float dx = p_u.x - targetNode_.x;
+    float dy = p_u.y - targetNode_.y;
     if (std::hypot(dx, dy) < 3*stepsize) {  
         idx_found = idx_u;
         break;
@@ -299,7 +330,7 @@ std::vector<Pose> Planner::findShortestPath(GridNode startNode) {
 
         auto it = nodes.find(idx_vt);
         if (it == nodes.end() || d_v < it->second.dist) {
-          nodes.insert_or_assign(idx_vt, GridNode{p_v.x, p_v.y, p_v.th, d_v, idx_u});
+          nodes.insert_or_assign(idx_vt, GridNodeDist{GridNode{p_v, idx_u}, d_v});
 
           float h = std::hypot(p_v.x - targetNode_.x, p_v.y - targetNode_.y);
           pq.emplace(d_v + h, d_v, idx_vt);
@@ -317,9 +348,9 @@ std::vector<Pose> Planner::findShortestPath(GridNode startNode) {
   int idx_c = idx_found;
 
   while (idx_c != startNode.idx) {
-    const GridNode& n = nodes.at(idx_c);
-    path.push_back({n.x, n.y, Common::MathUtils::wrapAngle(n.theta)});
-    idx_c = nodes.at(idx_c).idx;
+    const GridNode& n = nodes.at(idx_c).node;
+    path.push_back(n.pose);
+    idx_c = n.idx;
   }
   std::reverse(path.begin(), path.end());
   return path;
@@ -347,38 +378,30 @@ bool Planner::checkMapReady() {
 }
 
 float Planner::moveVehicle(Pose& start, float s, float phi, Pose& end, float& avgCost) {
-  Pose p;
-  float x_check, y_check;
-
   float sum = 0.0f;
   const int n = std::max(1, static_cast<int>(std::ceil(std::abs(s) / (0.5f * gridMetaData_->resolution))));
 
+  // returns the cell cost at (x, y), -1 if outside the map or in collision
+  auto cellCost = [&](float x, float y) -> int {
+    if (!Common::MapUtils::checkGridBoundries(x, y, gridMetaData_)) return -1;
+    const int idx_c = Common::MapUtils::getMapIndexFromPos(x, y, gridMetaData_);
+    if (idx_c < 0) return -1;
+    int c = lastOccGrid_->data[idx_c];
+    if (c >= cost_inscribed) return -1;
+    return c;
+  };
+
   int i = 0;
   while (i < n) {
-    p = motion(start, s * (i + 1) / n, phi);
+    const Pose p = motion(start, s * (i + 1) / n, phi);
 
-    if (s < 0.0f) {
-      x_check = p.x - config_vehicle_wheelbase * std::cos(p.th);
-      y_check = p.y - config_vehicle_wheelbase * std::sin(p.th);
-    } 
-    else {
-      x_check = p.x;
-      y_check = p.y;
-    } 
+    const int c_rear = cellCost(p.x, p.y);
+    if (c_rear < 0) break;
+    const int c_front = cellCost(p.x + config_vehicle_wheelbase * std::cos(p.th),
+                                 p.y + config_vehicle_wheelbase * std::sin(p.th));
+    if (c_front < 0) break;
 
-    // check if reference point is inside the map
-    if (!Common::MapUtils::checkGridBoundries(x_check, y_check, gridMetaData_)) break;
-
-    const int idx_c = Common::MapUtils::getMapIndexFromPos(x_check, y_check, gridMetaData_);
-    int c = lastOccGrid_->data[idx_c];
-
-    // check if reference point is in collision with obstacles
-    if (c >= cost_inscribed) break;  
-
-    // unknown: treat as moderately costly
-    if (c < 0) c = 50; 
-
-    sum += c;
+    sum += std::max(c_rear, c_front);
     i++;
     end = p;
   }

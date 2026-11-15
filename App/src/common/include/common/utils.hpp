@@ -5,6 +5,7 @@
 #include <nav_msgs/msg/map_meta_data.hpp>
 
 
+
 namespace Common::MapUtils
 {
     inline int getMapIndexFromPos(float x, float y, const nav_msgs::msg::MapMetaData* mapMetaData) {

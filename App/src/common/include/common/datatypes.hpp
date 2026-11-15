@@ -5,7 +5,11 @@ struct Pose {
 };
 
 struct GridNode {
-    float x, y, theta;
-    float dist;
+    Pose pose;
+    int idx;
+};
+
+struct PathNode {
+    Pose pose;
     int idx;
 };

@@ -1,0 +1,8 @@
+In file included from [01m[K/home/valenstein/Workspace/CarControl/App/src/planner/src/planner.cpp:14[m[K:
+[01m[K/home/valenstein/Workspace/CarControl/App/src/planner/include/planner/planner.hpp:11:10:[m[K [01;31m[Kfatal error: [m[Kcar_msgs/msg/debug_planner.hpp: No such file or directory
+   11 | #include [01;31m[K"car_msgs/msg/debug_planner.hpp"[m[K
+      |          [01;31m[K^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+gmake[2]: *** [CMakeFiles/planner.dir/build.make:76: CMakeFiles/planner.dir/src/planner.cpp.o] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/planner.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

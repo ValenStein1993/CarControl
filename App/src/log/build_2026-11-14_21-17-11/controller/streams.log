@@ -1,0 +1,42 @@
+[0.086s] Invoking command in '/home/valenstein/Workspace/CarControl/App/src/build/controller': AMENT_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/valenstein/Workspace/CarControl/App/src/controller -DCMAKE_INSTALL_PREFIX=/home/valenstein/Workspace/CarControl/App/src/install/controller
+[0.629s] -- The C compiler identification is GNU 13.3.0
+[1.004s] -- The CXX compiler identification is GNU 13.3.0
+[1.077s] -- Detecting C compiler ABI info
+[1.675s] -- Detecting C compiler ABI info - done
+[1.720s] -- Check for working C compiler: /usr/bin/cc - skipped
+[1.721s] -- Detecting C compile features
+[1.727s] -- Detecting C compile features - done
+[1.752s] -- Detecting CXX compiler ABI info
+[2.356s] -- Detecting CXX compiler ABI info - done
+[2.476s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[2.484s] -- Detecting CXX compile features
+[2.488s] -- Detecting CXX compile features - done
+[2.533s] -- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)
+[3.449s] -- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter 
+[4.377s] -- Found rclcpp: 28.1.21 (/opt/ros/jazzy/share/rclcpp/cmake)
+[4.815s] -- Found rosidl_generator_c: 4.6.9 (/opt/ros/jazzy/share/rosidl_generator_c/cmake)
+[4.981s] -- Found rosidl_generator_cpp: 4.6.9 (/opt/ros/jazzy/share/rosidl_generator_cpp/cmake)
+[5.077s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[5.258s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[6.024s] -- Found rmw_implementation_cmake: 7.3.3 (/opt/ros/jazzy/share/rmw_implementation_cmake/cmake)
+[6.072s] -- Found rmw_fastrtps_cpp: 8.4.4 (/opt/ros/jazzy/share/rmw_fastrtps_cpp/cmake)
+[6.610s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.13")  
+[6.724s] -- Found FastRTPS: /opt/ros/jazzy/include (Required is at least version "2.13") 
+[6.907s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[7.383s] -- Found car_msgs: 0.0.1 (/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/share/car_msgs/cmake)
+[7.716s] -- Found common: 0.0.0 (/home/valenstein/Workspace/CarControl/App/src/install/common/share/common/cmake)
+[7.740s] -- Found nav_msgs: 5.3.8 (/opt/ros/jazzy/share/nav_msgs/cmake)
+[7.905s] -- Found sensor_msgs: 5.3.8 (/opt/ros/jazzy/share/sensor_msgs/cmake)
+[8.002s] -- Found tf2: 0.36.21 (/opt/ros/jazzy/share/tf2/cmake)
+[8.019s] -- Found tf2_geometry_msgs: 0.36.21 (/opt/ros/jazzy/share/tf2_geometry_msgs/cmake)
+[8.094s] -- Found eigen3_cmake_module: 0.3.1 (/opt/ros/jazzy/share/eigen3_cmake_module/cmake)
+[8.098s] -- Found Eigen3: TRUE (found version "3.4.0") 
+[8.098s] -- Ensuring Eigen3 include directory is part of orocos-kdl CMake target
+[9.153s] -- Configuring done (9.0s)
+[9.304s] -- Generating done (0.1s)
+[9.324s] -- Build files have been written to: /home/valenstein/Workspace/CarControl/App/src/build/controller
+[9.412s] Invoked command in '/home/valenstein/Workspace/CarControl/App/src/build/controller' returned '0': AMENT_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake /home/valenstein/Workspace/CarControl/App/src/controller -DCMAKE_INSTALL_PREFIX=/home/valenstein/Workspace/CarControl/App/src/install/controller
+[9.414s] Invoking command in '/home/valenstein/Workspace/CarControl/App/src/build/controller': AMENT_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/valenstein/Workspace/CarControl/App/src/build/controller -- -j4 -l4
+[9.702s] [ 50%] [32mBuilding CXX object CMakeFiles/controller.dir/src/controller.cpp.o[0m
+[78.887s] [100%] [32m[1mLinking CXX executable controller[0m
+[80.922s] [100%] Built target controller

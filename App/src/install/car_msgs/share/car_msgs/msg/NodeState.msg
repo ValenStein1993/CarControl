@@ -1,0 +1,1 @@
+bool localizer_is_ready

@@ -50,7 +50,7 @@ class Controller : public BaseNode {
   private:
 
     float distAhead_;
-    GridNode closestNode_;
+    PathNode closestNode_;
     float steeringAngleAct_;
 
     car_msgs::msg::DebugController debugMsg_;
@@ -85,6 +85,7 @@ class Controller : public BaseNode {
     int getDrivingDir(int i) const;
     bool isDegenerate(int i) const;
     int getSegmentEnd(int first, int dir) const;
+    Pose trackedAxle(const geometry_msgs::msg::Pose& p, int dir) const;
     std::optional<PathProjection> projectOnPath(int first, int last, int dir) const;
     std::pair<float, float> calcSteering();
 

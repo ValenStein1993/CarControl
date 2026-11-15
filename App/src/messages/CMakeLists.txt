@@ -16,6 +16,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/NodeState.msg"
   "msg/DebugController.msg"
   "msg/PathNode.msg"
+  "msg/DebugPlanner.msg"
   DEPENDENCIES std_msgs
 )
 

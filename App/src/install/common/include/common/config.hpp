@@ -1,0 +1,62 @@
+// AUTO-GENERATED FILE — do not edit by hand.
+// Generated from yaml by gen_config_hpp.py
+#pragma once
+
+#include <string_view>
+
+inline constexpr float config_position_x_init = -1.125f;
+inline constexpr float config_position_y_init = -1.35f;
+inline constexpr float config_position_yaw_init = 1.57f;
+inline constexpr float config_position_x_target = 1.125f;
+inline constexpr float config_position_y_target = 1.35f;
+inline constexpr std::string_view config_topics_sensorMeasurements = "/sensor/measurements";
+inline constexpr std::string_view config_topics_sensorCalibration = "/sensor/calibration";
+inline constexpr std::string_view config_topics_motionControl = "/motion_control";
+inline constexpr std::string_view config_topics_odomEkf = "/odom";
+inline constexpr std::string_view config_topics_poseCrtgrphr = "/tracked_pose";
+inline constexpr std::string_view config_topics_occupancyGrid = "/occupancy_grid";
+inline constexpr std::string_view config_topics_debugPlanner = "/debug/planner";
+inline constexpr std::string_view config_topics_debugController = "/debug/controller";
+inline constexpr std::string_view config_topics_costMap = "/costmap";
+inline constexpr std::string_view config_topics_globalPath = "/global_path";
+inline constexpr std::string_view config_topics_closestNode = "/closest_node";
+inline constexpr std::string_view config_topics_closestNodeDisp = "/closest_node_disp";
+inline constexpr std::string_view config_topics_vehicleState = "/vehicle_state_ekf";
+inline constexpr std::string_view config_topics_vehicleStateAct = "/vehicle_state_actual";
+inline constexpr std::string_view config_topics_histVehicleStateEkf = "/hist_vehicle_state_ekf";
+inline constexpr std::string_view config_topics_histVehicleStateCsm = "/hist_vehicle_state_csm";
+inline constexpr std::string_view config_topics_histVehicleStateAct = "/hist_vehicle_state_actual";
+inline constexpr std::string_view config_topics_nodeState = "/node_state";
+inline constexpr std::string_view config_topics_laserScan = "/scan";
+inline constexpr std::string_view config_frames_map = "map";
+inline constexpr std::string_view config_frames_odom = "odom";
+inline constexpr std::string_view config_frames_vehicle_chassis = "base_link";
+inline constexpr std::string_view config_frames_vehicle_lidar = "lidar_link";
+inline constexpr std::string_view config_frames_vehicle_imu = "imu_link";
+inline constexpr std::string_view config_frames_vehicle_front_axle = "front_axle_link";
+inline constexpr std::string_view config_frames_vehicle_rear_axle = "rear_axle_link";
+inline constexpr float config_occgrid_resolution = 0.02f;
+inline constexpr int config_sensors_imu_pos_chassis_x = 0;
+inline constexpr int config_sensors_imu_pos_chassis_y = 0;
+inline constexpr int config_sensors_imu_pos_chassis_z = 0;
+inline constexpr float config_sensors_imu_stddev_accel = 0.02f;
+inline constexpr float config_sensors_imu_stddev_yaw_rate = 0.01f;
+inline constexpr int config_sensors_lidar_pos_chassis_x = 0;
+inline constexpr int config_sensors_lidar_pos_chassis_y = 0;
+inline constexpr float config_sensors_lidar_pos_chassis_z = 0.1f;
+inline constexpr float config_sensors_lidar_stddev = 0.005f;
+inline constexpr float config_sensors_potentiometer_stddev = 0.0001f;
+inline constexpr float config_sensors_wheelencoder_stddev = 0.0001f;
+inline constexpr float config_vehicle_max_steering = 0.9f;
+inline constexpr float config_vehicle_wheelbase = 0.14f;
+inline constexpr float config_vehicle_wheeltrack = 0.1f;
+inline constexpr float config_vehicle_chassis_main_length = 0.13f;
+inline constexpr float config_vehicle_chassis_main_width = 0.08f;
+inline constexpr float config_vehicle_chassis_main_height = 0.02f;
+inline constexpr float config_vehicle_chassis_main_mass = 1.15f;
+inline constexpr float config_vehicle_chassis_front_length = 0.04f;
+inline constexpr float config_vehicle_chassis_front_width = 0.03f;
+inline constexpr float config_vehicle_chassis_front_height = 0.02f;
+inline constexpr float config_vehicle_wheels_radius = 0.015f;
+inline constexpr float config_vehicle_wheels_width = 0.015f;
+inline constexpr float config_vehicle_wheels_mass = 0.1f;

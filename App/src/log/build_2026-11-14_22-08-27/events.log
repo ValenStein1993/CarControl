@@ -1,0 +1,372 @@
+[0.000000] (-) TimerEvent: {}
+[0.000227] (-) JobUnselected: {'identifier': 'car_msgs'}
+[0.000310] (-) JobUnselected: {'identifier': 'common'}
+[0.000358] (-) JobUnselected: {'identifier': 'controller'}
+[0.000409] (-) JobUnselected: {'identifier': 'costmap'}
+[0.000472] (-) JobUnselected: {'identifier': 'csm'}
+[0.000534] (-) JobUnselected: {'identifier': 'odometry'}
+[0.000588] (-) JobUnselected: {'identifier': 'ros2_laser_scan_matcher'}
+[0.000634] (-) JobUnselected: {'identifier': 'startup'}
+[0.000693] (planner) JobQueued: {'identifier': 'planner', 'dependencies': OrderedDict({'car_msgs': '/home/valenstein/Workspace/CarControl/App/src/install/car_msgs', 'common': '/home/valenstein/Workspace/CarControl/App/src/install/common'})}
+[0.000799] (planner) JobStarted: {'identifier': 'planner'}
+[0.029392] (planner) JobProgress: {'identifier': 'planner', 'progress': 'cmake'}
+[0.032066] (planner) JobProgress: {'identifier': 'planner', 'progress': 'build'}
+[0.033416] (planner) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/valenstein/Workspace/CarControl/App/src/build/planner', '--', '-j4', '-l4'], 'cwd': '/home/valenstein/Workspace/CarControl/App/src/build/planner', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'GZ_SIM_RESOURCE_PATH': '/opt/ros/jazzy/share', 'PYRENODE_RUNTIME': 'coreclr', 'USER': 'valenstein', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'STM32CubeMX_PATH': '/home/valenstein/STM32CubeMX', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib:/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/valenstein', 'OLDPWD': '/home/valenstein/Workspace/CarControl', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2827', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GNOME_KEYRING_CONTROL': '/run/user/1000/keyring', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'valenstein', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.SettingsDaemon.MediaKeys.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'valenstein', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/valenstein/.dotnet/tools', 'SESSION_MANAGER': 'local/valenstein-pc:@/tmp/.ICE-unix/2585,unix/valenstein-pc:/tmp/.ICE-unix/2585', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/2d5c6661_7833_4071_8161_b8807acbae8c', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'PYTHONNET_RUNTIME': 'coreclr', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'DOTNET_BUNDLE_EXTRACT_BASE_DIR': '/home/valenstein/.cache/dotnet_bundle_extract', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.32SXX3', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.353', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/valenstein/Workspace/CarControl/App/src/build/planner', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[0.101393] (-) TimerEvent: {}
+[0.164065] (planner) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/planner.dir/src/planner.cpp.o\x1b[0m\n'}
+[0.201509] (-) TimerEvent: {}
+[0.302784] (-) TimerEvent: {}
+[0.403199] (-) TimerEvent: {}
+[0.504305] (-) TimerEvent: {}
+[0.604852] (-) TimerEvent: {}
+[0.705322] (-) TimerEvent: {}
+[0.805625] (-) TimerEvent: {}
+[0.905945] (-) TimerEvent: {}
+[1.006272] (-) TimerEvent: {}
+[1.106747] (-) TimerEvent: {}
+[1.207121] (-) TimerEvent: {}
+[1.307521] (-) TimerEvent: {}
+[1.408017] (-) TimerEvent: {}
+[1.508570] (-) TimerEvent: {}
+[1.609052] (-) TimerEvent: {}
+[1.709511] (-) TimerEvent: {}
+[1.809986] (-) TimerEvent: {}
+[1.910441] (-) TimerEvent: {}
+[2.010904] (-) TimerEvent: {}
+[2.111249] (-) TimerEvent: {}
+[2.211746] (-) TimerEvent: {}
+[2.312549] (-) TimerEvent: {}
+[2.415960] (-) TimerEvent: {}
+[2.516432] (-) TimerEvent: {}
+[2.617815] (-) TimerEvent: {}
+[2.718575] (-) TimerEvent: {}
+[2.820244] (-) TimerEvent: {}
+[2.921322] (-) TimerEvent: {}
+[3.021801] (-) TimerEvent: {}
+[3.122284] (-) TimerEvent: {}
+[3.224920] (-) TimerEvent: {}
+[3.325374] (-) TimerEvent: {}
+[3.425737] (-) TimerEvent: {}
+[3.526216] (-) TimerEvent: {}
+[3.626702] (-) TimerEvent: {}
+[3.727329] (-) TimerEvent: {}
+[3.827874] (-) TimerEvent: {}
+[3.928228] (-) TimerEvent: {}
+[4.028595] (-) TimerEvent: {}
+[4.128988] (-) TimerEvent: {}
+[4.230773] (-) TimerEvent: {}
+[4.331129] (-) TimerEvent: {}
+[4.431755] (-) TimerEvent: {}
+[4.532788] (-) TimerEvent: {}
+[4.633322] (-) TimerEvent: {}
+[4.733809] (-) TimerEvent: {}
+[4.834171] (-) TimerEvent: {}
+[4.934779] (-) TimerEvent: {}
+[5.035187] (-) TimerEvent: {}
+[5.137051] (-) TimerEvent: {}
+[5.237760] (-) TimerEvent: {}
+[5.339238] (-) TimerEvent: {}
+[5.439793] (-) TimerEvent: {}
+[5.540403] (-) TimerEvent: {}
+[5.640766] (-) TimerEvent: {}
+[5.741208] (-) TimerEvent: {}
+[5.841647] (-) TimerEvent: {}
+[5.942023] (-) TimerEvent: {}
+[6.042460] (-) TimerEvent: {}
+[6.143756] (-) TimerEvent: {}
+[6.244101] (-) TimerEvent: {}
+[6.344471] (-) TimerEvent: {}
+[6.444933] (-) TimerEvent: {}
+[6.545284] (-) TimerEvent: {}
+[6.645749] (-) TimerEvent: {}
+[6.746097] (-) TimerEvent: {}
+[6.846548] (-) TimerEvent: {}
+[6.946935] (-) TimerEvent: {}
+[7.047386] (-) TimerEvent: {}
+[7.147857] (-) TimerEvent: {}
+[7.248310] (-) TimerEvent: {}
+[7.348752] (-) TimerEvent: {}
+[7.449219] (-) TimerEvent: {}
+[7.549725] (-) TimerEvent: {}
+[7.650059] (-) TimerEvent: {}
+[7.750493] (-) TimerEvent: {}
+[7.850969] (-) TimerEvent: {}
+[7.954020] (-) TimerEvent: {}
+[8.054499] (-) TimerEvent: {}
+[8.154868] (-) TimerEvent: {}
+[8.255358] (-) TimerEvent: {}
+[8.355837] (-) TimerEvent: {}
+[8.456216] (-) TimerEvent: {}
+[8.556759] (-) TimerEvent: {}
+[8.659960] (-) TimerEvent: {}
+[8.760539] (-) TimerEvent: {}
+[8.861125] (-) TimerEvent: {}
+[8.961714] (-) TimerEvent: {}
+[9.062245] (-) TimerEvent: {}
+[9.162632] (-) TimerEvent: {}
+[9.263164] (-) TimerEvent: {}
+[9.363668] (-) TimerEvent: {}
+[9.464020] (-) TimerEvent: {}
+[9.564528] (-) TimerEvent: {}
+[9.667320] (-) TimerEvent: {}
+[9.767848] (-) TimerEvent: {}
+[9.868346] (-) TimerEvent: {}
+[9.969216] (-) TimerEvent: {}
+[10.069712] (-) TimerEvent: {}
+[10.172980] (-) TimerEvent: {}
+[10.273522] (-) TimerEvent: {}
+[10.375751] (-) TimerEvent: {}
+[10.476246] (-) TimerEvent: {}
+[10.576773] (-) TimerEvent: {}
+[10.677255] (-) TimerEvent: {}
+[10.779017] (-) TimerEvent: {}
+[10.879556] (-) TimerEvent: {}
+[10.980037] (-) TimerEvent: {}
+[11.080504] (-) TimerEvent: {}
+[11.181003] (-) TimerEvent: {}
+[11.281495] (-) TimerEvent: {}
+[11.382008] (-) TimerEvent: {}
+[11.482382] (-) TimerEvent: {}
+[11.582816] (-) TimerEvent: {}
+[11.683238] (-) TimerEvent: {}
+[11.783587] (-) TimerEvent: {}
+[11.883921] (-) TimerEvent: {}
+[11.984287] (-) TimerEvent: {}
+[12.084670] (-) TimerEvent: {}
+[12.185157] (-) TimerEvent: {}
+[12.285660] (-) TimerEvent: {}
+[12.386400] (-) TimerEvent: {}
+[12.487094] (-) TimerEvent: {}
+[12.587735] (-) TimerEvent: {}
+[12.688486] (-) TimerEvent: {}
+[12.788919] (-) TimerEvent: {}
+[12.889271] (-) TimerEvent: {}
+[12.989625] (-) TimerEvent: {}
+[13.090000] (-) TimerEvent: {}
+[13.190359] (-) TimerEvent: {}
+[13.290713] (-) TimerEvent: {}
+[13.391050] (-) TimerEvent: {}
+[13.491417] (-) TimerEvent: {}
+[13.591744] (-) TimerEvent: {}
+[13.692178] (-) TimerEvent: {}
+[13.792490] (-) TimerEvent: {}
+[13.892831] (-) TimerEvent: {}
+[13.993180] (-) TimerEvent: {}
+[14.093592] (-) TimerEvent: {}
+[14.193948] (-) TimerEvent: {}
+[14.294309] (-) TimerEvent: {}
+[14.394692] (-) TimerEvent: {}
+[14.495066] (-) TimerEvent: {}
+[14.595419] (-) TimerEvent: {}
+[14.695752] (-) TimerEvent: {}
+[14.796095] (-) TimerEvent: {}
+[14.896427] (-) TimerEvent: {}
+[14.996762] (-) TimerEvent: {}
+[15.097096] (-) TimerEvent: {}
+[15.197452] (-) TimerEvent: {}
+[15.297765] (-) TimerEvent: {}
+[15.398099] (-) TimerEvent: {}
+[15.498528] (-) TimerEvent: {}
+[15.598836] (-) TimerEvent: {}
+[15.699168] (-) TimerEvent: {}
+[15.799607] (-) TimerEvent: {}
+[15.900097] (-) TimerEvent: {}
+[16.000482] (-) TimerEvent: {}
+[16.101251] (-) TimerEvent: {}
+[16.201664] (-) TimerEvent: {}
+[16.302345] (-) TimerEvent: {}
+[16.402827] (-) TimerEvent: {}
+[16.505889] (-) TimerEvent: {}
+[16.606248] (-) TimerEvent: {}
+[16.706593] (-) TimerEvent: {}
+[16.806961] (-) TimerEvent: {}
+[16.907296] (-) TimerEvent: {}
+[17.007647] (-) TimerEvent: {}
+[17.107992] (-) TimerEvent: {}
+[17.208347] (-) TimerEvent: {}
+[17.308723] (-) TimerEvent: {}
+[17.409070] (-) TimerEvent: {}
+[17.509457] (-) TimerEvent: {}
+[17.609843] (-) TimerEvent: {}
+[17.710198] (-) TimerEvent: {}
+[17.810507] (-) TimerEvent: {}
+[17.910843] (-) TimerEvent: {}
+[18.011183] (-) TimerEvent: {}
+[18.111532] (-) TimerEvent: {}
+[18.211888] (-) TimerEvent: {}
+[18.312236] (-) TimerEvent: {}
+[18.412587] (-) TimerEvent: {}
+[18.512914] (-) TimerEvent: {}
+[18.613269] (-) TimerEvent: {}
+[18.713605] (-) TimerEvent: {}
+[18.813924] (-) TimerEvent: {}
+[18.914383] (-) TimerEvent: {}
+[19.014779] (-) TimerEvent: {}
+[19.115156] (-) TimerEvent: {}
+[19.215564] (-) TimerEvent: {}
+[19.316038] (-) TimerEvent: {}
+[19.416407] (-) TimerEvent: {}
+[19.516771] (-) TimerEvent: {}
+[19.617125] (-) TimerEvent: {}
+[19.717487] (-) TimerEvent: {}
+[19.817886] (-) TimerEvent: {}
+[19.918331] (-) TimerEvent: {}
+[20.018700] (-) TimerEvent: {}
+[20.119022] (-) TimerEvent: {}
+[20.219369] (-) TimerEvent: {}
+[20.319729] (-) TimerEvent: {}
+[20.420063] (-) TimerEvent: {}
+[20.520410] (-) TimerEvent: {}
+[20.620746] (-) TimerEvent: {}
+[20.721050] (-) TimerEvent: {}
+[20.821377] (-) TimerEvent: {}
+[20.921746] (-) TimerEvent: {}
+[21.022079] (-) TimerEvent: {}
+[21.122416] (-) TimerEvent: {}
+[21.222784] (-) TimerEvent: {}
+[21.323127] (-) TimerEvent: {}
+[21.423503] (-) TimerEvent: {}
+[21.523836] (-) TimerEvent: {}
+[21.624203] (-) TimerEvent: {}
+[21.724562] (-) TimerEvent: {}
+[21.824896] (-) TimerEvent: {}
+[21.925267] (-) TimerEvent: {}
+[22.025652] (-) TimerEvent: {}
+[22.126007] (-) TimerEvent: {}
+[22.226360] (-) TimerEvent: {}
+[22.326734] (-) TimerEvent: {}
+[22.427119] (-) TimerEvent: {}
+[22.527479] (-) TimerEvent: {}
+[22.627766] (-) TimerEvent: {}
+[22.728095] (-) TimerEvent: {}
+[22.828428] (-) TimerEvent: {}
+[22.928747] (-) TimerEvent: {}
+[23.029148] (-) TimerEvent: {}
+[23.129507] (-) TimerEvent: {}
+[23.229887] (-) TimerEvent: {}
+[23.330248] (-) TimerEvent: {}
+[23.430615] (-) TimerEvent: {}
+[23.530942] (-) TimerEvent: {}
+[23.631310] (-) TimerEvent: {}
+[23.731672] (-) TimerEvent: {}
+[23.832017] (-) TimerEvent: {}
+[23.932369] (-) TimerEvent: {}
+[24.032727] (-) TimerEvent: {}
+[24.133096] (-) TimerEvent: {}
+[24.233453] (-) TimerEvent: {}
+[24.333814] (-) TimerEvent: {}
+[24.434152] (-) TimerEvent: {}
+[24.534519] (-) TimerEvent: {}
+[24.634836] (-) TimerEvent: {}
+[24.735157] (-) TimerEvent: {}
+[24.835515] (-) TimerEvent: {}
+[24.935825] (-) TimerEvent: {}
+[25.036182] (-) TimerEvent: {}
+[25.136511] (-) TimerEvent: {}
+[25.236888] (-) TimerEvent: {}
+[25.337206] (-) TimerEvent: {}
+[25.437575] (-) TimerEvent: {}
+[25.537912] (-) TimerEvent: {}
+[25.638252] (-) TimerEvent: {}
+[25.738598] (-) TimerEvent: {}
+[25.838912] (-) TimerEvent: {}
+[25.939294] (-) TimerEvent: {}
+[26.039640] (-) TimerEvent: {}
+[26.139997] (-) TimerEvent: {}
+[26.240353] (-) TimerEvent: {}
+[26.340726] (-) TimerEvent: {}
+[26.441095] (-) TimerEvent: {}
+[26.541399] (-) TimerEvent: {}
+[26.641755] (-) TimerEvent: {}
+[26.742114] (-) TimerEvent: {}
+[26.842471] (-) TimerEvent: {}
+[26.942837] (-) TimerEvent: {}
+[27.043178] (-) TimerEvent: {}
+[27.143500] (-) TimerEvent: {}
+[27.243911] (-) TimerEvent: {}
+[27.344299] (-) TimerEvent: {}
+[27.444652] (-) TimerEvent: {}
+[27.545013] (-) TimerEvent: {}
+[27.645375] (-) TimerEvent: {}
+[27.745715] (-) TimerEvent: {}
+[27.846059] (-) TimerEvent: {}
+[27.946385] (-) TimerEvent: {}
+[28.046751] (-) TimerEvent: {}
+[28.147096] (-) TimerEvent: {}
+[28.247422] (-) TimerEvent: {}
+[28.347771] (-) TimerEvent: {}
+[28.448128] (-) TimerEvent: {}
+[28.548460] (-) TimerEvent: {}
+[28.648831] (-) TimerEvent: {}
+[28.749182] (-) TimerEvent: {}
+[28.849533] (-) TimerEvent: {}
+[28.950968] (-) TimerEvent: {}
+[29.051347] (-) TimerEvent: {}
+[29.152031] (-) TimerEvent: {}
+[29.255065] (-) TimerEvent: {}
+[29.355434] (-) TimerEvent: {}
+[29.455767] (-) TimerEvent: {}
+[29.556136] (-) TimerEvent: {}
+[29.656512] (-) TimerEvent: {}
+[29.756855] (-) TimerEvent: {}
+[29.857198] (-) TimerEvent: {}
+[29.957556] (-) TimerEvent: {}
+[30.057889] (-) TimerEvent: {}
+[30.158246] (-) TimerEvent: {}
+[30.258601] (-) TimerEvent: {}
+[30.358946] (-) TimerEvent: {}
+[30.459313] (-) TimerEvent: {}
+[30.559714] (-) TimerEvent: {}
+[30.660082] (-) TimerEvent: {}
+[30.760507] (-) TimerEvent: {}
+[30.860969] (-) TimerEvent: {}
+[30.961440] (-) TimerEvent: {}
+[31.061824] (-) TimerEvent: {}
+[31.162221] (-) TimerEvent: {}
+[31.262853] (-) TimerEvent: {}
+[31.363316] (-) TimerEvent: {}
+[31.463684] (-) TimerEvent: {}
+[31.487300] (planner) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking CXX executable planner\x1b[0m\n'}
+[31.563779] (-) TimerEvent: {}
+[31.664140] (-) TimerEvent: {}
+[31.764652] (-) TimerEvent: {}
+[31.865125] (-) TimerEvent: {}
+[31.965633] (-) TimerEvent: {}
+[32.066506] (-) TimerEvent: {}
+[32.167088] (-) TimerEvent: {}
+[32.267621] (-) TimerEvent: {}
+[32.368844] (-) TimerEvent: {}
+[32.469741] (-) TimerEvent: {}
+[32.572922] (-) TimerEvent: {}
+[32.673296] (-) TimerEvent: {}
+[32.775951] (-) TimerEvent: {}
+[32.876341] (-) TimerEvent: {}
+[32.976724] (-) TimerEvent: {}
+[33.077095] (-) TimerEvent: {}
+[33.177427] (-) TimerEvent: {}
+[33.227135] (planner) StdoutLine: {'line': b'[100%] Built target planner\n'}
+[33.245186] (planner) CommandEnded: {'returncode': 0}
+[33.246253] (planner) JobProgress: {'identifier': 'planner', 'progress': 'install'}
+[33.262104] (planner) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/valenstein/Workspace/CarControl/App/src/build/planner'], 'cwd': '/home/valenstein/Workspace/CarControl/App/src/build/planner', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'GZ_SIM_RESOURCE_PATH': '/opt/ros/jazzy/share', 'PYRENODE_RUNTIME': 'coreclr', 'USER': 'valenstein', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'STM32CubeMX_PATH': '/home/valenstein/STM32CubeMX', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib:/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/valenstein', 'OLDPWD': '/home/valenstein/Workspace/CarControl', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2827', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GNOME_KEYRING_CONTROL': '/run/user/1000/keyring', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'valenstein', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.SettingsDaemon.MediaKeys.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'valenstein', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/valenstein/.dotnet/tools', 'SESSION_MANAGER': 'local/valenstein-pc:@/tmp/.ICE-unix/2585,unix/valenstein-pc:/tmp/.ICE-unix/2585', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/2d5c6661_7833_4071_8161_b8807acbae8c', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'PYTHONNET_RUNTIME': 'coreclr', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'DOTNET_BUNDLE_EXTRACT_BASE_DIR': '/home/valenstein/.cache/dotnet_bundle_extract', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.32SXX3', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.353', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/valenstein/Workspace/CarControl/App/src/build/planner', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib/python3.12/site-packages:/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[33.278012] (-) TimerEvent: {}
+[33.278672] (planner) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[33.281826] (planner) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/install/planner/lib/planner/planner\n'}
+[33.316492] (planner) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/install/planner/lib/planner/planner" to ""\n'}
+[33.316870] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/ament_index/resource_index/package_run_dependencies/planner\n'}
+[33.317177] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/ament_index/resource_index/parent_prefix_path/planner\n'}
+[33.317631] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/environment/ament_prefix_path.sh\n'}
+[33.318954] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/environment/ament_prefix_path.dsv\n'}
+[33.319293] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/environment/path.sh\n'}
+[33.319525] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/environment/path.dsv\n'}
+[33.319663] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/local_setup.bash\n'}
+[33.319829] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/local_setup.sh\n'}
+[33.319949] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/local_setup.zsh\n'}
+[33.320085] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/local_setup.dsv\n'}
+[33.320200] (planner) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.dsv\n'}
+[33.320308] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/ament_index/resource_index/packages/planner\n'}
+[33.320414] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/cmake/plannerConfig.cmake\n'}
+[33.320512] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/cmake/plannerConfig-version.cmake\n'}
+[33.320609] (planner) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.xml\n'}
+[33.323089] (planner) CommandEnded: {'returncode': 0}
+[33.358685] (planner) JobEnded: {'identifier': 'planner', 'rc': 0}
+[33.361929] (-) EventReactorShutdown: {}

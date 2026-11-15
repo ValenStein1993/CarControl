@@ -1,0 +1,26 @@
+{
+  "type_description_msg": {
+    "type_description": {
+      "type_name": "car_msgs/msg/NodeState",
+      "fields": [
+        {
+          "name": "localizer_is_ready",
+          "type": {
+            "type_id": 15,
+            "capacity": 0,
+            "string_capacity": 0,
+            "nested_type_name": ""
+          },
+          "default_value": ""
+        }
+      ]
+    },
+    "referenced_type_descriptions": []
+  },
+  "type_hashes": [
+    {
+      "type_name": "car_msgs/msg/NodeState",
+      "hash_string": "RIHS01_dedf720b2bea5815db071736f26e4dbc0d321c679085218602bf7a0492a71192"
+    }
+  ]
+}

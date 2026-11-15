@@ -1,0 +1,228 @@
+[0.330s] DEBUG:colcon:Command line arguments: ['/usr/bin/colcon', 'build', '--packages-select', 'planner']
+[0.330s] DEBUG:colcon:Parsed command line arguments: Namespace(log_base=None, log_level=None, verb_name='build', build_base='build', install_base='install', merge_install=False, symlink_install=False, test_result_base=None, continue_on_error=False, executor='parallel', parallel_workers=4, event_handlers=None, ignore_user_meta=False, metas=['./colcon.meta'], base_paths=['.'], packages_ignore=None, packages_ignore_regex=None, paths=None, packages_up_to=None, packages_up_to_regex=None, packages_above=None, packages_above_and_dependencies=None, packages_above_depth=None, packages_select_by_dep=None, packages_skip_by_dep=None, packages_skip_up_to=None, packages_select_build_failed=False, packages_skip_build_finished=False, packages_select_test_failures=False, packages_skip_test_passed=False, packages_select=['planner'], packages_skip=None, packages_select_regex=None, packages_skip_regex=None, packages_start=None, packages_end=None, allow_overriding=[], cmake_args=None, cmake_target=None, cmake_target_skip_unavailable=False, cmake_clean_cache=False, cmake_clean_first=False, cmake_force_configure=False, ament_cmake_args=None, catkin_cmake_args=None, catkin_skip_building_tests=False, verb_parser=<colcon_defaults.argument_parser.defaults.DefaultArgumentsDecorator object at 0x730c2f841670>, verb_extension=<colcon_core.verb.build.BuildVerb object at 0x730c2f8414f0>, main=<bound method BuildVerb.main of <colcon_core.verb.build.BuildVerb object at 0x730c2f8414f0>>)
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) check parameters
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) check parameters
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) check parameters
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) check parameters
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(colcon_meta) discover
+[0.415s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) discover
+[0.415s] INFO:colcon.colcon_core.package_discovery:Crawling recursively for packages in '/home/valenstein/Workspace/CarControl/App/src'
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ignore', 'ignore_ament_install']
+[0.415s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore'
+[0.416s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ignore_ament_install'
+[0.416s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_pkg']
+[0.416s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_pkg'
+[0.416s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['colcon_meta']
+[0.416s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'colcon_meta'
+[0.416s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['ros']
+[0.416s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'ros'
+[0.469s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['cmake', 'python']
+[0.470s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'cmake'
+[0.470s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python'
+[0.470s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extensions ['python_setup_py']
+[0.470s] Level 1:colcon.colcon_core.package_identification:_identify(.) by extension 'python_setup_py'
+[0.470s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extensions ['ignore', 'ignore_ament_install']
+[0.470s] Level 1:colcon.colcon_core.package_identification:_identify(build) by extension 'ignore'
+[0.470s] Level 1:colcon.colcon_core.package_identification:_identify(build) ignored
+[0.470s] Level 1:colcon.colcon_core.package_identification:_identify(common) by extensions ['ignore', 'ignore_ament_install']
+[0.471s] Level 1:colcon.colcon_core.package_identification:_identify(common) by extension 'ignore'
+[0.471s] Level 1:colcon.colcon_core.package_identification:_identify(common) by extension 'ignore_ament_install'
+[0.471s] Level 1:colcon.colcon_core.package_identification:_identify(common) by extensions ['colcon_pkg']
+[0.471s] Level 1:colcon.colcon_core.package_identification:_identify(common) by extension 'colcon_pkg'
+[0.471s] Level 1:colcon.colcon_core.package_identification:_identify(common) by extensions ['colcon_meta']
+[0.471s] Level 1:colcon.colcon_core.package_identification:_identify(common) by extension 'colcon_meta'
+[0.471s] Level 1:colcon.colcon_core.package_identification:_identify(common) by extensions ['ros']
+[0.471s] Level 1:colcon.colcon_core.package_identification:_identify(common) by extension 'ros'
+[0.476s] DEBUG:colcon.colcon_core.package_identification:Package 'common' with type 'ros.ament_cmake' and name 'common'
+[0.477s] Level 1:colcon.colcon_core.package_identification:_identify(controller) by extensions ['ignore', 'ignore_ament_install']
+[0.477s] Level 1:colcon.colcon_core.package_identification:_identify(controller) by extension 'ignore'
+[0.477s] Level 1:colcon.colcon_core.package_identification:_identify(controller) by extension 'ignore_ament_install'
+[0.477s] Level 1:colcon.colcon_core.package_identification:_identify(controller) by extensions ['colcon_pkg']
+[0.477s] Level 1:colcon.colcon_core.package_identification:_identify(controller) by extension 'colcon_pkg'
+[0.477s] Level 1:colcon.colcon_core.package_identification:_identify(controller) by extensions ['colcon_meta']
+[0.477s] Level 1:colcon.colcon_core.package_identification:_identify(controller) by extension 'colcon_meta'
+[0.477s] Level 1:colcon.colcon_core.package_identification:_identify(controller) by extensions ['ros']
+[0.477s] Level 1:colcon.colcon_core.package_identification:_identify(controller) by extension 'ros'
+[0.478s] DEBUG:colcon.colcon_core.package_identification:Package 'controller' with type 'ros.ament_cmake' and name 'controller'
+[0.478s] Level 1:colcon.colcon_core.package_identification:_identify(costmap) by extensions ['ignore', 'ignore_ament_install']
+[0.479s] Level 1:colcon.colcon_core.package_identification:_identify(costmap) by extension 'ignore'
+[0.479s] Level 1:colcon.colcon_core.package_identification:_identify(costmap) by extension 'ignore_ament_install'
+[0.479s] Level 1:colcon.colcon_core.package_identification:_identify(costmap) by extensions ['colcon_pkg']
+[0.479s] Level 1:colcon.colcon_core.package_identification:_identify(costmap) by extension 'colcon_pkg'
+[0.479s] Level 1:colcon.colcon_core.package_identification:_identify(costmap) by extensions ['colcon_meta']
+[0.479s] Level 1:colcon.colcon_core.package_identification:_identify(costmap) by extension 'colcon_meta'
+[0.479s] Level 1:colcon.colcon_core.package_identification:_identify(costmap) by extensions ['ros']
+[0.479s] Level 1:colcon.colcon_core.package_identification:_identify(costmap) by extension 'ros'
+[0.481s] DEBUG:colcon.colcon_core.package_identification:Package 'costmap' with type 'ros.ament_cmake' and name 'costmap'
+[0.481s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extensions ['ignore', 'ignore_ament_install']
+[0.481s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extension 'ignore'
+[0.481s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extension 'ignore_ament_install'
+[0.481s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extensions ['colcon_pkg']
+[0.481s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extension 'colcon_pkg'
+[0.481s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extensions ['colcon_meta']
+[0.481s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extension 'colcon_meta'
+[0.481s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extensions ['ros']
+[0.481s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extension 'ros'
+[0.482s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extensions ['cmake', 'python']
+[0.482s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extension 'cmake'
+[0.482s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extension 'python'
+[0.482s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extensions ['python_setup_py']
+[0.482s] Level 1:colcon.colcon_core.package_identification:_identify(external) by extension 'python_setup_py'
+[0.482s] Level 1:colcon.colcon_core.package_identification:_identify(external/csm) by extensions ['ignore', 'ignore_ament_install']
+[0.482s] Level 1:colcon.colcon_core.package_identification:_identify(external/csm) by extension 'ignore'
+[0.483s] Level 1:colcon.colcon_core.package_identification:_identify(external/csm) by extension 'ignore_ament_install'
+[0.483s] Level 1:colcon.colcon_core.package_identification:_identify(external/csm) by extensions ['colcon_pkg']
+[0.483s] Level 1:colcon.colcon_core.package_identification:_identify(external/csm) by extension 'colcon_pkg'
+[0.483s] Level 1:colcon.colcon_core.package_identification:_identify(external/csm) by extensions ['colcon_meta']
+[0.483s] Level 1:colcon.colcon_core.package_identification:_identify(external/csm) by extension 'colcon_meta'
+[0.483s] Level 1:colcon.colcon_core.package_identification:_identify(external/csm) by extensions ['ros']
+[0.483s] Level 1:colcon.colcon_core.package_identification:_identify(external/csm) by extension 'ros'
+[0.485s] DEBUG:colcon.colcon_core.package_identification:Package 'external/csm' with type 'ros.ament_cmake' and name 'csm'
+[0.485s] Level 1:colcon.colcon_core.package_identification:_identify(external/ros2_laser_scan_matcher) by extensions ['ignore', 'ignore_ament_install']
+[0.485s] Level 1:colcon.colcon_core.package_identification:_identify(external/ros2_laser_scan_matcher) by extension 'ignore'
+[0.485s] Level 1:colcon.colcon_core.package_identification:_identify(external/ros2_laser_scan_matcher) by extension 'ignore_ament_install'
+[0.485s] Level 1:colcon.colcon_core.package_identification:_identify(external/ros2_laser_scan_matcher) by extensions ['colcon_pkg']
+[0.485s] Level 1:colcon.colcon_core.package_identification:_identify(external/ros2_laser_scan_matcher) by extension 'colcon_pkg'
+[0.485s] Level 1:colcon.colcon_core.package_identification:_identify(external/ros2_laser_scan_matcher) by extensions ['colcon_meta']
+[0.485s] Level 1:colcon.colcon_core.package_identification:_identify(external/ros2_laser_scan_matcher) by extension 'colcon_meta'
+[0.485s] Level 1:colcon.colcon_core.package_identification:_identify(external/ros2_laser_scan_matcher) by extensions ['ros']
+[0.486s] Level 1:colcon.colcon_core.package_identification:_identify(external/ros2_laser_scan_matcher) by extension 'ros'
+[0.487s] DEBUG:colcon.colcon_core.package_identification:Package 'external/ros2_laser_scan_matcher' with type 'ros.ament_cmake' and name 'ros2_laser_scan_matcher'
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extensions ['ignore', 'ignore_ament_install']
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(install) by extension 'ignore'
+[0.487s] Level 1:colcon.colcon_core.package_identification:_identify(install) ignored
+[0.488s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extensions ['ignore', 'ignore_ament_install']
+[0.488s] Level 1:colcon.colcon_core.package_identification:_identify(log) by extension 'ignore'
+[0.488s] Level 1:colcon.colcon_core.package_identification:_identify(log) ignored
+[0.488s] Level 1:colcon.colcon_core.package_identification:_identify(messages) by extensions ['ignore', 'ignore_ament_install']
+[0.488s] Level 1:colcon.colcon_core.package_identification:_identify(messages) by extension 'ignore'
+[0.488s] Level 1:colcon.colcon_core.package_identification:_identify(messages) by extension 'ignore_ament_install'
+[0.488s] Level 1:colcon.colcon_core.package_identification:_identify(messages) by extensions ['colcon_pkg']
+[0.488s] Level 1:colcon.colcon_core.package_identification:_identify(messages) by extension 'colcon_pkg'
+[0.488s] Level 1:colcon.colcon_core.package_identification:_identify(messages) by extensions ['colcon_meta']
+[0.488s] Level 1:colcon.colcon_core.package_identification:_identify(messages) by extension 'colcon_meta'
+[0.489s] Level 1:colcon.colcon_core.package_identification:_identify(messages) by extensions ['ros']
+[0.489s] Level 1:colcon.colcon_core.package_identification:_identify(messages) by extension 'ros'
+[0.490s] DEBUG:colcon.colcon_core.package_identification:Package 'messages' with type 'ros.ament_cmake' and name 'car_msgs'
+[0.490s] Level 1:colcon.colcon_core.package_identification:_identify(odometry) by extensions ['ignore', 'ignore_ament_install']
+[0.490s] Level 1:colcon.colcon_core.package_identification:_identify(odometry) by extension 'ignore'
+[0.490s] Level 1:colcon.colcon_core.package_identification:_identify(odometry) by extension 'ignore_ament_install'
+[0.490s] Level 1:colcon.colcon_core.package_identification:_identify(odometry) by extensions ['colcon_pkg']
+[0.490s] Level 1:colcon.colcon_core.package_identification:_identify(odometry) by extension 'colcon_pkg'
+[0.490s] Level 1:colcon.colcon_core.package_identification:_identify(odometry) by extensions ['colcon_meta']
+[0.490s] Level 1:colcon.colcon_core.package_identification:_identify(odometry) by extension 'colcon_meta'
+[0.490s] Level 1:colcon.colcon_core.package_identification:_identify(odometry) by extensions ['ros']
+[0.491s] Level 1:colcon.colcon_core.package_identification:_identify(odometry) by extension 'ros'
+[0.493s] DEBUG:colcon.colcon_core.package_identification:Package 'odometry' with type 'ros.ament_cmake' and name 'odometry'
+[0.493s] Level 1:colcon.colcon_core.package_identification:_identify(planner) by extensions ['ignore', 'ignore_ament_install']
+[0.493s] Level 1:colcon.colcon_core.package_identification:_identify(planner) by extension 'ignore'
+[0.493s] Level 1:colcon.colcon_core.package_identification:_identify(planner) by extension 'ignore_ament_install'
+[0.493s] Level 1:colcon.colcon_core.package_identification:_identify(planner) by extensions ['colcon_pkg']
+[0.493s] Level 1:colcon.colcon_core.package_identification:_identify(planner) by extension 'colcon_pkg'
+[0.493s] Level 1:colcon.colcon_core.package_identification:_identify(planner) by extensions ['colcon_meta']
+[0.493s] Level 1:colcon.colcon_core.package_identification:_identify(planner) by extension 'colcon_meta'
+[0.493s] Level 1:colcon.colcon_core.package_identification:_identify(planner) by extensions ['ros']
+[0.493s] Level 1:colcon.colcon_core.package_identification:_identify(planner) by extension 'ros'
+[0.494s] DEBUG:colcon.colcon_core.package_identification:Package 'planner' with type 'ros.ament_cmake' and name 'planner'
+[0.494s] Level 1:colcon.colcon_core.package_identification:_identify(startup) by extensions ['ignore', 'ignore_ament_install']
+[0.495s] Level 1:colcon.colcon_core.package_identification:_identify(startup) by extension 'ignore'
+[0.495s] Level 1:colcon.colcon_core.package_identification:_identify(startup) by extension 'ignore_ament_install'
+[0.495s] Level 1:colcon.colcon_core.package_identification:_identify(startup) by extensions ['colcon_pkg']
+[0.495s] Level 1:colcon.colcon_core.package_identification:_identify(startup) by extension 'colcon_pkg'
+[0.495s] Level 1:colcon.colcon_core.package_identification:_identify(startup) by extensions ['colcon_meta']
+[0.495s] Level 1:colcon.colcon_core.package_identification:_identify(startup) by extension 'colcon_meta'
+[0.495s] Level 1:colcon.colcon_core.package_identification:_identify(startup) by extensions ['ros']
+[0.495s] Level 1:colcon.colcon_core.package_identification:_identify(startup) by extension 'ros'
+[0.496s] DEBUG:colcon.colcon_core.package_identification:Package 'startup' with type 'ros.ament_cmake' and name 'startup'
+[0.496s] Level 1:colcon.colcon_core.package_discovery:discover_packages(recursive) using defaults
+[0.496s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) discover
+[0.497s] Level 1:colcon.colcon_core.package_discovery:discover_packages(ignore) using defaults
+[0.497s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) discover
+[0.497s] Level 1:colcon.colcon_core.package_discovery:discover_packages(path) using defaults
+[0.537s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'car_msgs' in 'messages'
+[0.537s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'common' in 'common'
+[0.537s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'csm' in 'external/csm'
+[0.537s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'controller' in 'controller'
+[0.537s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'costmap' in 'costmap'
+[0.538s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'odometry' in 'odometry'
+[0.538s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'ros2_laser_scan_matcher' in 'external/ros2_laser_scan_matcher'
+[0.538s] INFO:colcon.colcon_core.package_selection:Skipping not selected package 'startup' in 'startup'
+[0.538s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) check parameters
+[0.539s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) discover
+[0.547s] DEBUG:colcon.colcon_installed_package_information.package_discovery:Found 299 installed packages in /opt/ros/jazzy
+[0.548s] Level 1:colcon.colcon_core.package_discovery:discover_packages(prefix_path) using defaults
+[0.645s] Level 5:colcon.colcon_core.verb:set package 'planner' build argument 'cmake_args' from command line to 'None'
+[0.645s] Level 5:colcon.colcon_core.verb:set package 'planner' build argument 'cmake_target' from command line to 'None'
+[0.645s] Level 5:colcon.colcon_core.verb:set package 'planner' build argument 'cmake_target_skip_unavailable' from command line to 'False'
+[0.645s] Level 5:colcon.colcon_core.verb:set package 'planner' build argument 'cmake_clean_cache' from command line to 'False'
+[0.645s] Level 5:colcon.colcon_core.verb:set package 'planner' build argument 'cmake_clean_first' from command line to 'False'
+[0.645s] Level 5:colcon.colcon_core.verb:set package 'planner' build argument 'cmake_force_configure' from command line to 'False'
+[0.645s] Level 5:colcon.colcon_core.verb:set package 'planner' build argument 'ament_cmake_args' from command line to 'None'
+[0.645s] Level 5:colcon.colcon_core.verb:set package 'planner' build argument 'catkin_cmake_args' from command line to 'None'
+[0.645s] Level 5:colcon.colcon_core.verb:set package 'planner' build argument 'catkin_skip_building_tests' from command line to 'False'
+[0.645s] DEBUG:colcon.colcon_core.verb:Building package 'planner' with the following arguments: {'ament_cmake_args': None, 'build_base': '/home/valenstein/Workspace/CarControl/App/src/build/planner', 'catkin_cmake_args': None, 'catkin_skip_building_tests': False, 'cmake_args': None, 'cmake_clean_cache': False, 'cmake_clean_first': False, 'cmake_force_configure': False, 'cmake_target': None, 'cmake_target_skip_unavailable': False, 'install_base': '/home/valenstein/Workspace/CarControl/App/src/install/planner', 'merge_install': False, 'path': '/home/valenstein/Workspace/CarControl/App/src/planner', 'symlink_install': False, 'test_result_base': None}
+[0.646s] INFO:colcon.colcon_core.executor:Executing jobs using 'parallel' executor
+[0.647s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete
+[0.647s] INFO:colcon.colcon_ros.task.ament_cmake.build:Building ROS package in '/home/valenstein/Workspace/CarControl/App/src/planner' with build type 'ament_cmake'
+[0.648s] INFO:colcon.colcon_cmake.task.cmake.build:Building CMake package in '/home/valenstein/Workspace/CarControl/App/src/planner'
+[0.659s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_core.shell.bat': Not used on non-Windows systems
+[0.659s] INFO:colcon.colcon_core.shell:Skip shell extension 'powershell' for command environment: Not usable outside of PowerShell
+[0.660s] DEBUG:colcon.colcon_core.shell:Skip shell extension 'dsv' for command environment
+[0.703s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/valenstein/Workspace/CarControl/App/src/build/planner': AMENT_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/valenstein/Workspace/CarControl/App/src/build/planner -- -j4 -l4
+[36.540s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/valenstein/Workspace/CarControl/App/src/build/planner' returned '0': AMENT_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --build /home/valenstein/Workspace/CarControl/App/src/build/planner -- -j4 -l4
+[36.560s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoking command in '/home/valenstein/Workspace/CarControl/App/src/build/planner': AMENT_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/valenstein/Workspace/CarControl/App/src/build/planner
+[36.626s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(planner)
+[36.628s] DEBUG:colcon.colcon_core.event_handler.log_command:Invoked command in '/home/valenstein/Workspace/CarControl/App/src/build/planner' returned '0': AMENT_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/valenstein/Workspace/CarControl/App/src/install/common:/home/valenstein/Workspace/CarControl/App/src/install/car_msgs:/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy DEBUGINFOD_URLS=https://debuginfod.ubuntu.com LD_LIBRARY_PATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/valenstein/Workspace/CarControl/App/src/install/car_msgs/lib/python3.12/site-packages:${PYTHONPATH} /usr/bin/cmake --install /home/valenstein/Workspace/CarControl/App/src/build/planner
+[36.634s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner' for CMake module files
+[36.635s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner' for CMake config files
+[36.635s] Level 1:colcon.colcon_core.shell:create_environment_hook('planner', 'cmake_prefix_path')
+[36.636s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/hook/cmake_prefix_path.ps1'
+[36.637s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/hook/cmake_prefix_path.dsv'
+[36.638s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/hook/cmake_prefix_path.sh'
+[36.639s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner/lib'
+[36.640s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner/bin'
+[36.640s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner/lib/pkgconfig/planner.pc'
+[36.640s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner/lib/python3.12/site-packages'
+[36.641s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner/bin'
+[36.642s] INFO:colcon.colcon_core.shell:Creating package script '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.ps1'
+[36.644s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.dsv'
+[36.645s] INFO:colcon.colcon_core.shell:Creating package script '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.sh'
+[36.646s] INFO:colcon.colcon_core.shell:Creating package script '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.bash'
+[36.648s] INFO:colcon.colcon_core.shell:Creating package script '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.zsh'
+[36.649s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/valenstein/Workspace/CarControl/App/src/install/planner/share/colcon-core/packages/planner)
+[36.650s] Level 1:colcon.colcon_core.environment:create_environment_scripts_only(planner)
+[36.651s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner' for CMake module files
+[36.652s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner' for CMake config files
+[36.652s] Level 1:colcon.colcon_core.shell:create_environment_hook('planner', 'cmake_prefix_path')
+[36.653s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/hook/cmake_prefix_path.ps1'
+[36.653s] INFO:colcon.colcon_core.shell:Creating environment descriptor '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/hook/cmake_prefix_path.dsv'
+[36.654s] INFO:colcon.colcon_core.shell:Creating environment hook '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/hook/cmake_prefix_path.sh'
+[36.655s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner/lib'
+[36.655s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner/bin'
+[36.655s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner/lib/pkgconfig/planner.pc'
+[36.656s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner/lib/python3.12/site-packages'
+[36.657s] Level 1:colcon.colcon_core.environment:checking '/home/valenstein/Workspace/CarControl/App/src/install/planner/bin'
+[36.657s] INFO:colcon.colcon_core.shell:Creating package script '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.ps1'
+[36.658s] INFO:colcon.colcon_core.shell:Creating package descriptor '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.dsv'
+[36.659s] INFO:colcon.colcon_core.shell:Creating package script '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.sh'
+[36.660s] INFO:colcon.colcon_core.shell:Creating package script '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.bash'
+[36.662s] INFO:colcon.colcon_core.shell:Creating package script '/home/valenstein/Workspace/CarControl/App/src/install/planner/share/planner/package.zsh'
+[36.663s] Level 1:colcon.colcon_core.environment:create_file_with_runtime_dependencies(/home/valenstein/Workspace/CarControl/App/src/install/planner/share/colcon-core/packages/planner)
+[36.664s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:closing loop
+[36.664s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:loop closed
+[36.665s] DEBUG:colcon.colcon_parallel_executor.executor.parallel:run_until_complete finished with '0'
+[36.665s] DEBUG:colcon.colcon_core.event_reactor:joining thread
+[36.698s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.terminal_notifier': Not used on non-Darwin systems
+[36.699s] INFO:colcon.colcon_core.plugin_system:Skipping extension 'colcon_notification.desktop_notification.win32': Not used on non-Windows systems
+[36.699s] INFO:colcon.colcon_notification.desktop_notification:Sending desktop notification using 'notify2'
+[36.771s] DEBUG:colcon.colcon_core.event_reactor:joined thread
+[36.772s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/valenstein/Workspace/CarControl/App/src/install/local_setup.ps1'
+[36.775s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/valenstein/Workspace/CarControl/App/src/install/_local_setup_util_ps1.py'
+[36.784s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/valenstein/Workspace/CarControl/App/src/install/setup.ps1'
+[36.789s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/valenstein/Workspace/CarControl/App/src/install/local_setup.sh'
+[36.791s] INFO:colcon.colcon_core.shell:Creating prefix util module '/home/valenstein/Workspace/CarControl/App/src/install/_local_setup_util_sh.py'
+[36.794s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/valenstein/Workspace/CarControl/App/src/install/setup.sh'
+[36.797s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/valenstein/Workspace/CarControl/App/src/install/local_setup.bash'
+[36.799s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/valenstein/Workspace/CarControl/App/src/install/setup.bash'
+[36.802s] INFO:colcon.colcon_core.shell:Creating prefix script '/home/valenstein/Workspace/CarControl/App/src/install/local_setup.zsh'
+[36.803s] INFO:colcon.colcon_core.shell:Creating prefix chain script '/home/valenstein/Workspace/CarControl/App/src/install/setup.zsh'

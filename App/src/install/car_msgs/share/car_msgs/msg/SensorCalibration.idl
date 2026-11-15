@@ -1,0 +1,49 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from car_msgs/msg/SensorCalibration.msg
+// generated code does not contain a copyright notice
+
+#include "std_msgs/msg/Header.idl"
+
+module car_msgs {
+  module msg {
+    struct SensorCalibration {
+      std_msgs::msg::Header header;
+
+      boolean is_calibrated;
+
+      float mpu6050_mean_accel_x;
+
+      float mpu6050_mean_accel_y;
+
+      float mpu6050_mean_accel_z;
+
+      float mpu6050_var_accel_x;
+
+      float mpu6050_var_accel_y;
+
+      float mpu6050_var_accel_z;
+
+      float mpu6050_mean_gyro_x;
+
+      float mpu6050_mean_gyro_y;
+
+      float mpu6050_mean_gyro_z;
+
+      float mpu6050_var_gyro_x;
+
+      float mpu6050_var_gyro_y;
+
+      float mpu6050_var_gyro_z;
+
+      float cjmcu103_mean_angle;
+
+      float cjmcu103_var_angle;
+
+      float cjmcu103_mean_anglespeed;
+
+      float cjmcu103_var_anglespeed;
+
+      float wheelencoder_var_rotspeed;
+    };
+  };
+};

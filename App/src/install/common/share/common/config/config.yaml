@@ -1,0 +1,93 @@
+position:
+  x_init: -1.125
+  y_init: -1.35
+  yaw_init: 1.57
+  x_target: 1.125
+  y_target: 1.35
+
+
+
+topics:
+  sensorMeasurements: /sensor/measurements
+  sensorCalibration: /sensor/calibration
+  motionControl: /motion_control
+  odomEkf: /odom
+  poseCrtgrphr: /tracked_pose
+  occupancyGrid: /occupancy_grid
+  debugPlanner: /debug/planner
+  debugController: /debug/controller
+  costMap: /costmap
+  globalPath: /global_path
+  closestNode: /closest_node
+  closestNodeDisp: /closest_node_disp
+
+
+
+
+
+  vehicleState: /vehicle_state_ekf
+  vehicleStateAct: /vehicle_state_actual
+  histVehicleStateEkf: /hist_vehicle_state_ekf
+  histVehicleStateCsm: /hist_vehicle_state_csm
+  histVehicleStateAct: /hist_vehicle_state_actual
+  nodeState: /node_state
+  laserScan: /scan
+  globalPath: /global_path
+
+
+frames:
+  map: map
+  odom: odom
+  vehicle:
+    chassis: base_link
+    lidar: lidar_link
+    imu: imu_link
+    front_axle: front_axle_link
+    rear_axle: rear_axle_link
+  
+
+occgrid:
+  resolution: 0.02
+
+sensors:
+  imu:
+    pos_chassis:
+      x: 0
+      y: 0
+      z: 0
+    stddev:
+      accel: 0.02
+      yaw_rate: 0.01
+  lidar:
+    pos_chassis:
+      x: 0
+      y: 0
+      z: 0.1
+    stddev: 0.005
+  potentiometer:
+    stddev: 0.0001
+  wheelencoder:
+    stddev: 0.0001
+
+vehicle:
+  max_steering: 0.9
+  wheelbase: 0.14
+  wheeltrack: 0.1
+  chassis:
+    main:
+      length: 0.13
+      width: 0.08
+      height: 0.02
+      mass: 1.15
+    front:
+      length: 0.04
+      width: 0.03
+      height: 0.02
+  wheels:
+    radius: 0.015
+    width: 0.015
+    mass: 0.1
+
+
+
+

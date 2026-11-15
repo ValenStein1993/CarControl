@@ -1,0 +1,12 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from car_msgs/msg/NodeState.msg
+// generated code does not contain a copyright notice
+
+
+module car_msgs {
+  module msg {
+    struct NodeState {
+      boolean localizer_is_ready;
+    };
+  };
+};

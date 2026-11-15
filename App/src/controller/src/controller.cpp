@@ -31,7 +31,7 @@ using Common::MathUtils::wrapAngle;
 
 Controller::Controller()
   : BaseNode("controller"),
-    closestNode_{0.0f, 0.0f, 0.0f, -1, -1} {
+    closestNode_{{0.0f, 0.0f, 0.0f}, -1} {
 
   if (debug_) {
     add_timer(100ms, &Controller::publish_debugMsg);
@@ -66,31 +66,29 @@ Controller::Controller()
 }
 
 void Controller::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
-  std::string vehicle_base_frame = "base_link";
-  std::string front_axle_frame = "front_axle_link";
+  const std::string vehicle_base_frame{config_frames_vehicle_chassis};
+  const std::string rear_axle_frame{config_frames_vehicle_rear_axle};
 
-  if (!tf_buffer_->canTransform(vehicle_base_frame, front_axle_frame, tf2::TimePointZero)) {
+  if (!tf_buffer_->canTransform(vehicle_base_frame, rear_axle_frame, tf2::TimePointZero)) {
     return;
   }
 
-  const auto base_to_front_axle = tf_buffer_->lookupTransform(
-      vehicle_base_frame, front_axle_frame, tf2::TimePointZero);
+  const auto base_to_rear_axle = tf_buffer_->lookupTransform(
+      vehicle_base_frame, rear_axle_frame, tf2::TimePointZero);
 
   tf2::Transform map_to_chassis;
   tf2::fromMsg(msg->pose, map_to_chassis);
 
-  tf2::Transform chassis_to_front_axle_tf;
-  tf2::fromMsg(base_to_front_axle.transform, chassis_to_front_axle_tf);
+  tf2::Transform chassis_to_rear_axle;
+  tf2::fromMsg(base_to_rear_axle.transform, chassis_to_rear_axle);
 
-  const tf2::Transform map_to_front_axle = map_to_chassis * chassis_to_front_axle_tf;
+  // the path is planned for the rear axle
+  const tf2::Transform map_to_rear_axle = map_to_chassis * chassis_to_rear_axle;
 
-  geometry_msgs::msg::PoseStamped front_axle_pose;
-  front_axle_pose.header = msg->header;
-  front_axle_pose.pose.position.x = map_to_front_axle.getOrigin().x();
-  front_axle_pose.pose.position.y = map_to_front_axle.getOrigin().y();
-  front_axle_pose.pose.position.z = map_to_front_axle.getOrigin().z();
-  front_axle_pose.pose.orientation = tf2::toMsg(map_to_front_axle.getRotation());
-  lastVehiclePose_ = std::make_shared<geometry_msgs::msg::PoseStamped>(front_axle_pose);
+  geometry_msgs::msg::PoseStamped rear_axle_pose;
+  rear_axle_pose.header = msg->header;
+  tf2::toMsg(map_to_rear_axle, rear_axle_pose.pose);
+  lastVehiclePose_ = std::make_shared<geometry_msgs::msg::PoseStamped>(rear_axle_pose);
 
   publish_motionControl();
 }
@@ -128,12 +126,12 @@ void Controller::publish_closestNode() {
   geometry_msgs::msg::PoseStamped msg;
   msg.header.stamp = get_clock()->now();
   msg.header.frame_id = lastPath_->header.frame_id;
-  msg.pose.position.x = closestNode_.x;
-  msg.pose.position.y = closestNode_.y;
+  msg.pose.position.x = closestNode_.pose.x;
+  msg.pose.position.y = closestNode_.pose.y;
   msg.pose.position.z = 0.0;
   
   tf2::Quaternion q;
-  q.setRPY(0, 0, closestNode_.theta);
+  q.setRPY(0, 0, closestNode_.pose.th);
   msg.pose.orientation = tf2::toMsg(q);
 
   pub_closestNodeDisp_->publish(msg);
@@ -141,9 +139,9 @@ void Controller::publish_closestNode() {
   car_msgs::msg::PathNode pathNodeMsg;
   pathNodeMsg.header.stamp = get_clock()->now();
   pathNodeMsg.header.frame_id = lastPath_->header.frame_id;
-  pathNodeMsg.x = closestNode_.x;
-  pathNodeMsg.y = closestNode_.y;
-  pathNodeMsg.th = closestNode_.theta;
+  pathNodeMsg.x = closestNode_.pose.x;
+  pathNodeMsg.y = closestNode_.pose.y;
+  pathNodeMsg.th = closestNode_.pose.th;
   pathNodeMsg.idx = closestNode_.idx;
 
   pub_closestNode_->publish(pathNodeMsg);
@@ -200,24 +198,19 @@ int Controller::getSegmentEnd(int first, int dir) const {
   return last;
 }
 
+Pose Controller::trackedAxle(const geometry_msgs::msg::Pose& p, int dir) const {
+  const float theta = tf2::getYaw(p.orientation);
+  const float offset = (dir == 1) ? config_vehicle_wheelbase : 0.0f;
+  return Pose{static_cast<float>(p.position.x) + offset * std::cos(theta),
+              static_cast<float>(p.position.y) + offset * std::sin(theta),
+              theta};
+}
+
 std::optional<PathProjection> Controller::projectOnPath(int first, int last, int dir) const {
-  // Projects the tracked axle onto segments [first, last] of its path.
-  // The published path belongs to the front axle. Stanley tracks the leading axle:
-  //   forward (dir = 1):  front axle on the published path
-  //   reverse (dir = -1): rear axle on the path shifted by -L along the planned heading
+  // Projects the tracked axle onto segments [first, last] of the path of that axle
   const auto& poses = lastPath_->poses;
-  const float L = config_vehicle_wheelbase;
 
-  auto transformPoint = [&](const geometry_msgs::msg::Pose& p) {
-    const float theta = tf2::getYaw(p.orientation);
-    const float offset = (dir == 1) ? 0.0f : -L;
-    return Pose{static_cast<float>(p.position.x) + offset * std::cos(theta),
-                static_cast<float>(p.position.y) + offset * std::sin(theta),
-                theta};
-  };
-
-  // same axle on the vehicle side
-  const Pose vehicle = transformPoint(lastVehiclePose_->pose);
+  const Pose vehicle = trackedAxle(lastVehiclePose_->pose, dir);
   const float pos_x = vehicle.x;
   const float pos_y = vehicle.y;
 
@@ -226,8 +219,8 @@ std::optional<PathProjection> Controller::projectOnPath(int first, int last, int
 
   for (int i = first; i <= last; ++i) {
 
-    const Pose a = transformPoint(poses[i].pose);
-    const Pose b = transformPoint(poses[i + 1].pose);
+    const Pose a = trackedAxle(poses[i].pose, dir);
+    const Pose b = trackedAxle(poses[i + 1].pose, dir);
     const float ax = a.x;
     const float ay = a.y;
     const float bx = b.x;
@@ -258,11 +251,7 @@ std::pair<float, float> Controller::calcSteering() {
     return {0.0f, 0.0f};
   }
 
-  const float x_front = lastVehiclePose_->pose.position.x;
-  const float y_front = lastVehiclePose_->pose.position.y;
   const float yaw = tf2::getYaw(lastVehiclePose_->pose.orientation);
-  const float x_rear = x_front - config_vehicle_wheelbase * std::cos(yaw);
-  const float y_rear = y_front - config_vehicle_wheelbase * std::sin(yaw);
 
   auto projectRun = [&](int first) {
     const int dir = getDrivingDir(first);
@@ -277,7 +266,6 @@ std::pair<float, float> Controller::calcSteering() {
   // reference point passed the goal or end of the segment
   while (proj && proj->idx == last && proj->t >= 1.0f) {
     if (last + 1 >= nSeg) {
-      closestNode_ = {proj->x, proj->y, proj->heading, 0.0f, proj->idx};
       RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Goal reached: stopping.");
       return {0.0f, 0.0f};
     }
@@ -285,10 +273,11 @@ std::pair<float, float> Controller::calcSteering() {
     std::tie(proj, last) = projectRun(first);
   }
 
-  closestNode_ = {proj->x, proj->y, proj->heading, 0.0f, proj->idx};
+  closestNode_ = {{proj->x, proj->y, proj->heading}, proj->idx};
   const int dir = proj->dir;
-  const float x_ref = dir == 1 ? x_front : x_rear;
-  const float y_ref = dir == 1 ? y_front : y_rear;
+  const Pose ref = trackedAxle(lastVehiclePose_->pose, dir);
+  const float x_ref = ref.x;
+  const float y_ref = ref.y;
 
   const float cte = (y_ref - proj->y) * std::cos(proj->tangent) -
     (x_ref - proj->x) * std::sin(proj->tangent);
@@ -303,7 +292,7 @@ std::pair<float, float> Controller::calcSteering() {
 
   const float delta_phi = std::abs(phi - steeringAngleAct_);
   const float ratio = std::clamp((delta_phi - phiTol) / (phiErrMax - phiTol), 0.0f, 1.0f);
-  const float speed = std::max(dir * maxSpeed * (1.0f - ratio), 0.001f);
+  const float speed = dir * std::max(maxSpeed * (1.0f - ratio), 0.001f);
 
   const float yaw_rate = (speed / config_vehicle_wheelbase) * std::tan(phi);
 
@@ -313,7 +302,7 @@ std::pair<float, float> Controller::calcSteering() {
     debugMsg_.cn_yaw = phi;
     debugMsg_.speed = speed;
     debugMsg_.steering_angle = steeringAngleAct_;
-    debugMsg_.pdx_cnode = proj->idx;
+    debugMsg_.idx_closest_node = closestNode_.idx;
     debugMsg_.cte = cte;
     debugMsg_.heading_error = delta_phi;
   }

@@ -43,6 +43,7 @@ frames:
     lidar: lidar_link
     imu: imu_link
     front_axle: front_axle_link
+    rear_axle: rear_axle_link
   
 
 occgrid:
