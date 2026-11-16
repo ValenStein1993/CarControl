@@ -25,8 +25,6 @@
 
 constexpr float maxSpeed = 0.03;
 constexpr float maxSpeedDist = 0.3;
-constexpr float phiTol = 0.02;  // [rad] steering angle tolerance for speed reduction
-constexpr float phiErrMax = 0.2; // [rad] steering angle error for
 constexpr float gain_cte = 2.0;
 
 // Stanley softening constant [m/s]: limits the cross-track term at low speed

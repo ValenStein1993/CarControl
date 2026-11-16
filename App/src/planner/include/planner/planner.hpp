@@ -24,6 +24,7 @@ constexpr float maxSpeed = 0.02;
 constexpr float gain_cte = 0.5;
 constexpr int n_binsAngle = 36;
 constexpr float latticeRes = 0.05f;
+constexpr float planAheadDist = 0.2f;
 
 struct GridNodeDist {
     GridNode node;

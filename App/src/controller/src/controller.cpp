@@ -166,7 +166,6 @@ void Controller::publish_debugMsg() {
   pub_debug_->publish(debugMsg_);
 }
 
-
 int Controller::getDrivingDir(int i) const {
   const auto& a = lastPath_->poses[i].pose;
   const auto& b = lastPath_->poses[i + 1].pose.position;
@@ -281,6 +280,8 @@ std::pair<float, float> Controller::calcSteering() {
   phi = std::clamp(phi, -config_vehicle_max_steering, config_vehicle_max_steering);
 
   const float delta_phi = std::abs(phi - steeringAngleAct_);
+  const float phiErrMax = dir == 1 ? 0.8f * config_vehicle_max_steering : 0.2f * config_vehicle_max_steering;
+  const float phiTol = dir == 1 ? 0.2f * config_vehicle_max_steering : 0.02f * config_vehicle_max_steering;
   const float ratio = std::clamp((delta_phi - phiTol) / (phiErrMax - phiTol), 0.0f, 1.0f);
   const float speed = dir * std::max(maxSpeed * (1.0f - ratio), 0.001f);
 

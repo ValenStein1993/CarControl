@@ -185,10 +185,23 @@ PathNode Planner::getUpdateNode() {
   }
 
   int idx_update = idx_startSearch;
+  float cLast = 100;
+  float distAhead = 0;
+
+  // find the farthest node along the path that is still reachable with low cost
   for (int i = idx_startSearch; i < n; ++i) {
+    distAhead += std::hypot(path_[i].x - path_[i - 1].x, path_[i].y - path_[i - 1].y);
+    if (distAhead > planAheadDist) {
+      idx_update = i;
+      break;
+    };
+
     int idx_map = Common::MapUtils::getMapIndexFromPos(path_[i].x, path_[i].y, gridMetaData_);
-    if (idx_map >= 0 && lastOccGrid_->data[idx_map] >= cost_update) break;
-    idx_update = i;
+    float c = lastOccGrid_->data[idx_map];
+    if (c >= cost_update) break;
+    if (c <= cLast) idx_update = i;
+    
+    cLast = c;
   }
   idx_update = std::min(idx_update, n - 1); 
   return PathNode{path_[idx_update], idx_update};
