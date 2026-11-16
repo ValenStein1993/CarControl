@@ -66,6 +66,8 @@ Planner::Planner()
     static_cast<std::string>(config_topics_debugPlanner), 10);
   pub_path_ = create_publisher<nav_msgs::msg::Path>(
     static_cast<std::string>(config_topics_globalPath), 10);
+  pub_footprint_ = create_publisher<geometry_msgs::msg::PolygonStamped>(
+    static_cast<std::string>(config_topics_vehicleFootprint), 10);
 
   sub_vehiclePose_ = create_subscription<geometry_msgs::msg::PoseStamped>(
     static_cast<std::string>(config_topics_poseCrtgrphr), 10, 
@@ -100,6 +102,8 @@ void Planner::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::Shared
   rear_axle_pose.header = msg->header;
   tf2::toMsg(map_to_rear_axle, rear_axle_pose.pose);
   lastVehiclePose_ = std::make_shared<geometry_msgs::msg::PoseStamped>(rear_axle_pose);
+
+  publish_footprint();
 }
 
 void Planner::callback_laserScan(const sensor_msgs::msg::LaserScan::SharedPtr msg) {
@@ -168,6 +172,36 @@ void Planner::publish_path() {
 void Planner::publish_debugMsg() {
   debugMsg_.header.stamp = get_clock()->now();
   pub_debug_->publish(debugMsg_);
+}
+
+void Planner::publish_footprint() {
+  if (!lastVehiclePose_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot publish footprint: Vehicle pose is unavailable.");
+    return;
+  }
+
+  geometry_msgs::msg::PolygonStamped footprintMsg;
+  footprintMsg.header.stamp = get_clock()->now();
+  footprintMsg.header.frame_id = config_frames_vehicle_chassis;
+
+  const float halfLength = 0.5f * (config_vehicle_chassis_main_length + config_vehicle_chassis_front_length);
+  const float halfWidth = 0.5f * (config_vehicle_wheeltrack + config_vehicle_wheels_width);
+
+  std::vector<geometry_msgs::msg::Point32> corners(4);
+  corners[0].x = halfLength; corners[0].y = halfWidth;   // front right
+  corners[1].x = halfLength; corners[1].y = -halfWidth;  // front left
+  corners[2].x = -halfLength; corners[2].y = -halfWidth; // rear left
+  corners[3].x = -halfLength; corners[3].y = halfWidth;  // rear right
+
+  for (const auto& corner : corners) {
+    geometry_msgs::msg::Point32 point;
+    point.x = corner.x;
+    point.y = corner.y;
+    point.z = 0.0f;
+    footprintMsg.polygon.points.push_back(point);
+  }
+
+  pub_footprint_->publish(footprintMsg);
 }
 
 PathNode Planner::getUpdateNode() {

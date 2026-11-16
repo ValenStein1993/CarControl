@@ -16,6 +16,7 @@
 #include <nav_msgs/msg/path.hpp>
 #include <sensor_msgs/msg/laser_scan.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <geometry_msgs/msg/polygon_stamped.hpp>
 #include <nav_msgs/msg/map_meta_data.hpp>
 #include "common/datatypes.hpp"
 
@@ -57,6 +58,7 @@ class Planner : public BaseNode {
     rclcpp::Publisher<car_msgs::msg::DebugPlanner>::SharedPtr pub_debug_;
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;
     rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pub_path_;
+    rclcpp::Publisher<geometry_msgs::msg::PolygonStamped>::SharedPtr pub_footprint_;
 	
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_vehiclePose_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_laserScan_;
@@ -71,6 +73,7 @@ class Planner : public BaseNode {
 
     void publish_debugMsg();
     void publish_path();
+    void publish_footprint();
 
     std::vector<Pose> findShortestPath(PathNode startNode);
     void setTargetNode();
