@@ -8,8 +8,8 @@
 #pragma once
 
 #define EKF_N 4 // state dimension, x = {x, y, v, phi};
-#define EKF_M 5 // measurement dimension, z = {x, y, phi, v, phi_dot};
-#define EKF_U 2 // input dimension, u = {a, theta};
+#define EKF_M 1 // measurement dimension, z = {v};
+#define EKF_U 2 // input dimension, u = {a, gyro_z};
 
 #include "tinyekf.h"
 #include <memory>
@@ -21,6 +21,9 @@
 #include "car_msgs/msg/node_state.hpp"
 #include "car_msgs/msg/motion_control.hpp"
 #include <nav_msgs/msg/odometry.hpp>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/transform_listener.h>
+#include <tf2/LinearMath/Transform.hpp>
 
 #include "common/datatypes.hpp"
 #include "common/basenode.hpp"
@@ -62,19 +65,23 @@ class Odometry : public BaseNode {
     Odometry();
 	VehicleStateSpace stateSpace_{};
 	SensorConfig sensorConfig_{};
-	bool isReady_{false};
 
 	void initStateSpace();
-	void updateStateSpaceOdom(float dt, float accel_x, float angle, float translSpeed, float gyro_z);
-	void updateStateSpaceScan(const nav_msgs::msg::Odometry::SharedPtr msg);
+	void updateStateSpaceOdom(float dt, float accel_x, float translSpeed, float gyro_z);
 
   private:
   	bool firstMessage_{true};
-	
-  	rclcpp::Time lastTimestamp_{}; 
+
+	std::optional<tf2::Transform> rear_to_chassis_;
+
+  	rclcpp::Time lastTimestamp_{};
+	car_msgs::msg::MotionControl::SharedPtr lastMotionControl_;
+
   	rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_odomEkf_{};
-	rclcpp::Publisher<car_msgs::msg::NodeState>::SharedPtr pub_nodeState_{};
+	
 	std::unique_ptr<tf2_ros::TransformBroadcaster> tf_broadcaster_;
+	std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
+    std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 
     rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_{};
     rclcpp::Subscription<car_msgs::msg::SensorCalibration>::SharedPtr sub_calibration_{};
@@ -85,9 +92,8 @@ class Odometry : public BaseNode {
     void callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg);
     void callback_motionControl(const car_msgs::msg::MotionControl::SharedPtr msg);
 	void publish_odom();
-	float normalizeAngle(float angle);
 
 
-	car_msgs::msg::MotionControl::SharedPtr lastMotionControl_;
+
 
 };

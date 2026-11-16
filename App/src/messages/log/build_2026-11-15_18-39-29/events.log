@@ -1,0 +1,851 @@
+[0.000000] (-) TimerEvent: {}
+[0.000577] (car_msgs) JobQueued: {'identifier': 'car_msgs', 'dependencies': OrderedDict()}
+[0.001706] (car_msgs) JobStarted: {'identifier': 'car_msgs'}
+[0.027079] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'cmake'}
+[0.029690] (car_msgs) Command: {'cmd': ['/usr/bin/cmake', '/home/valenstein/Workspace/CarControl/App/src/messages', '-DCMAKE_INSTALL_PREFIX=/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs'], 'cwd': '/home/valenstein/Workspace/CarControl/App/src/messages/build/car_msgs', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'GZ_SIM_RESOURCE_PATH': '/opt/ros/jazzy/share', 'PYRENODE_RUNTIME': 'coreclr', 'USER': 'valenstein', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'STM32CubeMX_PATH': '/home/valenstein/STM32CubeMX', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/valenstein', 'OLDPWD': '/home/valenstein/Workspace/CarControl/App/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2827', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GNOME_KEYRING_CONTROL': '/run/user/1000/keyring', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'valenstein', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.SettingsDaemon.MediaKeys.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'valenstein', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/valenstein/.dotnet/tools', 'SESSION_MANAGER': 'local/valenstein-pc:@/tmp/.ICE-unix/2585,unix/valenstein-pc:/tmp/.ICE-unix/2585', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/2d5c6661_7833_4071_8161_b8807acbae8c', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'PYTHONNET_RUNTIME': 'coreclr', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'DOTNET_BUNDLE_EXTRACT_BASE_DIR': '/home/valenstein/.cache/dotnet_bundle_extract', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.32SXX3', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.353', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/valenstein/Workspace/CarControl/App/src/messages/build/car_msgs', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[0.100964] (-) TimerEvent: {}
+[0.201463] (-) TimerEvent: {}
+[0.274976] (car_msgs) StdoutLine: {'line': b'-- The C compiler identification is GNU 13.3.0\n'}
+[0.301939] (-) TimerEvent: {}
+[0.402411] (-) TimerEvent: {}
+[0.458392] (car_msgs) StdoutLine: {'line': b'-- The CXX compiler identification is GNU 13.3.0\n'}
+[0.500411] (car_msgs) StdoutLine: {'line': b'-- Detecting C compiler ABI info\n'}
+[0.503406] (-) TimerEvent: {}
+[0.604797] (-) TimerEvent: {}
+[0.705232] (-) TimerEvent: {}
+[0.805853] (-) TimerEvent: {}
+[0.821400] (car_msgs) StdoutLine: {'line': b'-- Detecting C compiler ABI info - done\n'}
+[0.842450] (car_msgs) StdoutLine: {'line': b'-- Check for working C compiler: /usr/bin/cc - skipped\n'}
+[0.843034] (car_msgs) StdoutLine: {'line': b'-- Detecting C compile features\n'}
+[0.843832] (car_msgs) StdoutLine: {'line': b'-- Detecting C compile features - done\n'}
+[0.860720] (car_msgs) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info\n'}
+[0.905947] (-) TimerEvent: {}
+[1.006422] (-) TimerEvent: {}
+[1.094957] (car_msgs) StdoutLine: {'line': b'-- Detecting CXX compiler ABI info - done\n'}
+[1.106570] (-) TimerEvent: {}
+[1.166151] (car_msgs) StdoutLine: {'line': b'-- Check for working CXX compiler: /usr/bin/c++ - skipped\n'}
+[1.168078] (car_msgs) StdoutLine: {'line': b'-- Detecting CXX compile features\n'}
+[1.169472] (car_msgs) StdoutLine: {'line': b'-- Detecting CXX compile features - done\n'}
+[1.196777] (car_msgs) StdoutLine: {'line': b'-- Found ament_cmake: 2.5.6 (/opt/ros/jazzy/share/ament_cmake/cmake)\n'}
+[1.207017] (-) TimerEvent: {}
+[1.310802] (-) TimerEvent: {}
+[1.411137] (-) TimerEvent: {}
+[1.511867] (-) TimerEvent: {}
+[1.614410] (-) TimerEvent: {}
+[1.626730] (car_msgs) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter \n'}
+[1.714534] (-) TimerEvent: {}
+[1.814969] (-) TimerEvent: {}
+[1.916133] (-) TimerEvent: {}
+[1.925673] (car_msgs) StdoutLine: {'line': b'-- Found rosidl_default_generators: 1.6.1 (/opt/ros/jazzy/share/rosidl_default_generators/cmake)\n'}
+[1.960390] (car_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[2.016266] (-) TimerEvent: {}
+[2.116640] (-) TimerEvent: {}
+[2.142561] (car_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[2.219277] (-) TimerEvent: {}
+[2.278178] (car_msgs) StdoutLine: {'line': b'-- Found rosidl_adapter: 4.6.9 (/opt/ros/jazzy/share/rosidl_adapter/cmake)\n'}
+[2.291109] (car_msgs) StdoutLine: {'line': b'-- Found std_msgs: 5.3.8 (/opt/ros/jazzy/share/std_msgs/cmake)\n'}
+[2.319413] (-) TimerEvent: {}
+[2.422763] (-) TimerEvent: {}
+[2.523388] (-) TimerEvent: {}
+[2.623780] (-) TimerEvent: {}
+[2.724438] (-) TimerEvent: {}
+[2.824930] (-) TimerEvent: {}
+[2.925381] (-) TimerEvent: {}
+[3.025697] (-) TimerEvent: {}
+[3.126031] (-) TimerEvent: {}
+[3.226407] (-) TimerEvent: {}
+[3.326762] (-) TimerEvent: {}
+[3.427101] (-) TimerEvent: {}
+[3.527400] (-) TimerEvent: {}
+[3.628387] (-) TimerEvent: {}
+[3.729401] (-) TimerEvent: {}
+[3.816453] (car_msgs) StdoutLine: {'line': b'-- Found ament_cmake_ros: 0.12.1 (/opt/ros/jazzy/share/ament_cmake_ros/cmake)\n'}
+[3.829521] (-) TimerEvent: {}
+[3.930454] (-) TimerEvent: {}
+[4.030794] (-) TimerEvent: {}
+[4.131174] (-) TimerEvent: {}
+[4.231518] (-) TimerEvent: {}
+[4.331834] (-) TimerEvent: {}
+[4.432132] (-) TimerEvent: {}
+[4.532473] (-) TimerEvent: {}
+[4.632916] (-) TimerEvent: {}
+[4.733418] (-) TimerEvent: {}
+[4.757169] (car_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c\n'}
+[4.834426] (-) TimerEvent: {}
+[4.934910] (-) TimerEvent: {}
+[5.035313] (-) TimerEvent: {}
+[5.135656] (-) TimerEvent: {}
+[5.235975] (-) TimerEvent: {}
+[5.336282] (-) TimerEvent: {}
+[5.436625] (-) TimerEvent: {}
+[5.536980] (-) TimerEvent: {}
+[5.637279] (-) TimerEvent: {}
+[5.737622] (-) TimerEvent: {}
+[5.838096] (-) TimerEvent: {}
+[5.866111] (car_msgs) StdoutLine: {'line': b'-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp\n'}
+[5.874127] (car_msgs) StdoutLine: {'line': b'-- Found python_cmake_module: 0.11.1 (/opt/ros/jazzy/share/python_cmake_module/cmake)\n'}
+[5.938216] (-) TimerEvent: {}
+[6.038572] (-) TimerEvent: {}
+[6.109409] (car_msgs) StdoutLine: {'line': b'-- Found PythonExtra: /usr/bin/python3  \n'}
+[6.138667] (-) TimerEvent: {}
+[6.238979] (-) TimerEvent: {}
+[6.339292] (-) TimerEvent: {}
+[6.439677] (-) TimerEvent: {}
+[6.540032] (-) TimerEvent: {}
+[6.640371] (-) TimerEvent: {}
+[6.740719] (-) TimerEvent: {}
+[6.841017] (-) TimerEvent: {}
+[6.941355] (-) TimerEvent: {}
+[7.041854] (-) TimerEvent: {}
+[7.050469] (car_msgs) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter Development NumPy Development.Module Development.Embed \n'}
+[7.141972] (-) TimerEvent: {}
+[7.228693] (car_msgs) StdoutLine: {'line': b'-- Found Python3: /usr/bin/python3 (found version "3.12.3") found components: Interpreter \n'}
+[7.242111] (-) TimerEvent: {}
+[7.248809] (car_msgs) StdoutLine: {'line': b'-- Configuring done (7.2s)\n'}
+[7.342229] (-) TimerEvent: {}
+[7.392413] (car_msgs) StdoutLine: {'line': b'-- Generating done (0.1s)\n'}
+[7.412966] (car_msgs) StdoutLine: {'line': b'-- Build files have been written to: /home/valenstein/Workspace/CarControl/App/src/messages/build/car_msgs\n'}
+[7.426013] (car_msgs) CommandEnded: {'returncode': 0}
+[7.427118] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'build'}
+[7.430701] (car_msgs) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/valenstein/Workspace/CarControl/App/src/messages/build/car_msgs', '--', '-j4', '-l4'], 'cwd': '/home/valenstein/Workspace/CarControl/App/src/messages/build/car_msgs', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'GZ_SIM_RESOURCE_PATH': '/opt/ros/jazzy/share', 'PYRENODE_RUNTIME': 'coreclr', 'USER': 'valenstein', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'STM32CubeMX_PATH': '/home/valenstein/STM32CubeMX', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/valenstein', 'OLDPWD': '/home/valenstein/Workspace/CarControl/App/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2827', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GNOME_KEYRING_CONTROL': '/run/user/1000/keyring', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'valenstein', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.SettingsDaemon.MediaKeys.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'valenstein', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/valenstein/.dotnet/tools', 'SESSION_MANAGER': 'local/valenstein-pc:@/tmp/.ICE-unix/2585,unix/valenstein-pc:/tmp/.ICE-unix/2585', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/2d5c6661_7833_4071_8161_b8807acbae8c', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'PYTHONNET_RUNTIME': 'coreclr', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'DOTNET_BUNDLE_EXTRACT_BASE_DIR': '/home/valenstein/.cache/dotnet_bundle_extract', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.32SXX3', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.353', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/valenstein/Workspace/CarControl/App/src/messages/build/car_msgs', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[7.442349] (-) TimerEvent: {}
+[7.544507] (-) TimerEvent: {}
+[7.564656] (car_msgs) StdoutLine: {'line': b'[  1%] \x1b[34m\x1b[1mGenerating Rust code for ROS interfaces\x1b[0m\n'}
+[7.596493] (car_msgs) StdoutLine: {'line': b'[  1%] Built target ament_cmake_python_copy_car_msgs\n'}
+[7.617174] (car_msgs) StdoutLine: {'line': b'[  2%] \x1b[34m\x1b[1mGenerating type hashes for ROS interfaces\x1b[0m\n'}
+[7.645402] (-) TimerEvent: {}
+[7.747838] (-) TimerEvent: {}
+[7.848768] (-) TimerEvent: {}
+[7.949249] (-) TimerEvent: {}
+[8.049721] (-) TimerEvent: {}
+[8.150225] (-) TimerEvent: {}
+[8.252028] (-) TimerEvent: {}
+[8.352368] (-) TimerEvent: {}
+[8.414465] (car_msgs) StdoutLine: {'line': b'running egg_info\n'}
+[8.415990] (car_msgs) StdoutLine: {'line': b'creating car_msgs.egg-info\n'}
+[8.454403] (-) TimerEvent: {}
+[8.494651] (car_msgs) StdoutLine: {'line': b'writing car_msgs.egg-info/PKG-INFO\n'}
+[8.494981] (car_msgs) StdoutLine: {'line': b'writing dependency_links to car_msgs.egg-info/dependency_links.txt\n'}
+[8.495191] (car_msgs) StdoutLine: {'line': b'writing top-level names to car_msgs.egg-info/top_level.txt\n'}
+[8.495408] (car_msgs) StdoutLine: {'line': b"writing manifest file 'car_msgs.egg-info/SOURCES.txt'\n"}
+[8.554489] (-) TimerEvent: {}
+[8.656731] (-) TimerEvent: {}
+[8.761798] (-) TimerEvent: {}
+[8.830880] (car_msgs) StdoutLine: {'line': b'[  2%] Built target car_msgs__rosidl_generator_type_description\n'}
+[8.860785] (car_msgs) StdoutLine: {'line': b"reading manifest file 'car_msgs.egg-info/SOURCES.txt'\n"}
+[8.861896] (-) TimerEvent: {}
+[8.863202] (car_msgs) StdoutLine: {'line': b"writing manifest file 'car_msgs.egg-info/SOURCES.txt'\n"}
+[8.887990] (car_msgs) StdoutLine: {'line': b'[  3%] \x1b[34m\x1b[1mGenerating C code for ROS interfaces\x1b[0m\n'}
+[8.896638] (car_msgs) StdoutLine: {'line': b'[  3%] \x1b[34m\x1b[1mGenerating C++ code for ROS interfaces\x1b[0m\n'}
+[8.953681] (car_msgs) StdoutLine: {'line': b'[  3%] Built target car_msgs__rs\n'}
+[8.962010] (-) TimerEvent: {}
+[8.986243] (car_msgs) StdoutLine: {'line': b'[  3%] Built target ament_cmake_python_build_car_msgs_egg\n'}
+[9.062111] (-) TimerEvent: {}
+[9.162552] (-) TimerEvent: {}
+[9.263387] (-) TimerEvent: {}
+[9.365391] (-) TimerEvent: {}
+[9.465717] (-) TimerEvent: {}
+[9.566013] (-) TimerEvent: {}
+[9.666388] (-) TimerEvent: {}
+[9.766703] (-) TimerEvent: {}
+[9.867030] (-) TimerEvent: {}
+[9.967379] (-) TimerEvent: {}
+[10.067705] (-) TimerEvent: {}
+[10.168067] (-) TimerEvent: {}
+[10.269426] (-) TimerEvent: {}
+[10.369870] (-) TimerEvent: {}
+[10.470193] (-) TimerEvent: {}
+[10.572462] (-) TimerEvent: {}
+[10.672770] (-) TimerEvent: {}
+[10.774416] (-) TimerEvent: {}
+[10.876421] (-) TimerEvent: {}
+[10.976924] (-) TimerEvent: {}
+[11.081418] (-) TimerEvent: {}
+[11.181843] (-) TimerEvent: {}
+[11.285555] (-) TimerEvent: {}
+[11.387597] (-) TimerEvent: {}
+[11.488009] (-) TimerEvent: {}
+[11.589086] (-) TimerEvent: {}
+[11.689468] (-) TimerEvent: {}
+[11.704509] (car_msgs) StdoutLine: {'line': b'[  3%] Built target car_msgs__cpp\n'}
+[11.736412] (car_msgs) StdoutLine: {'line': b'[  4%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/sensor_measurements__functions.c.o\x1b[0m\n'}
+[11.751720] (car_msgs) StdoutLine: {'line': b'[  5%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/sensor_measurements__type_support.c.o\x1b[0m\n'}
+[11.753696] (car_msgs) StdoutLine: {'line': b'[  6%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/sensor_measurements__description.c.o\x1b[0m\n'}
+[11.766799] (car_msgs) StdoutLine: {'line': b'[  7%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/sensor_calibration__description.c.o\x1b[0m\n'}
+[11.791745] (-) TimerEvent: {}
+[11.888496] (car_msgs) StdoutLine: {'line': b'[  8%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/sensor_calibration__functions.c.o\x1b[0m\n'}
+[11.892067] (-) TimerEvent: {}
+[11.957637] (car_msgs) StdoutLine: {'line': b'[  9%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/sensor_calibration__type_support.c.o\x1b[0m\n'}
+[11.979511] (car_msgs) StdoutLine: {'line': b'[ 10%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/vehicle_state__description.c.o\x1b[0m\n'}
+[11.992502] (-) TimerEvent: {}
+[12.020494] (car_msgs) StdoutLine: {'line': b'[ 11%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/vehicle_state__functions.c.o\x1b[0m\n'}
+[12.081451] (car_msgs) StdoutLine: {'line': b'[ 13%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/motion_control__description.c.o\x1b[0m\n'}
+[12.083326] (car_msgs) StdoutLine: {'line': b'[ 13%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/vehicle_state__type_support.c.o\x1b[0m\n'}
+[12.092699] (-) TimerEvent: {}
+[12.135078] (car_msgs) StdoutLine: {'line': b'[ 14%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/motion_control__functions.c.o\x1b[0m\n'}
+[12.195433] (-) TimerEvent: {}
+[12.205478] (car_msgs) StdoutLine: {'line': b'[ 15%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/node_state__description.c.o\x1b[0m\n'}
+[12.206740] (car_msgs) StdoutLine: {'line': b'[ 16%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/motion_control__type_support.c.o\x1b[0m\n'}
+[12.260425] (car_msgs) StdoutLine: {'line': b'[ 17%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/node_state__functions.c.o\x1b[0m\n'}
+[12.298421] (-) TimerEvent: {}
+[12.330530] (car_msgs) StdoutLine: {'line': b'[ 18%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/node_state__type_support.c.o\x1b[0m\n'}
+[12.342470] (car_msgs) StdoutLine: {'line': b'[ 19%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/debug_controller__description.c.o\x1b[0m\n'}
+[12.379690] (car_msgs) StdoutLine: {'line': b'[ 20%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/debug_controller__functions.c.o\x1b[0m\n'}
+[12.399459] (-) TimerEvent: {}
+[12.439207] (car_msgs) StdoutLine: {'line': b'[ 21%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/debug_controller__type_support.c.o\x1b[0m\n'}
+[12.460620] (car_msgs) StdoutLine: {'line': b'[ 21%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/path_node__description.c.o\x1b[0m\n'}
+[12.499595] (-) TimerEvent: {}
+[12.533737] (car_msgs) StdoutLine: {'line': b'[ 22%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/path_node__functions.c.o\x1b[0m\n'}
+[12.559762] (car_msgs) StdoutLine: {'line': b'[ 23%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/path_node__type_support.c.o\x1b[0m\n'}
+[12.563314] (car_msgs) StdoutLine: {'line': b'[ 24%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/debug_planner__description.c.o\x1b[0m\n'}
+[12.602420] (-) TimerEvent: {}
+[12.642718] (car_msgs) StdoutLine: {'line': b'[ 25%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/debug_planner__functions.c.o\x1b[0m\n'}
+[12.658749] (car_msgs) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_c.dir/rosidl_generator_c/car_msgs/msg/detail/debug_planner__type_support.c.o\x1b[0m\n'}
+[12.703090] (-) TimerEvent: {}
+[12.766361] (car_msgs) StdoutLine: {'line': b'[ 27%] \x1b[32m\x1b[1mLinking C shared library libcar_msgs__rosidl_generator_c.so\x1b[0m\n'}
+[12.803198] (-) TimerEvent: {}
+[12.863435] (car_msgs) StdoutLine: {'line': b'[ 27%] Built target car_msgs__rosidl_generator_c\n'}
+[12.892507] (car_msgs) StdoutLine: {'line': b'[ 28%] \x1b[34m\x1b[1mGenerating C++ introspection for ROS interfaces\x1b[0m\n'}
+[12.894052] (car_msgs) StdoutLine: {'line': b'[ 29%] \x1b[34m\x1b[1mGenerating C introspection for ROS interfaces\x1b[0m\n'}
+[12.894398] (car_msgs) StdoutLine: {'line': b'[ 30%] \x1b[34m\x1b[1mGenerating C type support dispatch for ROS interfaces\x1b[0m\n'}
+[12.903225] (car_msgs) StdoutLine: {'line': b'[ 31%] \x1b[34m\x1b[1mGenerating C type support for eProsima Fast-RTPS\x1b[0m\n'}
+[12.903594] (-) TimerEvent: {}
+[13.003958] (-) TimerEvent: {}
+[13.105689] (-) TimerEvent: {}
+[13.210211] (-) TimerEvent: {}
+[13.312007] (-) TimerEvent: {}
+[13.413573] (-) TimerEvent: {}
+[13.515386] (-) TimerEvent: {}
+[13.616951] (-) TimerEvent: {}
+[13.718493] (-) TimerEvent: {}
+[13.822582] (-) TimerEvent: {}
+[13.925419] (-) TimerEvent: {}
+[14.028511] (-) TimerEvent: {}
+[14.134531] (-) TimerEvent: {}
+[14.235206] (-) TimerEvent: {}
+[14.335659] (-) TimerEvent: {}
+[14.436026] (-) TimerEvent: {}
+[14.539389] (-) TimerEvent: {}
+[14.639760] (-) TimerEvent: {}
+[14.740207] (-) TimerEvent: {}
+[14.840593] (-) TimerEvent: {}
+[14.897123] (car_msgs) StdoutLine: {'line': b'[ 32%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/car_msgs/msg/detail/sensor_measurements__type_support.c.o\x1b[0m\n'}
+[14.940694] (-) TimerEvent: {}
+[14.982477] (car_msgs) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/car_msgs/msg/sensor_measurements__type_support.cpp.o\x1b[0m\n'}
+[15.028503] (car_msgs) StdoutLine: {'line': b'[ 34%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/car_msgs/msg/detail/sensor_calibration__type_support.c.o\x1b[0m\n'}
+[15.042413] (-) TimerEvent: {}
+[15.131495] (car_msgs) StdoutLine: {'line': b'[ 35%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/car_msgs/msg/sensor_calibration__type_support.cpp.o\x1b[0m\n'}
+[15.142546] (-) TimerEvent: {}
+[15.155318] (car_msgs) StdoutLine: {'line': b'[ 36%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/car_msgs/msg/detail/vehicle_state__type_support.c.o\x1b[0m\n'}
+[15.246604] (-) TimerEvent: {}
+[15.293479] (car_msgs) StdoutLine: {'line': b'[ 37%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/car_msgs/msg/detail/sensor_measurements__type_support.cpp.o\x1b[0m\n'}
+[15.339833] (car_msgs) StdoutLine: {'line': b'[ 38%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/car_msgs/msg/detail/motion_control__type_support.c.o\x1b[0m\n'}
+[15.345403] (car_msgs) StdoutLine: {'line': b'[ 39%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/car_msgs/msg/vehicle_state__type_support.cpp.o\x1b[0m\n'}
+[15.346801] (-) TimerEvent: {}
+[15.451571] (-) TimerEvent: {}
+[15.532332] (car_msgs) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/car_msgs/msg/detail/node_state__type_support.c.o\x1b[0m\n'}
+[15.555476] (-) TimerEvent: {}
+[15.657420] (-) TimerEvent: {}
+[15.667238] (car_msgs) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/car_msgs/msg/motion_control__type_support.cpp.o\x1b[0m\n'}
+[15.758362] (-) TimerEvent: {}
+[15.833193] (car_msgs) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/car_msgs/msg/detail/debug_controller__type_support.c.o\x1b[0m\n'}
+[15.858465] (-) TimerEvent: {}
+[15.935808] (car_msgs) StdoutLine: {'line': b'[ 41%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/car_msgs/msg/detail/sensor_measurements__type_support_c.cpp.o\x1b[0m\n'}
+[15.941759] (car_msgs) StdoutLine: {'line': b'[ 42%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/car_msgs/msg/node_state__type_support.cpp.o\x1b[0m\n'}
+[15.958578] (-) TimerEvent: {}
+[16.062911] (-) TimerEvent: {}
+[16.063927] (car_msgs) StdoutLine: {'line': b'[ 43%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/car_msgs/msg/detail/path_node__type_support.c.o\x1b[0m\n'}
+[16.163432] (-) TimerEvent: {}
+[16.228991] (car_msgs) StdoutLine: {'line': b'[ 44%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/car_msgs/msg/debug_controller__type_support.cpp.o\x1b[0m\n'}
+[16.264427] (-) TimerEvent: {}
+[16.277312] (car_msgs) StdoutLine: {'line': b'[ 45%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/car_msgs/msg/detail/debug_planner__type_support.c.o\x1b[0m\n'}
+[16.364538] (-) TimerEvent: {}
+[16.406401] (car_msgs) StdoutLine: {'line': b'[ 46%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/car_msgs/msg/path_node__type_support.cpp.o\x1b[0m\n'}
+[16.464657] (-) TimerEvent: {}
+[16.479955] (car_msgs) StdoutLine: {'line': b'[ 47%] \x1b[32m\x1b[1mLinking C shared library libcar_msgs__rosidl_typesupport_introspection_c.so\x1b[0m\n'}
+[16.566408] (-) TimerEvent: {}
+[16.582229] (car_msgs) StdoutLine: {'line': b'[ 48%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/car_msgs/msg/debug_planner__type_support.cpp.o\x1b[0m\n'}
+[16.620574] (car_msgs) StdoutLine: {'line': b'[ 49%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/car_msgs/msg/detail/sensor_calibration__type_support.cpp.o\x1b[0m\n'}
+[16.646655] (car_msgs) StdoutLine: {'line': b'[ 49%] Built target car_msgs__rosidl_typesupport_introspection_c\n'}
+[16.666548] (-) TimerEvent: {}
+[16.705422] (car_msgs) StdoutLine: {'line': b'[ 50%] \x1b[34m\x1b[1mGenerating C++ type support dispatch for ROS interfaces\x1b[0m\n'}
+[16.743461] (car_msgs) StdoutLine: {'line': b'[ 51%] \x1b[32m\x1b[1mLinking CXX shared library libcar_msgs__rosidl_typesupport_c.so\x1b[0m\n'}
+[16.770413] (-) TimerEvent: {}
+[16.870886] (-) TimerEvent: {}
+[16.939488] (car_msgs) StdoutLine: {'line': b'[ 51%] Built target car_msgs__rosidl_typesupport_c\n'}
+[16.979424] (car_msgs) StdoutLine: {'line': b'[ 52%] \x1b[34m\x1b[1mGenerating C++ type support for eProsima Fast-RTPS\x1b[0m\n'}
+[16.979775] (-) TimerEvent: {}
+[17.082399] (-) TimerEvent: {}
+[17.182817] (-) TimerEvent: {}
+[17.285418] (-) TimerEvent: {}
+[17.385805] (-) TimerEvent: {}
+[17.488424] (-) TimerEvent: {}
+[17.588750] (-) TimerEvent: {}
+[17.667673] (car_msgs) StdoutLine: {'line': b'[ 53%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/car_msgs/msg/detail/sensor_calibration__type_support_c.cpp.o\x1b[0m\n'}
+[17.688872] (-) TimerEvent: {}
+[17.737279] (car_msgs) StdoutLine: {'line': b'[ 54%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/car_msgs/msg/detail/vehicle_state__type_support.cpp.o\x1b[0m\n'}
+[17.788978] (-) TimerEvent: {}
+[17.889460] (-) TimerEvent: {}
+[17.993056] (-) TimerEvent: {}
+[18.094557] (-) TimerEvent: {}
+[18.197061] (-) TimerEvent: {}
+[18.298586] (-) TimerEvent: {}
+[18.401440] (-) TimerEvent: {}
+[18.501822] (-) TimerEvent: {}
+[18.605104] (-) TimerEvent: {}
+[18.635910] (car_msgs) StdoutLine: {'line': b'[ 55%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/car_msgs/msg/sensor_measurements__type_support.cpp.o\x1b[0m\n'}
+[18.705526] (-) TimerEvent: {}
+[18.807554] (-) TimerEvent: {}
+[18.900797] (car_msgs) StdoutLine: {'line': b'[ 56%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/car_msgs/msg/detail/motion_control__type_support.cpp.o\x1b[0m\n'}
+[18.907663] (-) TimerEvent: {}
+[19.008151] (-) TimerEvent: {}
+[19.108602] (-) TimerEvent: {}
+[19.211708] (-) TimerEvent: {}
+[19.247501] (car_msgs) StdoutLine: {'line': b'[ 57%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/car_msgs/msg/detail/vehicle_state__type_support_c.cpp.o\x1b[0m\n'}
+[19.312923] (-) TimerEvent: {}
+[19.415393] (-) TimerEvent: {}
+[19.518442] (-) TimerEvent: {}
+[19.618906] (-) TimerEvent: {}
+[19.719364] (-) TimerEvent: {}
+[19.819824] (-) TimerEvent: {}
+[19.919575] (car_msgs) StdoutLine: {'line': b'[ 58%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/car_msgs/msg/sensor_calibration__type_support.cpp.o\x1b[0m\n'}
+[19.919914] (-) TimerEvent: {}
+[20.020441] (-) TimerEvent: {}
+[20.043801] (car_msgs) StdoutLine: {'line': b'[ 59%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/car_msgs/msg/detail/node_state__type_support.cpp.o\x1b[0m\n'}
+[20.120551] (-) TimerEvent: {}
+[20.220935] (-) TimerEvent: {}
+[20.322271] (-) TimerEvent: {}
+[20.429306] (-) TimerEvent: {}
+[20.529909] (-) TimerEvent: {}
+[20.610763] (car_msgs) StdoutLine: {'line': b'[ 60%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/car_msgs/msg/detail/dds_fastrtps/sensor_measurements__type_support.cpp.o\x1b[0m\n'}
+[20.630040] (-) TimerEvent: {}
+[20.732735] (-) TimerEvent: {}
+[20.793111] (car_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/car_msgs/msg/detail/motion_control__type_support_c.cpp.o\x1b[0m\n'}
+[20.832939] (-) TimerEvent: {}
+[20.934625] (-) TimerEvent: {}
+[21.038738] (-) TimerEvent: {}
+[21.139385] (-) TimerEvent: {}
+[21.144469] (car_msgs) StdoutLine: {'line': b'[ 62%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/car_msgs/msg/detail/debug_controller__type_support.cpp.o\x1b[0m\n'}
+[21.239497] (-) TimerEvent: {}
+[21.322494] (car_msgs) StdoutLine: {'line': b'[ 63%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/car_msgs/msg/vehicle_state__type_support.cpp.o\x1b[0m\n'}
+[21.339621] (-) TimerEvent: {}
+[21.440098] (-) TimerEvent: {}
+[21.543407] (-) TimerEvent: {}
+[21.643802] (-) TimerEvent: {}
+[21.744215] (-) TimerEvent: {}
+[21.847406] (-) TimerEvent: {}
+[21.947796] (-) TimerEvent: {}
+[22.050643] (-) TimerEvent: {}
+[22.151097] (-) TimerEvent: {}
+[22.252408] (-) TimerEvent: {}
+[22.352878] (-) TimerEvent: {}
+[22.432697] (car_msgs) StdoutLine: {'line': b'[ 64%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/car_msgs/msg/detail/path_node__type_support.cpp.o\x1b[0m\n'}
+[22.453000] (-) TimerEvent: {}
+[22.507392] (car_msgs) StdoutLine: {'line': b'[ 65%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/car_msgs/msg/detail/dds_fastrtps/sensor_calibration__type_support.cpp.o\x1b[0m\n'}
+[22.558641] (-) TimerEvent: {}
+[22.660105] (-) TimerEvent: {}
+[22.763743] (-) TimerEvent: {}
+[22.864170] (-) TimerEvent: {}
+[22.967521] (-) TimerEvent: {}
+[23.067915] (-) TimerEvent: {}
+[23.155533] (car_msgs) StdoutLine: {'line': b'[ 65%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/car_msgs/msg/detail/node_state__type_support_c.cpp.o\x1b[0m\n'}
+[23.157500] (car_msgs) StdoutLine: {'line': b'[ 66%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/car_msgs/msg/motion_control__type_support.cpp.o\x1b[0m\n'}
+[23.168050] (-) TimerEvent: {}
+[23.272705] (-) TimerEvent: {}
+[23.373401] (-) TimerEvent: {}
+[23.473963] (-) TimerEvent: {}
+[23.537517] (car_msgs) StdoutLine: {'line': b'[ 67%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/car_msgs/msg/detail/debug_planner__type_support.cpp.o\x1b[0m\n'}
+[23.574768] (-) TimerEvent: {}
+[23.681349] (-) TimerEvent: {}
+[23.781757] (-) TimerEvent: {}
+[23.882283] (-) TimerEvent: {}
+[23.983666] (-) TimerEvent: {}
+[24.085870] (-) TimerEvent: {}
+[24.191412] (-) TimerEvent: {}
+[24.291841] (-) TimerEvent: {}
+[24.377616] (car_msgs) StdoutLine: {'line': b'[ 68%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/car_msgs/msg/detail/dds_fastrtps/vehicle_state__type_support.cpp.o\x1b[0m\n'}
+[24.391967] (-) TimerEvent: {}
+[24.493649] (-) TimerEvent: {}
+[24.508033] (car_msgs) StdoutLine: {'line': b'[ 69%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/car_msgs/msg/node_state__type_support.cpp.o\x1b[0m\n'}
+[24.593781] (-) TimerEvent: {}
+[24.696742] (-) TimerEvent: {}
+[24.729897] (car_msgs) StdoutLine: {'line': b'[ 70%] \x1b[32m\x1b[1mLinking CXX shared library libcar_msgs__rosidl_typesupport_introspection_cpp.so\x1b[0m\n'}
+[24.799680] (-) TimerEvent: {}
+[24.900084] (-) TimerEvent: {}
+[25.000625] (-) TimerEvent: {}
+[25.073247] (car_msgs) StdoutLine: {'line': b'[ 71%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/car_msgs/msg/detail/debug_controller__type_support_c.cpp.o\x1b[0m\n'}
+[25.100763] (-) TimerEvent: {}
+[25.150597] (car_msgs) StdoutLine: {'line': b'[ 71%] Built target car_msgs__rosidl_typesupport_introspection_cpp\n'}
+[25.179772] (car_msgs) StdoutLine: {'line': b'[ 72%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/car_msgs/msg/detail/path_node__type_support_c.cpp.o\x1b[0m\n'}
+[25.200915] (-) TimerEvent: {}
+[25.303085] (-) TimerEvent: {}
+[25.406520] (-) TimerEvent: {}
+[25.496477] (car_msgs) StdoutLine: {'line': b'[ 73%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/car_msgs/msg/debug_controller__type_support.cpp.o\x1b[0m\n'}
+[25.509425] (-) TimerEvent: {}
+[25.609851] (-) TimerEvent: {}
+[25.710299] (-) TimerEvent: {}
+[25.810739] (-) TimerEvent: {}
+[25.911260] (-) TimerEvent: {}
+[26.014728] (-) TimerEvent: {}
+[26.115153] (-) TimerEvent: {}
+[26.175477] (car_msgs) StdoutLine: {'line': b'[ 74%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/car_msgs/msg/detail/dds_fastrtps/motion_control__type_support.cpp.o\x1b[0m\n'}
+[26.215276] (-) TimerEvent: {}
+[26.315823] (-) TimerEvent: {}
+[26.416311] (-) TimerEvent: {}
+[26.519807] (-) TimerEvent: {}
+[26.620217] (-) TimerEvent: {}
+[26.723328] (-) TimerEvent: {}
+[26.757928] (car_msgs) StdoutLine: {'line': b'[ 75%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/car_msgs/msg/detail/dds_fastrtps/node_state__type_support.cpp.o\x1b[0m\n'}
+[26.823439] (-) TimerEvent: {}
+[26.889698] (car_msgs) StdoutLine: {'line': b'[ 76%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/car_msgs/msg/path_node__type_support.cpp.o\x1b[0m\n'}
+[26.923570] (-) TimerEvent: {}
+[27.026649] (-) TimerEvent: {}
+[27.129024] (-) TimerEvent: {}
+[27.132595] (car_msgs) StdoutLine: {'line': b'[ 77%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/car_msgs/msg/detail/debug_planner__type_support_c.cpp.o\x1b[0m\n'}
+[27.229160] (-) TimerEvent: {}
+[27.332780] (-) TimerEvent: {}
+[27.433409] (-) TimerEvent: {}
+[27.535260] (-) TimerEvent: {}
+[27.640024] (-) TimerEvent: {}
+[27.744425] (-) TimerEvent: {}
+[27.844823] (-) TimerEvent: {}
+[27.948143] (-) TimerEvent: {}
+[28.050706] (-) TimerEvent: {}
+[28.155081] (-) TimerEvent: {}
+[28.256442] (-) TimerEvent: {}
+[28.273576] (car_msgs) StdoutLine: {'line': b'[ 78%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/car_msgs/msg/detail/dds_fastrtps/debug_controller__type_support.cpp.o\x1b[0m\n'}
+[28.364947] (-) TimerEvent: {}
+[28.447964] (car_msgs) StdoutLine: {'line': b'[ 79%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/car_msgs/msg/detail/dds_fastrtps/path_node__type_support.cpp.o\x1b[0m\n'}
+[28.471544] (-) TimerEvent: {}
+[28.548602] (car_msgs) StdoutLine: {'line': b'[ 80%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/car_msgs/msg/debug_planner__type_support.cpp.o\x1b[0m\n'}
+[28.572428] (-) TimerEvent: {}
+[28.674420] (-) TimerEvent: {}
+[28.774866] (-) TimerEvent: {}
+[28.877619] (-) TimerEvent: {}
+[28.977969] (-) TimerEvent: {}
+[29.082575] (-) TimerEvent: {}
+[29.183052] (-) TimerEvent: {}
+[29.283676] (-) TimerEvent: {}
+[29.384634] (-) TimerEvent: {}
+[29.473002] (car_msgs) StdoutLine: {'line': b'[ 81%] \x1b[32m\x1b[1mLinking CXX shared library libcar_msgs__rosidl_typesupport_cpp.so\x1b[0m\n'}
+[29.486984] (-) TimerEvent: {}
+[29.587404] (-) TimerEvent: {}
+[29.666184] (car_msgs) StdoutLine: {'line': b'[ 82%] \x1b[32m\x1b[1mLinking CXX shared library libcar_msgs__rosidl_typesupport_fastrtps_c.so\x1b[0m\n'}
+[29.688145] (-) TimerEvent: {}
+[29.740443] (car_msgs) StdoutLine: {'line': b'[ 82%] Built target car_msgs__rosidl_typesupport_cpp\n'}
+[29.789413] (-) TimerEvent: {}
+[29.804438] (car_msgs) StdoutLine: {'line': b'[ 83%] \x1b[32mBuilding CXX object CMakeFiles/car_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/car_msgs/msg/detail/dds_fastrtps/debug_planner__type_support.cpp.o\x1b[0m\n'}
+[29.889541] (-) TimerEvent: {}
+[29.991050] (-) TimerEvent: {}
+[30.080437] (car_msgs) StdoutLine: {'line': b'[ 83%] Built target car_msgs__rosidl_typesupport_fastrtps_c\n'}
+[30.092455] (-) TimerEvent: {}
+[30.192839] (-) TimerEvent: {}
+[30.293243] (-) TimerEvent: {}
+[30.393819] (-) TimerEvent: {}
+[30.494408] (-) TimerEvent: {}
+[30.594781] (-) TimerEvent: {}
+[30.695161] (-) TimerEvent: {}
+[30.795547] (-) TimerEvent: {}
+[30.895925] (-) TimerEvent: {}
+[30.933848] (car_msgs) StdoutLine: {'line': b'[ 84%] \x1b[32m\x1b[1mLinking CXX shared library libcar_msgs__rosidl_typesupport_fastrtps_cpp.so\x1b[0m\n'}
+[30.996063] (-) TimerEvent: {}
+[31.041017] (car_msgs) StdoutLine: {'line': b'[ 84%] Built target car_msgs__rosidl_typesupport_fastrtps_cpp\n'}
+[31.070172] (car_msgs) StdoutLine: {'line': b'[ 84%] Built target car_msgs\n'}
+[31.096259] (-) TimerEvent: {}
+[31.103798] (car_msgs) StdoutLine: {'line': b'[ 85%] \x1b[34m\x1b[1mGenerating Python code for ROS interfaces\x1b[0m\n'}
+[31.196411] (-) TimerEvent: {}
+[31.296745] (-) TimerEvent: {}
+[31.397086] (-) TimerEvent: {}
+[31.497429] (-) TimerEvent: {}
+[31.597756] (-) TimerEvent: {}
+[31.698095] (-) TimerEvent: {}
+[31.798453] (-) TimerEvent: {}
+[31.898807] (-) TimerEvent: {}
+[31.999126] (-) TimerEvent: {}
+[32.099477] (-) TimerEvent: {}
+[32.199867] (-) TimerEvent: {}
+[32.300237] (-) TimerEvent: {}
+[32.400618] (-) TimerEvent: {}
+[32.500961] (-) TimerEvent: {}
+[32.602159] (-) TimerEvent: {}
+[32.702547] (-) TimerEvent: {}
+[32.802924] (-) TimerEvent: {}
+[32.903309] (-) TimerEvent: {}
+[33.003676] (-) TimerEvent: {}
+[33.105471] (-) TimerEvent: {}
+[33.172989] (car_msgs) StdoutLine: {'line': b'[ 85%] Built target car_msgs__py\n'}
+[33.205590] (-) TimerEvent: {}
+[33.226327] (car_msgs) StdoutLine: {'line': b'[ 86%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_py.dir/rosidl_generator_py/car_msgs/msg/_sensor_measurements_s.c.o\x1b[0m\n'}
+[33.306802] (-) TimerEvent: {}
+[33.407099] (-) TimerEvent: {}
+[33.507421] (-) TimerEvent: {}
+[33.562232] (car_msgs) StdoutLine: {'line': b'[ 87%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_py.dir/rosidl_generator_py/car_msgs/msg/_motion_control_s.c.o\x1b[0m\n'}
+[33.607526] (-) TimerEvent: {}
+[33.707930] (-) TimerEvent: {}
+[33.808285] (-) TimerEvent: {}
+[33.905353] (car_msgs) StdoutLine: {'line': b'[ 88%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_py.dir/rosidl_generator_py/car_msgs/msg/_node_state_s.c.o\x1b[0m\n'}
+[33.908399] (-) TimerEvent: {}
+[34.008818] (-) TimerEvent: {}
+[34.109197] (-) TimerEvent: {}
+[34.194828] (car_msgs) StdoutLine: {'line': b'[ 89%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_py.dir/rosidl_generator_py/car_msgs/msg/_debug_controller_s.c.o\x1b[0m\n'}
+[34.209303] (-) TimerEvent: {}
+[34.309682] (-) TimerEvent: {}
+[34.410060] (-) TimerEvent: {}
+[34.433128] (car_msgs) StdoutLine: {'line': b'[ 90%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_py.dir/rosidl_generator_py/car_msgs/msg/_path_node_s.c.o\x1b[0m\n'}
+[34.510198] (-) TimerEvent: {}
+[34.610702] (-) TimerEvent: {}
+[34.672724] (car_msgs) StdoutLine: {'line': b'[ 91%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_py.dir/rosidl_generator_py/car_msgs/msg/_debug_planner_s.c.o\x1b[0m\n'}
+[34.710852] (-) TimerEvent: {}
+[34.811197] (-) TimerEvent: {}
+[34.887178] (car_msgs) StdoutLine: {'line': b'[ 92%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_py.dir/rosidl_generator_py/car_msgs/msg/_vehicle_state_s.c.o\x1b[0m\n'}
+[34.911326] (-) TimerEvent: {}
+[35.011665] (-) TimerEvent: {}
+[35.110408] (car_msgs) StdoutLine: {'line': b'[ 93%] \x1b[32mBuilding C object CMakeFiles/car_msgs__rosidl_generator_py.dir/rosidl_generator_py/car_msgs/msg/_sensor_calibration_s.c.o\x1b[0m\n'}
+[35.111754] (-) TimerEvent: {}
+[35.212849] (-) TimerEvent: {}
+[35.313203] (-) TimerEvent: {}
+[35.389464] (car_msgs) StdoutLine: {'line': b'[ 94%] \x1b[32m\x1b[1mLinking C shared library libcar_msgs__rosidl_generator_py.so\x1b[0m\n'}
+[35.413306] (-) TimerEvent: {}
+[35.484640] (car_msgs) StdoutLine: {'line': b'[ 94%] Built target car_msgs__rosidl_generator_py\n'}
+[35.513432] (-) TimerEvent: {}
+[35.514539] (car_msgs) StdoutLine: {'line': b'[ 95%] \x1b[32mBuilding C object CMakeFiles/car_msgs_s__rosidl_typesupport_fastrtps_c.dir/rosidl_generator_py/car_msgs/_car_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o\x1b[0m\n'}
+[35.613573] (-) TimerEvent: {}
+[35.713965] (-) TimerEvent: {}
+[35.771387] (car_msgs) StdoutLine: {'line': b'[ 96%] \x1b[32m\x1b[1mLinking C shared module rosidl_generator_py/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so\x1b[0m\n'}
+[35.814052] (-) TimerEvent: {}
+[35.838176] (car_msgs) StdoutLine: {'line': b'[ 96%] Built target car_msgs_s__rosidl_typesupport_fastrtps_c\n'}
+[35.871232] (car_msgs) StdoutLine: {'line': b'[ 97%] \x1b[32mBuilding C object CMakeFiles/car_msgs_s__rosidl_typesupport_c.dir/rosidl_generator_py/car_msgs/_car_msgs_s.ep.rosidl_typesupport_c.c.o\x1b[0m\n'}
+[35.914182] (-) TimerEvent: {}
+[36.014652] (-) TimerEvent: {}
+[36.103210] (car_msgs) StdoutLine: {'line': b'[ 98%] \x1b[32m\x1b[1mLinking C shared module rosidl_generator_py/car_msgs/car_msgs_s__rosidl_typesupport_c.so\x1b[0m\n'}
+[36.114758] (-) TimerEvent: {}
+[36.164832] (car_msgs) StdoutLine: {'line': b'[ 98%] Built target car_msgs_s__rosidl_typesupport_c\n'}
+[36.214880] (-) TimerEvent: {}
+[36.225746] (car_msgs) StdoutLine: {'line': b'[ 99%] \x1b[32mBuilding C object CMakeFiles/car_msgs_s__rosidl_typesupport_introspection_c.dir/rosidl_generator_py/car_msgs/_car_msgs_s.ep.rosidl_typesupport_introspection_c.c.o\x1b[0m\n'}
+[36.315006] (-) TimerEvent: {}
+[36.415380] (-) TimerEvent: {}
+[36.474748] (car_msgs) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking C shared module rosidl_generator_py/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so\x1b[0m\n'}
+[36.515522] (-) TimerEvent: {}
+[36.539656] (car_msgs) StdoutLine: {'line': b'[100%] Built target car_msgs_s__rosidl_typesupport_introspection_c\n'}
+[36.563728] (car_msgs) CommandEnded: {'returncode': 0}
+[36.564781] (car_msgs) JobProgress: {'identifier': 'car_msgs', 'progress': 'install'}
+[36.580848] (car_msgs) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/valenstein/Workspace/CarControl/App/src/messages/build/car_msgs'], 'cwd': '/home/valenstein/Workspace/CarControl/App/src/messages/build/car_msgs', 'env': OrderedDict({'LESSOPEN': '| /usr/bin/lesspipe %s', 'GZ_SIM_RESOURCE_PATH': '/opt/ros/jazzy/share', 'PYRENODE_RUNTIME': 'coreclr', 'USER': 'valenstein', 'GZ_CONFIG_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/share/gz:/opt/ros/jazzy/opt/sdformat_vendor/share/gz:/opt/ros/jazzy/opt/gz_gui_vendor/share/gz:/opt/ros/jazzy/opt/gz_transport_vendor/share/gz:/opt/ros/jazzy/opt/gz_rendering_vendor/share/gz:/opt/ros/jazzy/opt/gz_plugin_vendor/share/gz:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/share/gz:/opt/ros/jazzy/opt/gz_msgs_vendor/share/gz:/opt/ros/jazzy/opt/gz_common_vendor/share/gz', 'XDG_SESSION_TYPE': 'wayland', 'STM32CubeMX_PATH': '/home/valenstein/STM32CubeMX', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib:/opt/ros/jazzy/opt/gz_sensors_vendor/lib:/opt/ros/jazzy/opt/gz_physics_vendor/lib:/opt/ros/jazzy/opt/sdformat_vendor/lib:/opt/ros/jazzy/opt/rviz_ogre_vendor/lib:/opt/ros/jazzy/lib/x86_64-linux-gnu:/opt/ros/jazzy/opt/gz_gui_vendor/lib:/opt/ros/jazzy/opt/gz_transport_vendor/lib:/opt/ros/jazzy/opt/gz_rendering_vendor/lib:/opt/ros/jazzy/opt/gz_plugin_vendor/lib:/opt/ros/jazzy/opt/gz_fuel_tools_vendor/lib:/opt/ros/jazzy/opt/gz_msgs_vendor/lib:/opt/ros/jazzy/opt/gz_common_vendor/lib:/opt/ros/jazzy/opt/gz_math_vendor/lib:/opt/ros/jazzy/opt/gz_utils_vendor/lib:/opt/ros/jazzy/opt/gz_tools_vendor/lib:/opt/ros/jazzy/opt/gz_ogre_next_vendor/lib:/opt/ros/jazzy/opt/gz_dartsim_vendor/lib:/opt/ros/jazzy/opt/gz_cmake_vendor/lib:/opt/ros/jazzy/lib', 'HOME': '/home/valenstein', 'OLDPWD': '/home/valenstein/Workspace/CarControl/App/src', 'DESKTOP_SESSION': 'ubuntu', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'SYSTEMD_EXEC_PID': '2827', 'GSM_SKIP_SSH_AGENT_WORKAROUND': 'true', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'GNOME_KEYRING_CONTROL': '/run/user/1000/keyring', 'DEBUGINFOD_URLS': 'https://debuginfod.ubuntu.com', 'IM_CONFIG_PHASE': '1', 'WAYLAND_DISPLAY': 'wayland-0', 'ROS_DISTRO': 'jazzy', 'LOGNAME': 'valenstein', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'MEMORY_PRESSURE_WATCH': '/sys/fs/cgroup/user.slice/user-1000.slice/user@1000.service/session.slice/org.gnome.SettingsDaemon.MediaKeys.service/memory.pressure', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'valenstein', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'PATH': '/opt/ros/jazzy/opt/gz_msgs_vendor/bin:/opt/ros/jazzy/opt/gz_tools_vendor/bin:/opt/ros/jazzy/opt/gz_ogre_next_vendor/bin:/opt/ros/jazzy/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/valenstein/.dotnet/tools', 'SESSION_MANAGER': 'local/valenstein-pc:@/tmp/.ICE-unix/2585,unix/valenstein-pc:/tmp/.ICE-unix/2585', 'XDG_MENU_PREFIX': 'gnome-', 'GNOME_TERMINAL_SCREEN': '/org/gnome/Terminal/screen/2d5c6661_7833_4071_8161_b8807acbae8c', 'GNOME_SETUP_DISPLAY': ':1', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':0', 'PYTHONNET_RUNTIME': 'coreclr', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'DOTNET_BUNDLE_EXTRACT_BASE_DIR': '/home/valenstein/.cache/dotnet_bundle_extract', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/.mutter-Xwaylandauth.32SXX3', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=00:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.avif=01;35:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:*~=00;90:*#=00;90:*.bak=00;90:*.crdownload=00;90:*.dpkg-dist=00;90:*.dpkg-new=00;90:*.dpkg-old=00;90:*.dpkg-tmp=00;90:*.old=00;90:*.orig=00;90:*.part=00;90:*.rej=00;90:*.rpmnew=00;90:*.rpmorig=00;90:*.rpmsave=00;90:*.swp=00;90:*.tmp=00;90:*.ucf-dist=00;90:*.ucf-new=00;90:*.ucf-old=00;90:', 'GNOME_TERMINAL_SERVICE': ':1.353', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/opt/ros/jazzy', 'SHELL': '/bin/bash', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'ROS_AUTOMATIC_DISCOVERY_RANGE': 'SUBNET', 'QT_IM_MODULE': 'ibus', 'PWD': '/home/valenstein/Workspace/CarControl/App/src/messages/build/car_msgs', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/opt/ros/jazzy/opt/gz_sim_vendor/lib/python:/opt/ros/jazzy/lib/python3.12/site-packages', 'COLCON': '1', 'MEMORY_PRESSURE_WRITE': 'c29tZSAyMDAwMDAgMjAwMDAwMAA=', 'VTE_VERSION': '7600', 'CMAKE_PREFIX_PATH': '/opt/ros/jazzy/opt/gz_sim_vendor:/opt/ros/jazzy/opt/gz_sensors_vendor:/opt/ros/jazzy/opt/gz_physics_vendor:/opt/ros/jazzy/opt/sdformat_vendor:/opt/ros/jazzy/opt/gz_gui_vendor:/opt/ros/jazzy/opt/gz_transport_vendor:/opt/ros/jazzy/opt/gz_rendering_vendor:/opt/ros/jazzy/opt/gz_plugin_vendor:/opt/ros/jazzy/opt/gz_fuel_tools_vendor:/opt/ros/jazzy/opt/gz_msgs_vendor:/opt/ros/jazzy/opt/gz_common_vendor:/opt/ros/jazzy/opt/gz_math_vendor:/opt/ros/jazzy/opt/gz_utils_vendor:/opt/ros/jazzy/opt/gz_tools_vendor:/opt/ros/jazzy/opt/gz_ogre_next_vendor:/opt/ros/jazzy/opt/gz_dartsim_vendor:/opt/ros/jazzy/opt/gz_cmake_vendor:/opt/ros/jazzy'}), 'shell': False}
+[36.595182] (car_msgs) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[36.596075] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/ament_index/resource_index/rosidl_interfaces/car_msgs\n'}
+[36.598528] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/SensorMeasurements.json\n'}
+[36.599229] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/SensorCalibration.json\n'}
+[36.599646] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/VehicleState.json\n'}
+[36.599836] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/MotionControl.json\n'}
+[36.600003] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/NodeState.json\n'}
+[36.600171] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/DebugController.json\n'}
+[36.600331] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/PathNode.json\n'}
+[36.600529] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/DebugPlanner.json\n'}
+[36.600694] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs\n'}
+[36.601287] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[36.601600] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[36.601797] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__type_support.c\n'}
+[36.602734] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__type_support.h\n'}
+[36.602968] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__type_support.h\n'}
+[36.603193] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__functions.h\n'}
+[36.603407] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__functions.c\n'}
+[36.603594] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__struct.h\n'}
+[36.603757] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__type_support.c\n'}
+[36.604500] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__functions.h\n'}
+[36.604793] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__type_support.c\n'}
+[36.606306] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__functions.c\n'}
+[36.606907] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__functions.h\n'}
+[36.607113] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__description.c\n'}
+[36.607283] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__description.c\n'}
+[36.608597] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__type_support.c\n'}
+[36.608820] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__functions.c\n'}
+[36.609002] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__struct.h\n'}
+[36.609176] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__description.c\n'}
+[36.609409] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__description.c\n'}
+[36.610622] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__struct.h\n'}
+[36.611022] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__type_support.c\n'}
+[36.611284] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__functions.c\n'}
+[36.611560] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__functions.h\n'}
+[36.611820] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__type_support.h\n'}
+[36.612045] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__struct.h\n'}
+[36.612271] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__description.c\n'}
+[36.612492] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__functions.c\n'}
+[36.612723] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__type_support.c\n'}
+[36.612968] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__type_support.h\n'}
+[36.613204] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__functions.h\n'}
+[36.613740] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__type_support.h\n'}
+[36.614020] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__description.c\n'}
+[36.614244] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__functions.c\n'}
+[36.614546] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__struct.h\n'}
+[36.614776] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__functions.h\n'}
+[36.614952] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__functions.h\n'}
+[36.615192] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__type_support.h\n'}
+[36.615461] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__functions.c\n'}
+[36.615770] (-) TimerEvent: {}
+[36.615990] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__functions.h\n'}
+[36.616353] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__struct.h\n'}
+[36.616750] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__struct.h\n'}
+[36.617171] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__description.c\n'}
+[36.617495] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__type_support.h\n'}
+[36.617783] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__functions.c\n'}
+[36.618084] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__struct.h\n'}
+[36.618398] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__description.c\n'}
+[36.622412] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__type_support.h\n'}
+[36.623075] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__type_support.c\n'}
+[36.623425] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__type_support.c\n'}
+[36.623776] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/path_node.h\n'}
+[36.624074] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/node_state.h\n'}
+[36.628619] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/debug_planner.h\n'}
+[36.629622] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/motion_control.h\n'}
+[36.630308] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/sensor_calibration.h\n'}
+[36.630879] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/debug_controller.h\n'}
+[36.632152] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/vehicle_state.h\n'}
+[36.634659] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_generator_c__visibility_control.h\n'}
+[36.634972] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/sensor_measurements.h\n'}
+[36.635281] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/environment/library_path.sh\n'}
+[36.635585] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/environment/library_path.dsv\n'}
+[36.635899] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_generator_c.so\n'}
+[36.636184] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_generator_c.so" to ""\n'}
+[36.636489] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs\n'}
+[36.636886] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[36.637566] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[36.637946] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__rosidl_typesupport_fastrtps_c.h\n'}
+[36.638235] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__rosidl_typesupport_fastrtps_c.h\n'}
+[36.638643] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__rosidl_typesupport_fastrtps_c.h\n'}
+[36.638943] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__rosidl_typesupport_fastrtps_c.h\n'}
+[36.639218] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__rosidl_typesupport_fastrtps_c.h\n'}
+[36.639496] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__rosidl_typesupport_fastrtps_c.h\n'}
+[36.640510] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__rosidl_typesupport_fastrtps_c.h\n'}
+[36.640967] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__rosidl_typesupport_fastrtps_c.h\n'}
+[36.641277] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h\n'}
+[36.641628] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_c.so\n'}
+[36.641989] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_c.so" to ""\n'}
+[36.642591] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs\n'}
+[36.643094] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[36.643616] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[36.644052] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__type_support.c\n'}
+[36.644489] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__type_support.c\n'}
+[36.644951] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__type_support.c\n'}
+[36.645406] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__rosidl_typesupport_introspection_c.h\n'}
+[36.645759] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__type_support.c\n'}
+[36.646251] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__rosidl_typesupport_introspection_c.h\n'}
+[36.646906] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__type_support.c\n'}
+[36.648024] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__type_support.c\n'}
+[36.650049] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__rosidl_typesupport_introspection_c.h\n'}
+[36.651540] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__rosidl_typesupport_introspection_c.h\n'}
+[36.651926] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__rosidl_typesupport_introspection_c.h\n'}
+[36.652264] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__rosidl_typesupport_introspection_c.h\n'}
+[36.652584] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__rosidl_typesupport_introspection_c.h\n'}
+[36.652920] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__type_support.c\n'}
+[36.653202] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__type_support.c\n'}
+[36.653688] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__rosidl_typesupport_introspection_c.h\n'}
+[36.654123] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h\n'}
+[36.654488] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_c.so\n'}
+[36.654797] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_c.so" to ""\n'}
+[36.655085] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_c.so\n'}
+[36.655426] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_c.so" to ""\n'}
+[36.656135] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs\n'}
+[36.657483] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[36.657703] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/sensor_measurements.hpp\n'}
+[36.657922] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[36.658114] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__traits.hpp\n'}
+[36.658391] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__type_support.hpp\n'}
+[36.658647] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__traits.hpp\n'}
+[36.658880] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__traits.hpp\n'}
+[36.659115] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__traits.hpp\n'}
+[36.659615] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__type_support.hpp\n'}
+[36.660065] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__builder.hpp\n'}
+[36.660464] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__type_support.hpp\n'}
+[36.660737] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__struct.hpp\n'}
+[36.661014] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__struct.hpp\n'}
+[36.661269] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__traits.hpp\n'}
+[36.661614] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__builder.hpp\n'}
+[36.661892] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__builder.hpp\n'}
+[36.662176] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__builder.hpp\n'}
+[36.662489] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__type_support.hpp\n'}
+[36.662820] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__traits.hpp\n'}
+[36.663141] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__builder.hpp\n'}
+[36.663459] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__type_support.hpp\n'}
+[36.663741] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__struct.hpp\n'}
+[36.664011] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__type_support.hpp\n'}
+[36.664259] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__type_support.hpp\n'}
+[36.664515] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__type_support.hpp\n'}
+[36.664762] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__traits.hpp\n'}
+[36.665006] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__builder.hpp\n'}
+[36.665257] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__struct.hpp\n'}
+[36.665581] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__builder.hpp\n'}
+[36.665892] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__struct.hpp\n'}
+[36.666165] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__struct.hpp\n'}
+[36.666594] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__struct.hpp\n'}
+[36.666893] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__struct.hpp\n'}
+[36.667187] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__traits.hpp\n'}
+[36.667499] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__builder.hpp\n'}
+[36.667751] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/sensor_calibration.hpp\n'}
+[36.667991] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_generator_cpp__visibility_control.hpp\n'}
+[36.668312] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/debug_planner.hpp\n'}
+[36.668847] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/debug_controller.hpp\n'}
+[36.669118] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/node_state.hpp\n'}
+[36.669386] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/path_node.hpp\n'}
+[36.669664] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/motion_control.hpp\n'}
+[36.669944] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/vehicle_state.hpp\n'}
+[36.670606] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs\n'}
+[36.670951] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[36.671242] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[36.671519] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[36.671738] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[36.671936] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[36.672134] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/dds_fastrtps\n'}
+[36.672362] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[36.672652] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[36.672920] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[36.673189] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[36.673449] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[36.673697] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h\n'}
+[36.674135] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_cpp.so\n'}
+[36.674561] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""\n'}
+[36.674868] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs\n'}
+[36.675233] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg\n'}
+[36.675612] (car_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail\n'}
+[36.675897] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__type_support.cpp\n'}
+[36.676243] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__rosidl_typesupport_introspection_cpp.hpp\n'}
+[36.676662] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__rosidl_typesupport_introspection_cpp.hpp\n'}
+[36.676950] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__type_support.cpp\n'}
+[36.677305] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__type_support.cpp\n'}
+[36.677664] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__type_support.cpp\n'}
+[36.677939] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_planner__rosidl_typesupport_introspection_cpp.hpp\n'}
+[36.678281] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__type_support.cpp\n'}
+[36.678573] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_calibration__rosidl_typesupport_introspection_cpp.hpp\n'}
+[36.678833] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/vehicle_state__type_support.cpp\n'}
+[36.679122] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__rosidl_typesupport_introspection_cpp.hpp\n'}
+[36.679509] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/sensor_measurements__type_support.cpp\n'}
+[36.679798] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/node_state__rosidl_typesupport_introspection_cpp.hpp\n'}
+[36.680094] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/debug_controller__rosidl_typesupport_introspection_cpp.hpp\n'}
+[36.680491] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/motion_control__type_support.cpp\n'}
+[36.680981] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/include/car_msgs/car_msgs/msg/detail/path_node__rosidl_typesupport_introspection_cpp.hpp\n'}
+[36.681451] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_cpp.so\n'}
+[36.682027] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_introspection_cpp.so" to ""\n'}
+[36.682426] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_cpp.so\n'}
+[36.684557] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_typesupport_cpp.so" to ""\n'}
+[36.685144] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/environment/pythonpath.sh\n'}
+[36.685594] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/environment/pythonpath.dsv\n'}
+[36.686283] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.1-py3.12.egg-info\n'}
+[36.686980] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.1-py3.12.egg-info/PKG-INFO\n'}
+[36.687709] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.1-py3.12.egg-info/top_level.txt\n'}
+[36.688596] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.1-py3.12.egg-info/SOURCES.txt\n'}
+[36.689403] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs-0.0.1-py3.12.egg-info/dependency_links.txt\n'}
+[36.690048] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs\n'}
+[36.691505] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_c.c\n'}
+[36.692188] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so\n'}
+[36.693198] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_fastrtps_c.c\n'}
+[36.693974] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so\n'}
+[36.695191] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so\n'}
+[36.695854] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/__init__.py\n'}
+[36.696798] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg\n'}
+[36.697467] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_path_node.py\n'}
+[36.698134] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_motion_control.py\n'}
+[36.698923] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_debug_controller.py\n'}
+[36.699595] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_sensor_measurements.py\n'}
+[36.700305] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_sensor_measurements_s.c\n'}
+[36.700632] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_vehicle_state_s.c\n'}
+[36.700887] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_sensor_calibration_s.c\n'}
+[36.701126] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_motion_control_s.c\n'}
+[36.701326] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_debug_controller_s.c\n'}
+[36.701618] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_debug_planner.py\n'}
+[36.701871] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_node_state_s.c\n'}
+[36.702079] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_node_state.py\n'}
+[36.702284] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_sensor_calibration.py\n'}
+[36.703671] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/__init__.py\n'}
+[36.703961] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_debug_planner_s.c\n'}
+[36.704228] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_vehicle_state.py\n'}
+[36.704497] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_path_node_s.c\n'}
+[36.704749] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/_car_msgs_s.ep.rosidl_typesupport_introspection_c.c\n'}
+[36.717409] (-) TimerEvent: {}
+[36.817807] (-) TimerEvent: {}
+[36.850453] (car_msgs) StdoutLine: {'line': b"Listing '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs'...\n"}
+[36.851454] (car_msgs) StdoutLine: {'line': b"Compiling '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/__init__.py'...\n"}
+[36.855634] (car_msgs) StdoutLine: {'line': b"Listing '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg'...\n"}
+[36.858203] (car_msgs) StdoutLine: {'line': b"Compiling '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/__init__.py'...\n"}
+[36.858989] (car_msgs) StdoutLine: {'line': b"Compiling '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_debug_controller.py'...\n"}
+[36.859265] (car_msgs) StdoutLine: {'line': b"Compiling '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_debug_planner.py'...\n"}
+[36.859560] (car_msgs) StdoutLine: {'line': b"Compiling '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_motion_control.py'...\n"}
+[36.859819] (car_msgs) StdoutLine: {'line': b"Compiling '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_node_state.py'...\n"}
+[36.860068] (car_msgs) StdoutLine: {'line': b"Compiling '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_path_node.py'...\n"}
+[36.860383] (car_msgs) StdoutLine: {'line': b"Compiling '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_sensor_calibration.py'...\n"}
+[36.860752] (car_msgs) StdoutLine: {'line': b"Compiling '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_sensor_measurements.py'...\n"}
+[36.861093] (car_msgs) StdoutLine: {'line': b"Compiling '/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/msg/_vehicle_state.py'...\n"}
+[36.872265] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so\n'}
+[36.872986] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_fastrtps_c.so" to ""\n'}
+[36.879578] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so\n'}
+[36.879918] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_introspection_c.so" to ""\n'}
+[36.880207] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so\n'}
+[36.880660] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/python3.12/site-packages/car_msgs/car_msgs_s__rosidl_typesupport_c.so" to ""\n'}
+[36.880982] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_generator_py.so\n'}
+[36.881270] (car_msgs) StdoutLine: {'line': b'-- Set non-toolchain portion of runtime path of "/home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/lib/libcar_msgs__rosidl_generator_py.so" to ""\n'}
+[36.883185] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/ament_index/resource_index/rust_packages/car_msgs\n'}
+[36.883540] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/rust\n'}
+[36.883804] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/rust/src\n'}
+[36.884060] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/rust/src/msg.rs\n'}
+[36.884275] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/rust/src/msg\n'}
+[36.889628] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/rust/src/msg/rmw.rs\n'}
+[36.890888] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/rust/src/lib.rs\n'}
+[36.892043] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/rust/Cargo.toml\n'}
+[36.894141] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/rust/build.rs\n'}
+[36.894521] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/SensorMeasurements.idl\n'}
+[36.897214] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/SensorCalibration.idl\n'}
+[36.897579] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/VehicleState.idl\n'}
+[36.899425] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/MotionControl.idl\n'}
+[36.900818] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/NodeState.idl\n'}
+[36.902925] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/DebugController.idl\n'}
+[36.903329] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/PathNode.idl\n'}
+[36.903643] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/DebugPlanner.idl\n'}
+[36.907520] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/SensorMeasurements.msg\n'}
+[36.907908] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/SensorCalibration.msg\n'}
+[36.908266] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/VehicleState.msg\n'}
+[36.911606] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/MotionControl.msg\n'}
+[36.911865] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/NodeState.msg\n'}
+[36.912143] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/DebugController.msg\n'}
+[36.914418] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/PathNode.msg\n'}
+[36.914752] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/msg/DebugPlanner.msg\n'}
+[36.915013] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/ament_index/resource_index/package_run_dependencies/car_msgs\n'}
+[36.915267] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/ament_index/resource_index/parent_prefix_path/car_msgs\n'}
+[36.915553] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/environment/ament_prefix_path.sh\n'}
+[36.915790] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/environment/ament_prefix_path.dsv\n'}
+[36.915987] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/environment/path.sh\n'}
+[36.916154] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/environment/path.dsv\n'}
+[36.916317] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/local_setup.bash\n'}
+[36.919219] (-) TimerEvent: {}
+[36.919787] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/local_setup.sh\n'}
+[36.922942] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/local_setup.zsh\n'}
+[36.924532] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/local_setup.dsv\n'}
+[36.926911] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/package.dsv\n'}
+[36.927623] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/ament_index/resource_index/packages/car_msgs\n'}
+[36.928643] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cExport.cmake\n'}
+[36.935640] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cExport-noconfig.cmake\n'}
+[36.935928] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cExport.cmake\n'}
+[36.936204] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake\n'}
+[36.936489] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cExport.cmake\n'}
+[36.936726] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake\n'}
+[36.936974] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cExport.cmake\n'}
+[36.937146] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cExport-noconfig.cmake\n'}
+[36.937310] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_cppExport.cmake\n'}
+[36.939575] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cppExport.cmake\n'}
+[36.939696] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake\n'}
+[36.939799] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cppExport.cmake\n'}
+[36.939896] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake\n'}
+[36.939992] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cppExport.cmake\n'}
+[36.940166] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/car_msgs__rosidl_typesupport_cppExport-noconfig.cmake\n'}
+[36.940419] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_pyExport.cmake\n'}
+[36.940693] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/export_car_msgs__rosidl_generator_pyExport-noconfig.cmake\n'}
+[36.940908] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/rosidl_cmake-extras.cmake\n'}
+[36.941167] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[36.941475] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[36.941755] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_libraries-extras.cmake\n'}
+[36.942014] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/ament_cmake_export_targets-extras.cmake\n'}
+[36.942279] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake\n'}
+[36.942602] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake\n'}
+[36.942908] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/rosidl_cmake_aggregate_target-extras.cmake\n'}
+[36.943215] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/car_msgsConfig.cmake\n'}
+[36.943646] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/cmake/car_msgsConfig-version.cmake\n'}
+[36.944393] (car_msgs) StdoutLine: {'line': b'-- Installing: /home/valenstein/Workspace/CarControl/App/src/messages/install/car_msgs/share/car_msgs/package.xml\n'}
+[36.945195] (car_msgs) CommandEnded: {'returncode': 0}
+[37.003937] (car_msgs) JobEnded: {'identifier': 'car_msgs', 'rc': 0}
+[37.005653] (-) EventReactorShutdown: {}

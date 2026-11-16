@@ -1,8 +1,14 @@
 #pragma once
+#include "rclcpp/rclcpp.hpp"
+
 #include "common/config.hpp"
 #include <cmath>
 #include <utility>
 #include <nav_msgs/msg/map_meta_data.hpp>
+#include <tf2_ros/buffer.h>
+#include <optional>
+#include <tf2/LinearMath/Transform.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 
 
 
@@ -57,4 +63,37 @@ namespace Common::MathUtils
         return std::atan2(std::sin(a), std::cos(a));
     }
 
+}
+
+namespace Common::TfUtils
+{
+    inline std::optional<tf2::Transform> lookupRearAxleToBaseTransform(std::unique_ptr<tf2_ros::Buffer>& buffer) {
+        const std::string chassis{config_frames_vehicle_chassis};
+        const std::string rearAxle{config_frames_vehicle_rear_axle};
+
+        if (!buffer->canTransform(rearAxle, chassis, tf2::TimePointZero)) {
+            return std::nullopt;
+        }
+
+        tf2::Transform rear_to_chassis;
+        const auto t = buffer->lookupTransform(rearAxle, chassis, tf2::TimePointZero);
+        tf2::fromMsg(t.transform, rear_to_chassis);
+
+        return rear_to_chassis;
+    }
+
+    inline std::optional<tf2::Transform> lookupBaseToRearAxleTransform(std::unique_ptr<tf2_ros::Buffer>& buffer) {
+        const std::string chassis{config_frames_vehicle_chassis};
+        const std::string rearAxle{config_frames_vehicle_rear_axle};
+
+        if (!buffer->canTransform(chassis, rearAxle, tf2::TimePointZero)) {
+            return std::nullopt;
+        }
+
+        tf2::Transform chassis_to_rear_axle;
+        const auto t = buffer->lookupTransform(chassis, rearAxle, tf2::TimePointZero);
+        tf2::fromMsg(t.transform, chassis_to_rear_axle);
+
+        return chassis_to_rear_axle;
+    }
 }

@@ -52,6 +52,7 @@ class Planner : public BaseNode {
 
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+    std::optional<tf2::Transform> tf_chassisToRearAxle;
 
     rclcpp::Publisher<car_msgs::msg::DebugPlanner>::SharedPtr pub_debug_;
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;

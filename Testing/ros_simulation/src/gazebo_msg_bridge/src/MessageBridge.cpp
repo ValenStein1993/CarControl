@@ -212,7 +212,8 @@ void MessageBridge::PostUpdate(
         lastLaserScan = lastLaserScan_;
     }
 
-    msgLaserScan.header.stamp = timestamp;
+    const auto& st = lastLaserScan.header().stamp();
+    msgLaserScan.header.stamp = rclcpp::Time(st.sec(), st.nsec());
     msgLaserScan.header.frame_id = config_frames_vehicle_lidar;
     msgLaserScan.angle_min = lastLaserScan.angle_min();
     msgLaserScan.angle_max = lastLaserScan.angle_max();

@@ -86,24 +86,16 @@ Planner::Planner()
 }
 
 void Planner::callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg) {
-  const std::string vehicle_base_frame{config_frames_vehicle_chassis};
-  const std::string rear_axle_frame{config_frames_vehicle_rear_axle};
-
-  if (!tf_buffer_->canTransform(vehicle_base_frame, rear_axle_frame, tf2::TimePointZero)) {
-    return;
+  if (!tf_chassisToRearAxle) {
+    tf_chassisToRearAxle = Common::TfUtils::lookupBaseToRearAxleTransform(tf_buffer_);
+    if (!tf_chassisToRearAxle) return;
   }
-
-  const auto base_to_rear_axle = tf_buffer_->lookupTransform(
-      vehicle_base_frame, rear_axle_frame, tf2::TimePointZero);
 
   tf2::Transform map_to_chassis;
   tf2::fromMsg(msg->pose, map_to_chassis);
 
-  tf2::Transform chassis_to_rear_axle;
-  tf2::fromMsg(base_to_rear_axle.transform, chassis_to_rear_axle);
-
   // the path is planned for the rear axle
-  const tf2::Transform map_to_rear_axle = map_to_chassis * chassis_to_rear_axle;
+  const tf2::Transform map_to_rear_axle = map_to_chassis * *tf_chassisToRearAxle;
 
   geometry_msgs::msg::PoseStamped rear_axle_pose;
   rear_axle_pose.header = msg->header;
@@ -155,7 +147,7 @@ void Planner::publish_path() {
 
   nav_msgs::msg::Path pathMsg;
   pathMsg.header.stamp = get_clock()->now();
-  pathMsg.header.frame_id = config_frames_odom;
+  pathMsg.header.frame_id = config_frames_map;
 
   for (const auto& p : path_) {
     geometry_msgs::msg::PoseStamped pose;

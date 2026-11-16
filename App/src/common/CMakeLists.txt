@@ -29,6 +29,9 @@ find_package(ament_cmake REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(nav_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 add_library(common INTERFACE)
 
@@ -41,6 +44,9 @@ target_link_libraries(common INTERFACE
   ament_index_cpp::ament_index_cpp
   rclcpp::rclcpp
   nav_msgs::nav_msgs
+  tf2_ros::tf2_ros
+  tf2::tf2
+  tf2_geometry_msgs::tf2_geometry_msgs
 )
 
 add_dependencies(common common_config_header)
@@ -77,5 +83,5 @@ install(
 
 
 ament_export_targets(common_targets)
-ament_export_dependencies(ament_index_cpp)
+ament_export_dependencies(ament_index_cpp rclcpp nav_msgs tf2 tf2_ros tf2_geometry_msgs)
 ament_package()

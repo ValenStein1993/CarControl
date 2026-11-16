@@ -1,0 +1,16 @@
+msg/DebugController.idl
+msg/DebugController.msg
+msg/DebugPlanner.idl
+msg/DebugPlanner.msg
+msg/MotionControl.idl
+msg/MotionControl.msg
+msg/NodeState.idl
+msg/NodeState.msg
+msg/PathNode.idl
+msg/PathNode.msg
+msg/SensorCalibration.idl
+msg/SensorCalibration.msg
+msg/SensorMeasurements.idl
+msg/SensorMeasurements.msg
+msg/VehicleState.idl
+msg/VehicleState.msg

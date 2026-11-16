@@ -63,9 +63,9 @@ class Controller : public BaseNode {
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_closestNodeDisp_;
     rclcpp::Publisher<car_msgs::msg::PathNode>::SharedPtr pub_closestNode_;
 
-
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
+    std::optional<tf2::Transform> tf_chassisToRearAxle;
 	
     rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr sub_vehiclePose_;
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_laserScan_;
@@ -81,6 +81,7 @@ class Controller : public BaseNode {
     void publish_debugMsg();
     void publish_motionControl();
     void publish_closestNode();
+
 
     int getDrivingDir(int i) const;
     bool isDegenerate(int i) const;

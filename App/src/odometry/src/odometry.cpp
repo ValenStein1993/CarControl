@@ -7,6 +7,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "odometry/odometry.hpp"
 #include "common/config.hpp"
+#include "common/utils.hpp"
 
 #include "car_msgs/msg/sensor_measurements.hpp"
 #include "car_msgs/msg/sensor_calibration.hpp"
@@ -26,14 +27,8 @@ using namespace std::chrono_literals;
 Odometry::Odometry()
   : BaseNode("odometry") {
 
-	initStateSpace();
-
-	add_timer(500ms, &Odometry::publish_odom);
-
 	pub_odomEkf_ = create_publisher<nav_msgs::msg::Odometry>(
 		static_cast<std::string>(config_topics_odomEkf), 10);
-	pub_nodeState_ = create_publisher<car_msgs::msg::NodeState>(
-		static_cast<std::string>(config_topics_nodeState), 10);
 
 	sub_measurements_ = create_subscription<car_msgs::msg::SensorMeasurements>(
 		static_cast<std::string>(config_topics_sensorMeasurements), 10,
@@ -45,27 +40,32 @@ Odometry::Odometry()
 		static_cast<std::string>(config_topics_motionControl), 10,
 		std::bind(&Odometry::callback_motionControl, this, _1));
 
+	tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+  	tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+
 	tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
 
-	
 }
 
+
 void Odometry::publish_odom() {
+	// EKF state = pose of the rear axle in odom
+	const float v = stateSpace_.ekf.x[2];
+	const float psi = stateSpace_.ekf.x[3];
+	tf2::Quaternion q;
+	q.setRPY(0, 0, psi);
+	const tf2::Transform odom_to_rear(q, tf2::Vector3(stateSpace_.ekf.x[0], stateSpace_.ekf.x[1], 0.0));
+
+	// odom -> base_link = (odom -> rear axle) * (rear axle -> base_link)
+	const tf2::Transform odom_to_chassis = odom_to_rear * *rear_to_chassis_;
+
 	// Vehicle State
 	nav_msgs::msg::Odometry odomEkfMsg;
 	odomEkfMsg.header.frame_id = config_frames_odom;
 	odomEkfMsg.child_frame_id = config_frames_vehicle_chassis;
 	odomEkfMsg.header.stamp = get_clock()->now();
-	
-	odomEkfMsg.pose.pose.position.x = stateSpace_.ekf.x[0];
-	odomEkfMsg.pose.pose.position.y = stateSpace_.ekf.x[1];
-	
-	tf2::Quaternion q;
-	q.setRPY(0, 0, stateSpace_.ekf.x[3]);
-	odomEkfMsg.pose.pose.orientation.x = q.x();
-	odomEkfMsg.pose.pose.orientation.y = q.y();
-	odomEkfMsg.pose.pose.orientation.z = q.z();
-	odomEkfMsg.pose.pose.orientation.w = q.w();
+
+	tf2::toMsg(odom_to_chassis, odomEkfMsg.pose.pose);
 
 	odomEkfMsg.pose.covariance[0] = stateSpace_.ekf.P[0];
 	odomEkfMsg.pose.covariance[1] = stateSpace_.ekf.P[1];
@@ -77,23 +77,28 @@ void Odometry::publish_odom() {
 	odomEkfMsg.pose.covariance[31] = stateSpace_.ekf.P[13];
 	odomEkfMsg.pose.covariance[35] = stateSpace_.ekf.P[15];
 
-	odomEkfMsg.twist.twist.linear.x = stateSpace_.ekf.x[2] * std::cos(stateSpace_.ekf.x[3]);
-	odomEkfMsg.twist.twist.linear.y = stateSpace_.ekf.x[2] * std::sin(stateSpace_.ekf.x[3]);
+	// twist in the child frame (base_link): rear axle velocity (v, 0) plus omega x offset
+	const float omega = stateSpace_.u[1];
+	const tf2::Vector3 r = (*rear_to_chassis_).getOrigin();
+	odomEkfMsg.twist.twist.linear.x = v - omega * r.y();
+	odomEkfMsg.twist.twist.linear.y = omega * r.x();
+	odomEkfMsg.twist.twist.angular.z = omega;
 
 	pub_odomEkf_->publish(odomEkfMsg);
-
-	// Node State
-	car_msgs::msg::NodeState nodeStateMsg;
-	nodeStateMsg.localizer_is_ready = isReady_;
-
-	pub_nodeState_->publish(nodeStateMsg);
 }
 
 
 void Odometry::callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg) {
+	// EKF runs on the rear axle: wait for the static offset to base_link
+	if (!rear_to_chassis_) {
+		rear_to_chassis_ = Common::TfUtils::lookupRearAxleToBaseTransform(tf_buffer_);
+		if (!rear_to_chassis_) return;
+		else initStateSpace();
+	}
+
 	rclcpp::Time currentTimestamp = msg->header.stamp;
 
-	if (!isReady_) {
+	if (!sensorConfig_.isCalibrated) {
 		return;
 	}
 	
@@ -109,16 +114,19 @@ void Odometry::callback_measurements(const car_msgs::msg::SensorMeasurements::Sh
 	// if vehicle is idle and there is no command to move, skip the update to avoid drift in the EKF
 	if (lastMotionControl_ && lastMotionControl_->speed == 0.0f && msg->wheelencoder_translspeed < 1e-8f) {
 		RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Vehicle is not in motion, skip odometry.");
+		// state unchanged, but Cartographer needs odometry up to the current time
+		publish_odom();
 		return;
 	}
 
     updateStateSpaceOdom(
 		dt,
         msg->mpu6050_accel_x,
-        msg->cjmcu103_angle,
         msg->wheelencoder_translspeed,
         msg->mpu6050_gyro_z
     );
+
+	publish_odom();
 }
 
 void Odometry::callback_calibration(const car_msgs::msg::SensorCalibration::SharedPtr msg) {
@@ -128,8 +136,6 @@ void Odometry::callback_calibration(const car_msgs::msg::SensorCalibration::Shar
 	sensorConfig_.var_gyro_z = msg->mpu6050_var_gyro_z;
 	sensorConfig_.var_angle = msg->cjmcu103_var_angle;
 	sensorConfig_.var_rotspeed = msg->wheelencoder_var_rotspeed;
-
-	isReady_ = sensorConfig_.isCalibrated;
 }
 
 void Odometry::callback_motionControl(const car_msgs::msg::MotionControl::SharedPtr msg) {
@@ -139,27 +145,29 @@ void Odometry::callback_motionControl(const car_msgs::msg::MotionControl::Shared
 void Odometry::initStateSpace() {
 	const float pdiag[4] = {0, 0, 0, 0};
     ekf_initialize(&stateSpace_.ekf, pdiag);
-	stateSpace_.ekf.x[0] = 0.0f;
-	stateSpace_.ekf.x[1] = 0.0f;
-	stateSpace_.ekf.x[3] = 0.0f;
+
+	// base_link starts at the odom origin -> rear axle starts at chassis_to_rear
+	const tf2::Transform odom_to_rear0 = (*rear_to_chassis_).inverse();
+
+	stateSpace_.ekf.x[0] = odom_to_rear0.getOrigin().x();
+	stateSpace_.ekf.x[1] = odom_to_rear0.getOrigin().y();
+	stateSpace_.ekf.x[3] = tf2::getYaw(odom_to_rear0.getRotation());
 }
 
 void Odometry::updateStateSpaceOdom(
 	float dt, 
 	float accel_x, 
-	float angle, 
 	float translSpeed, 
 	float gyro_z) {
 	// x = {x, y, v, phi};
-	// z = {x, y, phi, v, phi_dot}
+	// z = {v}
 
 	_float_t* x = stateSpace_.ekf.x;
 
 	stateSpace_.u[0] = accel_x;
-	stateSpace_.u[1] = angle;
+	stateSpace_.u[1] = gyro_z;
 
-	stateSpace_.z[3] = translSpeed;
-	stateSpace_.z[4] = gyro_z;
+	stateSpace_.z[0] = translSpeed;
 
 	// ---- model equations ----
 	// x_k = x_k-1 + v_k-1 * cos(phi_k-1) * dt
@@ -168,8 +176,8 @@ void Odometry::updateStateSpaceOdom(
 	stateSpace_.fx[1] = x[1] + x[2] * std::sin(x[3]) * dt;
 	// v_k = v_k-1 + a_k-1 * dt
 	stateSpace_.fx[2] = x[2] + stateSpace_.u[0] * dt;
-	// phi_k = phi_k-1 + 1/L * v_k-1 * tan(theta_k-1) * dt
-	stateSpace_.fx[3] = x[3] + 1 / config_vehicle_wheelbase * x[2] * std::tan(stateSpace_.u[1]) * dt;
+	// phi_k = phi_k-1 + gyro_z * dt
+	stateSpace_.fx[3] = x[3] + stateSpace_.u[1] * dt;
 
 	// ---- model jacobian ----
 	stateSpace_.F[0] = 1;
@@ -179,36 +187,24 @@ void Odometry::updateStateSpaceOdom(
 	stateSpace_.F[6] = std::sin(x[3]) * dt;
 	stateSpace_.F[7] = x[2] * std::cos(x[3]) * dt;
 	stateSpace_.F[10] = 1;
-	stateSpace_.F[14] = 1 / config_vehicle_wheelbase * std::tan(stateSpace_.u[1]) * dt;
 	stateSpace_.F[15] = 1;
 
 	// ---- measurement equations ----
-	// zero all values to remove CSM values
-	std::fill(std::begin(stateSpace_.hx), std::end(stateSpace_.hx), 0.0f);
-	stateSpace_.hx[3] = stateSpace_.fx[2];
-	stateSpace_.hx[4] = 1 / config_vehicle_wheelbase * stateSpace_.fx[2] * std::tan(stateSpace_.u[1]);
+	stateSpace_.hx[0] = stateSpace_.fx[2];
 
 	// ---- measurement jacobian ----
-	// zero all values to remove CSM values
-	std::fill(std::begin(stateSpace_.H), std::end(stateSpace_.H), 0.0f);
-	stateSpace_.H[14] = 1;
-	stateSpace_.H[18] = 1 / config_vehicle_wheelbase * std::tan(stateSpace_.u[1]);
+	stateSpace_.H[2] = 1;
 
 	// ---- state covariance ----
 	stateSpace_.Q[0] = stddev_modelPos * stddev_modelPos;
 	stateSpace_.Q[5] = stddev_modelPos * stddev_modelPos;
 	// calculate Q from measurement noise W as Q = GWG with G as input jacobian
 	stateSpace_.Q[10] = stddev_modelPos * stddev_modelPos + std::pow(dt, 2) * sensorConfig_.var_accel_x;
-	// cov = model accuracy + (v/L/cos(theta)^2*dt)^2*var_theta
-	stateSpace_.Q[15] = stddev_modelOrntn * stddev_modelOrntn + std::pow(1 / config_vehicle_wheelbase * stateSpace_.fx[2] / std::pow(std::cos(angle), 2) * dt, 2) * sensorConfig_.var_angle;
+	// cov = model accuracy + dt^2 * var_gyro
+	stateSpace_.Q[15] = stddev_modelOrntn * stddev_modelOrntn + std::pow(dt, 2) * sensorConfig_.var_gyro_z;
 
 	// ---- measurement covariance ----
-	std::fill(std::begin(stateSpace_.R), std::end(stateSpace_.R), 0.0f);
-	stateSpace_.R[0] = ignoredMeasurementVariance;
-	stateSpace_.R[6] = ignoredMeasurementVariance;
-	stateSpace_.R[12] = ignoredMeasurementVariance;
-	stateSpace_.R[18] = sensorConfig_.var_rotspeed;
-	stateSpace_.R[24] = sensorConfig_.var_gyro_z;
+	stateSpace_.R[0] = sensorConfig_.var_rotspeed;
 
 	// prediction step with model and inputs
 	ekf_predict(&stateSpace_.ekf, stateSpace_.fx, stateSpace_.F, stateSpace_.Q);
@@ -217,18 +213,8 @@ void Odometry::updateStateSpaceOdom(
 	ekf_update(&stateSpace_.ekf, stateSpace_.z, stateSpace_.hx, stateSpace_.H, stateSpace_.R);
 
 	// normalize yaw
-	stateSpace_.ekf.x[3] = normalizeAngle(stateSpace_.ekf.x[3]);
+	stateSpace_.ekf.x[3] = Common::MathUtils::wrapAngle(stateSpace_.ekf.x[3]);
 }
-
-float Odometry::normalizeAngle(float angle) {
-    angle = std::fmod(angle + std::numbers::pi, 2.0 * std::numbers::pi);
-
-    if (angle < 0.0)
-        angle += 2.0 * std::numbers::pi;
-
-    return angle - std::numbers::pi;
-}
-
 
 int main(int argc, char * argv[])
 {

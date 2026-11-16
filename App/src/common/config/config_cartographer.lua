@@ -51,5 +51,7 @@ TRAJECTORY_BUILDER_2D.use_online_correlative_scan_matching = true
 TRAJECTORY_BUILDER_2D.motion_filter.max_time_seconds = 5.0
 TRAJECTORY_BUILDER_2D.motion_filter.max_distance_meters = 0.1
 TRAJECTORY_BUILDER_2D.motion_filter.max_angle_radians = math.rad(1)
+POSE_GRAPH.optimization_problem.odometry_rotation_weight = 0.
+POSE_GRAPH.optimization_problem.odometry_translation_weight = 1e3
 
 return options
