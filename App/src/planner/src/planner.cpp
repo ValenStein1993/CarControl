@@ -48,8 +48,7 @@ Pose motion(const Pose& p, float s, float phi) {
 
 
 Planner::Planner()
-  : BaseNode("planner"), 
-    mapReady_{false} {
+  : BaseNode("planner") {
 
   declare_parameter<float>("x_target", 0.0f);
 	declare_parameter<float>("y_target", 0.0f);
@@ -111,8 +110,7 @@ void Planner::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg
   lastOccGrid_ = msg;
   gridMetaData_ = &(msg->info);
 
-  if (!mapReady_) mapReady_ = checkMapReady();
-  if (mapReady_) setTargetNode();
+  setTargetNode();
   if (path_.empty()) publish_path();
   
 }
@@ -122,7 +120,7 @@ void Planner::callback_closestNode(const car_msgs::msg::PathNode::SharedPtr msg)
 }
 
 void Planner::publish_path() {
-  if (!mapReady_) {
+  if (!lastOccGrid_) {
     RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot find path: Map is not ready.");
     return;
   }

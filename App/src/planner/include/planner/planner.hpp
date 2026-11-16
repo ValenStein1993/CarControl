@@ -40,7 +40,6 @@ class Planner : public BaseNode {
     Pose targetNode_;
     std::vector<Pose> path_; 
     float distAhead_;
-    bool mapReady_;
 
     car_msgs::msg::DebugPlanner debugMsg_;
     
