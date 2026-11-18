@@ -18,9 +18,10 @@
 constexpr int8_t p_occupied = 65;
 constexpr int8_t cost_edge = 10;
 
-const float radius_inscribed = 0.5 * config_vehicle_wheeltrack;
+// cost >= cost_inscribed  <=>  a footprint circle centered in this cell collides
+const float radius_inscribed = Footprint::radius;
 const float radius_inflation = 5 * radius_inscribed;
-const float scale_cost = std::log(cost_inscribed / cost_edge) / (radius_inflation - radius_inscribed);
+const float scale_cost = std::log(Costmap::cost_inscribed / cost_edge) / (radius_inflation - radius_inscribed);
 
 
 class CostMap : public BaseNode {

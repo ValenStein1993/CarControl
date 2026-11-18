@@ -232,7 +232,7 @@ PathNode Planner::getUpdateNode() {
 
     int idx_map = Common::MapUtils::getMapIndexFromPos(path_[i].x, path_[i].y, gridMetaData_);
     float c = lastOccGrid_->data[idx_map];
-    if (c >= cost_update) break;
+    if (c >= Costmap::cost_update) break;
     if (c <= cLast) idx_update = i;
     
     cLast = c;
@@ -405,7 +405,7 @@ bool Planner::checkMapReady() {
   }
 
   for (int c : lastOccGrid_->data) {
-    if (c >= cost_inscribed) {
+    if (c >= Costmap::cost_inscribed) {
       mapHasObs = true;
       break;
     }
@@ -424,21 +424,42 @@ float Planner::moveVehicle(Pose& start, float s, float phi, Pose& end, float& av
     const int idx_c = Common::MapUtils::getMapIndexFromPos(x, y, gridMetaData_);
     if (idx_c < 0) return -1;
     int c = lastOccGrid_->data[idx_c];
-    if (c >= cost_inscribed) return -1;
+    if (c >= Costmap::cost_inscribed) return -1;
     return c;
+  };
+
+  // rear axle position measured from the rear end of the vehicle (rear overhang)
+  constexpr float x_rearAxle = 0.5f * (Vehicle::length - config_vehicle_wheelbase);
+  // circle centers relative to the rear axle
+  constexpr std::array<float, Footprint::n_circles> circles_x = [] {
+        std::array<float, Footprint::n_circles> xs{};
+        for (int i = 0; i < Footprint::n_circles; ++i) xs[i] = Footprint::spacing * (i + 0.5f) - x_rearAxle;
+        return xs;
+    }();
+
+
+  // max cost over the footprint circles of the rear axle pose p, -1 if any circle collides.
+  // costmap inscribed radius = circle radius -> cost < cost_inscribed means the circle is free
+  auto footprintCost = [&](const Pose& p) -> int {
+    const float c = std::cos(p.th);
+    const float s = std::sin(p.th);
+    int maxCost = 0;
+    for (const float dx : circles_x) {
+      const int cost = cellCost(p.x + dx * c, p.y + dx * s);
+      if (cost < 0) return -1;
+      maxCost = std::max(maxCost, cost);
+    }
+    return maxCost;
   };
 
   int i = 0;
   while (i < n) {
     const Pose p = motion(start, s * (i + 1) / n, phi);
 
-    const int c_rear = cellCost(p.x, p.y);
-    if (c_rear < 0) break;
-    const int c_front = cellCost(p.x + config_vehicle_wheelbase * std::cos(p.th),
-                                 p.y + config_vehicle_wheelbase * std::sin(p.th));
-    if (c_front < 0) break;
+    const int c = footprintCost(p);
+    if (c < 0) break;
 
-    sum += std::max(c_rear, c_front);
+    sum += c;
     i++;
     end = p;
   }

@@ -19,6 +19,7 @@
 #include <geometry_msgs/msg/polygon_stamped.hpp>
 #include <nav_msgs/msg/map_meta_data.hpp>
 #include "common/datatypes.hpp"
+#include "common/config_app.hpp"
 
 
 constexpr float maxSpeed = 0.02;
@@ -26,6 +27,7 @@ constexpr float gain_cte = 0.5;
 constexpr int n_binsAngle = 36;
 constexpr float latticeRes = 0.05f;
 constexpr float planAheadDist = 0.2f;
+
 
 struct GridNodeDist {
     GridNode node;

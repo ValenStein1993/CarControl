@@ -51,14 +51,14 @@ cv::Mat CostMap::occgridToCostmap(const nav_msgs::msg::OccupancyGrid::SharedPtr 
 
   cv::Mat cost;
   cv::exp((dist - radius_inscribed) * (-scale_cost), cost);
-  cost *= (cost_inscribed - 1); 
+  cost *= (Costmap::cost_inscribed - 1); 
   cost.setTo(0, dist > radius_inflation);
-  cost.setTo(cost_inscribed, dist <= radius_inscribed);
+  cost.setTo(Costmap::cost_inscribed, dist <= radius_inscribed);
  
-  cost.setTo(cost_lethal, occupied);
+  cost.setTo(Costmap::cost_lethal, occupied);
   cv::Mat out;
   cost.convertTo(out, CV_8U);
-  out.setTo(cost_unknown, unknown);
+  out.setTo(Costmap::cost_unknown, unknown);
   return out;
 }
 
