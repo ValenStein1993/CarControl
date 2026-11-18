@@ -26,10 +26,17 @@
 constexpr float maxSpeed = 0.03;
 constexpr float maxSpeedDist = 0.3;
 constexpr float gain_cte = 2.0;
-
-// Stanley softening constant [m/s]: limits the cross-track term at low speed
 constexpr float soft_cte = 0.1;
 
+// cols: direction, rows: cost (0: low risk, 1: >= unknown)
+constexpr std::array<float, 4> pct_phiErrMax = {
+    0.8,  0.2, 
+    0.1, 0.01,    
+};
+constexpr std::array<float, 4> pct_phiTol = {
+    0.4,  0.02, 
+    0.05, 0.01,    
+};
 
 // projection of a point onto the planned path
 struct PathProjection {
@@ -55,6 +62,8 @@ class Controller : public BaseNode {
     geometry_msgs::msg::PoseStamped::SharedPtr lastVehiclePose_;
     sensor_msgs::msg::LaserScan::SharedPtr lastLaserScan_;
     nav_msgs::msg::Path::SharedPtr lastPath_;
+    nav_msgs::msg::OccupancyGrid::SharedPtr lastOccGrid_;
+    nav_msgs::msg::MapMetaData* gridMetaData_;
 
     rclcpp::Publisher<car_msgs::msg::DebugController>::SharedPtr pub_debug_;
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;
@@ -69,12 +78,15 @@ class Controller : public BaseNode {
     rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_laserScan_;
     rclcpp::Subscription<nav_msgs::msg::Path>::SharedPtr sub_path_;
     rclcpp::Subscription<car_msgs::msg::SensorMeasurements>::SharedPtr sub_measurements_;
+    rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr sub_occGrid_;
 
 
     void callback_vehiclePose(const geometry_msgs::msg::PoseStamped::SharedPtr msg);
     void callback_path(const nav_msgs::msg::Path::SharedPtr msg);
     void callback_laserscan(const sensor_msgs::msg::LaserScan::SharedPtr msg);
     void callback_measurements(const car_msgs::msg::SensorMeasurements::SharedPtr msg);
+    void callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+
 
     void publish_debugMsg();
     void publish_motionControl();

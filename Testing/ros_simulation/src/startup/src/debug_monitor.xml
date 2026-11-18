@@ -3,31 +3,38 @@
  <tabbed_widget name="Main Window" parent="main_window">
   <Tab containers="1" tab_name="tab1">
    <Container>
-    <DockSplitter count="4" orientation="-" sizes="0.249647;0.251058;0.249647;0.249647">
+    <DockSplitter count="5" orientation="-" sizes="0.200448;0.199328;0.200448;0.199328;0.200448">
      <DockArea name="...">
       <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
-       <range bottom="-0.249663" left="51.900206" right="81.899573" top="0.928041"/>
+       <range bottom="-0.947404" left="502.701509" right="532.700955" top="0.640866"/>
        <limitY/>
        <curve color="#1f77b4" name="/debug/controller/steering_angle"/>
       </plot>
      </DockArea>
      <DockArea name="...">
       <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
-       <range bottom="-0.018080" left="51.900206" right="81.899573" top="0.043795"/>
+       <range bottom="-0.281390" left="502.701509" right="532.700955" top="0.195581"/>
        <limitY/>
        <curve color="#d62728" name="/debug/controller/yaw_rate"/>
       </plot>
      </DockArea>
      <DockArea name="...">
       <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
-       <range bottom="-0.796534" left="51.900206" right="81.899573" top="0.444967"/>
+       <range bottom="-0.046809" left="502.701509" right="532.700955" top="0.016392"/>
        <limitY/>
        <curve color="#1f77b4" name="/debug/controller/cte"/>
       </plot>
      </DockArea>
      <DockArea name="...">
       <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
-       <range bottom="0.473006" left="51.900206" right="81.899573" top="0.945486"/>
+       <range bottom="0.000275" left="502.701509" right="532.700955" top="0.030725"/>
+       <limitY/>
+       <curve color="#1f77b4" name="/debug/controller/speed"/>
+      </plot>
+     </DockArea>
+     <DockArea name="...">
+      <plot flip_x="false" flip_y="false" line_width="1.0" mode="TimeSeries">
+       <range bottom="-0.028817" left="502.701509" right="532.700955" top="1.181611"/>
        <limitY/>
        <curve color="#d62728" name="/debug/controller/heading_error"/>
       </plot>

@@ -60,6 +60,9 @@ Controller::Controller()
   sub_measurements_ = create_subscription<car_msgs::msg::SensorMeasurements>(
 		static_cast<std::string>(config_topics_sensorMeasurements), 10,
 		std::bind(&Controller::callback_measurements, this, _1));
+  sub_occGrid_ = create_subscription<nav_msgs::msg::OccupancyGrid>(
+    static_cast<std::string>(config_topics_costMap), 10, 
+    std::bind(&Controller::callback_occGrid, this, _1));
 
   tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
@@ -109,6 +112,11 @@ void Controller::callback_measurements(const car_msgs::msg::SensorMeasurements::
   steeringAngleAct_ = msg->cjmcu103_angle;
 }
 
+void Controller::callback_occGrid(const nav_msgs::msg::OccupancyGrid::SharedPtr msg) {
+  lastOccGrid_ = msg;
+  gridMetaData_ = &(msg->info);
+}
+
 void Controller::publish_closestNode() {
   if (!lastPath_) {
     RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot publish closest node: Vehicle path is unavailable.");
@@ -148,6 +156,11 @@ void Controller::publish_motionControl() {
 
   if (!lastPath_) {
     RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Vehicle path is unavailable.");
+    return;
+  }
+
+  if (!lastOccGrid_) {
+    RCLCPP_INFO_THROTTLE(get_logger(), *get_clock(), 1000, "Cannot plan motion: Occupancy grid is unavailable.");
     return;
   }
 
@@ -268,6 +281,8 @@ std::pair<float, float> Controller::calcSteering() {
   const float x_ref = ref.x;
   const float y_ref = ref.y;
 
+  const float c = lastOccGrid_->data[Common::MapUtils::getMapIndexFromPos(x_ref, y_ref, gridMetaData_)];
+
   const float cte = (y_ref - proj->y) * std::cos(proj->tangent) -
     (x_ref - proj->x) * std::sin(proj->tangent);
 
@@ -280,8 +295,10 @@ std::pair<float, float> Controller::calcSteering() {
   phi = std::clamp(phi, -config_vehicle_max_steering, config_vehicle_max_steering);
 
   const float delta_phi = std::abs(phi - steeringAngleAct_);
-  const float phiErrMax = dir == 1 ? 0.8f * config_vehicle_max_steering : 0.2f * config_vehicle_max_steering;
-  const float phiTol = dir == 1 ? 0.2f * config_vehicle_max_steering : 0.02f * config_vehicle_max_steering;
+
+  const int idx_lookup = (c >= Costmap::cost_unknown ? 1 : 0) * 2 + (dir == 1 ? 0 : 1);
+  const float phiErrMax = pct_phiErrMax[idx_lookup] * config_vehicle_max_steering;
+  const float phiTol = pct_phiTol[idx_lookup] * config_vehicle_max_steering;
   const float ratio = std::clamp((delta_phi - phiTol) / (phiErrMax - phiTol), 0.0f, 1.0f);
   const float speed = dir * std::max(maxSpeed * (1.0f - ratio), 0.001f);
 
