@@ -1,0 +1,11 @@
+# only the two ROS workspaces' sources and the entrypoint go into the build context
+*
+!App/src
+!Testing/ros_simulation/src
+!Docker/entrypoint.sh
+
+# local build output that ended up inside src
+**/build
+**/install
+**/log
+**/__pycache__

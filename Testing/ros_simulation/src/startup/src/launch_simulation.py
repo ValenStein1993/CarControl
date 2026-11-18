@@ -4,9 +4,10 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
-from launch.actions import SetEnvironmentVariable, IncludeLaunchDescription, ExecuteProcess
+from launch.actions import SetEnvironmentVariable, IncludeLaunchDescription, ExecuteProcess, DeclareLaunchArgument
+from launch.conditions import UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, PythonExpression
 from launch_ros.substitutions import FindPackageShare
 
 
@@ -26,12 +27,18 @@ def generate_launch_description():
     gz_launch_path = PathJoinSubstitution([ros_gz_sim_pkg_path, 'launch', 'gz_sim.launch.py'])
     gz_spawn_model_path = PathJoinSubstitution([ros_gz_sim_pkg_path, 'launch', 'gz_spawn_model.launch.py'])
 
+    # headless:=true -> no RViz/PlotJuggler, sensors rendered via EGL without a display (Docker / cloud VM)
+    headless = LaunchConfiguration('headless')
+    headless_flag = PythonExpression(["'--headless-rendering' if '", headless, "' == 'true' else ''"])
+
     return LaunchDescription([
+        DeclareLaunchArgument('headless', default_value='false',
+                              description='run without GUI tools and with EGL headless rendering'),
         SetEnvironmentVariable('GZ_SIM_PLUGIN_PATH', plugin_lib_abs),
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(gz_launch_path),
             launch_arguments={
-                'gz_args': f'-s -r "{world_abs}"',
+                'gz_args': ['-s -r ', headless_flag, f' "{world_abs}"'],
                 'on_exit_shutdown': 'True'
             }.items(),
         ),
@@ -56,6 +63,7 @@ def generate_launch_description():
             output='screen',
         ),
         Node(
+            condition=UnlessCondition(headless),
             package='rviz2',
             executable='rviz2',
             name='rviz',
@@ -68,6 +76,7 @@ def generate_launch_description():
             ]
         ),
         ExecuteProcess(
+            condition=UnlessCondition(headless),
             cmd=[
                 'ros2', 'run', 'plotjuggler', 'plotjuggler',
                 '-l', os.path.join(startup_abs, 'src', 'debug_monitor.xml')

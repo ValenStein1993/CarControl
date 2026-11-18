@@ -10,4 +10,4 @@ colcon build
 source "$ROOT/Testing/ros_simulation/install/setup.bash"
 
 python3 "$ROOT/Testing/ros_simulation/install/model/share/model/src/generate_model.py"
-ros2 launch startup_sim launch_simulation.py
+ros2 launch startup_sim launch_simulation.py headless:=true
