@@ -1,0 +1,42 @@
+name: Build simulation image
+
+on:
+  push:
+    tags: ['sim-v*']        
+  workflow_dispatch:        
+
+permissions:
+  contents: read            
+  id-token: write           
+
+env:
+  REGION: us-east1
+  PROJECT_ID: project-69960bd1-c997-4ca4-a0e
+  REPO: carcontrol
+  IMAGE: carcontrol-sim
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-24.04
+    steps:
+      # 1. Get the code onto the runner (recursive -> include the TinyEKF submodule, otherwise odometry won't build)
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # 2. Log in to Google Cloud (Workload Identity Federation, no stored password)
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WIF_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+
+      # 3. Install gcloud and set it up as Docker's credential helper (same as you did locally)
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
+
+      # 4. Build and push. The image gets the git tag name (e.g. sim-v0.3) AND "latest"
+      - name: Build and push
+        run: |
+          IMG=${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}
+          docker build -f Docker/Dockerfile -t $IMG:${GITHUB_REF_NAME} -t $IMG:latest .
+          docker push --all-tags $IMG

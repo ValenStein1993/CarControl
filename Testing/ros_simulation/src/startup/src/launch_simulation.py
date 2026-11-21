@@ -81,5 +81,14 @@ def generate_launch_description():
                 'ros2', 'run', 'plotjuggler', 'plotjuggler',
                 '-l', os.path.join(startup_abs, 'src', 'debug_monitor.xml')
             ],
-            output='screen')
+            output='screen'),
+        Node(
+            package='foxglove_bridge',
+            executable='foxglove_bridge',
+            parameters=[{
+                'port': 8765,
+                'address': '0.0.0.0',
+                'use_sim_time': True,
+            }],
+        )
     ])

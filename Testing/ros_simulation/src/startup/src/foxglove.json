@@ -1,0 +1,113 @@
+{
+  "topics": {
+    "/scan_matched_points2": {
+      "visible": false,
+      "colorField": "z",
+      "colorMode": "colormap",
+      "colorMap": "turbo"
+    },
+    "/scan": {
+      "visible": false,
+      "colorField": "intensity",
+      "colorMode": "colormap",
+      "colorMap": "turbo"
+    },
+    "/constraint_list": {
+      "visible": false
+    },
+    "/landmark_poses_list": {
+      "visible": false
+    },
+    "/trajectory_node_list": {
+      "visible": false
+    },
+    "/costmap": {
+      "visible": true
+    },
+    "/occupancy_grid": {
+      "visible": false
+    },
+    "/global_path": {
+      "visible": true,
+      "lineWidth": 0.015,
+      "gradient": [
+        "#6bffcdff",
+        "#4fdd2d80"
+      ]
+    },
+    "/vehicle_footprint": {
+      "visible": true,
+      "lineWidth": 0.015
+    },
+    "/closest_node_disp": {
+      "visible": false
+    }
+  },
+  "layers": {
+    "2a1c80ab-eb24-4bef-86e5-bda0df5c7d3f": {
+      "layerId": "foxglove.Grid",
+      "instanceId": "2a1c80ab-eb24-4bef-86e5-bda0df5c7d3f"
+    }
+  },
+  "cameraState": {
+    "perspective": true,
+    "distance": 5.006881794848845,
+    "phi": 0.00005729577951308232,
+    "thetaOffset": -19.178196409391862,
+    "targetOffset": [
+      0.7143334764829096,
+      0.05429572050573604,
+      -7.762918440672409e-19
+    ],
+    "target": [
+      0,
+      0,
+      0
+    ],
+    "targetOrientation": [
+      0,
+      0,
+      0,
+      1
+    ],
+    "fovy": 45,
+    "near": 0.5,
+    "far": 5000
+  },
+  "followMode": "follow-none",
+  "scene": {},
+  "transforms": {
+    "frame:map": {
+      "visible": false
+    },
+    "frame:odom": {
+      "visible": false
+    },
+    "frame:base_link": {
+      "visible": false
+    },
+    "frame:front_axle_link": {
+      "visible": false
+    },
+    "frame:imu_link": {
+      "visible": false
+    },
+    "frame:lidar_link": {
+      "visible": false
+    },
+    "frame:rear_axle_link": {
+      "visible": false
+    }
+  },
+  "publish": {
+    "type": "point",
+    "poseTopic": "/move_base_simple/goal",
+    "pointTopic": "/clicked_point",
+    "poseEstimateTopic": "/initialpose",
+    "poseEstimateXDeviation": 0.5,
+    "poseEstimateYDeviation": 0.5,
+    "poseEstimateThetaDeviation": 0.26179939
+  },
+  "synchronize": false,
+  "imageMode": {}
+}
