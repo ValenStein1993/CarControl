@@ -1,9 +1,7 @@
 name: Build simulation image
 
 on:
-  push:
-    tags: ['sim-v*']        
-  workflow_dispatch:        
+  workflow_dispatch:        # manual only: Actions tab -> Run workflow, or: gh workflow run docker-image.yml --ref master
 
 permissions:
   contents: read            
@@ -34,9 +32,10 @@ jobs:
       - uses: google-github-actions/setup-gcloud@v2
       - run: gcloud auth configure-docker ${REGION}-docker.pkg.dev --quiet
 
-      # 4. Build and push. The image gets the git tag name (e.g. sim-v0.3) AND "latest"
+      # 4. Build and push. The image gets the short commit hash (e.g. dca67b8) AND "latest"
       - name: Build and push
         run: |
           IMG=${REGION}-docker.pkg.dev/${PROJECT_ID}/${REPO}/${IMAGE}
-          docker build -f Docker/Dockerfile -t $IMG:${GITHUB_REF_NAME} -t $IMG:latest .
+          TAG=${GITHUB_SHA::7}
+          docker build -f Docker/Dockerfile -t $IMG:$TAG -t $IMG:latest .
           docker push --all-tags $IMG
