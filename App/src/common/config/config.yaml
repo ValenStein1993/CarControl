@@ -20,6 +20,7 @@ topics:
   globalPath: /global_path
   closestNode: /closest_node
   closestNodeDisp: /closest_node_disp
+  closestNodePath: /closest_node_path
   vehicleFootprint: /vehicle_footprint
 
 

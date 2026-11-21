@@ -41,8 +41,7 @@ constexpr std::array<float, 4> pct_phiTol = {
 // projection of a point onto the planned path
 struct PathProjection {
   float x, y;     // projected point on the path
-  float tangent;  // direction of travel along the segment
-  float heading;  // planned vehicle heading, interpolated along the segment
+  float heading;  // direction of travel along the segment
   float t;        // position on the segment [0, 1]
   int idx;        // index of the segment start pose
   int dir;        // +1 forward, -1 reverse
@@ -69,6 +68,7 @@ class Controller : public BaseNode {
   	rclcpp::Publisher<car_msgs::msg::MotionControl>::SharedPtr pub_motionControl_;
     rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_closestNodeDisp_;
     rclcpp::Publisher<car_msgs::msg::PathNode>::SharedPtr pub_closestNode_;
+    rclcpp::Publisher<geometry_msgs::msg::PoseStamped>::SharedPtr pub_closestNodePathDisp_;
 
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
     std::shared_ptr<tf2_ros::TransformListener> tf_listener_;

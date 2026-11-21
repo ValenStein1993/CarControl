@@ -47,6 +47,8 @@ Controller::Controller()
     static_cast<std::string>(config_topics_closestNodeDisp), 10);
   pub_closestNode_ = create_publisher<car_msgs::msg::PathNode>(
     static_cast<std::string>(config_topics_closestNode), 10);
+  pub_closestNodePathDisp_ = create_publisher<geometry_msgs::msg::PoseStamped>(
+    static_cast<std::string>(config_topics_closestNodePath), 10);
 
   sub_vehiclePose_ = create_subscription<geometry_msgs::msg::PoseStamped>(
     static_cast<std::string>(config_topics_poseCrtgrphr), 10, 
@@ -136,6 +138,20 @@ void Controller::publish_closestNode() {
 
   pub_closestNodeDisp_->publish(msg);
 
+
+  msg.header.stamp = get_clock()->now();
+  msg.header.frame_id = lastPath_->header.frame_id;
+  msg.pose.position.x = lastPath_->poses[closestNode_.idx].pose.position.x;
+  msg.pose.position.y = lastPath_->poses[closestNode_.idx].pose.position.y;
+  msg.pose.position.z = 0.0;
+  
+  q.setRPY(0, 0, lastPath_->poses[closestNode_.idx].pose.orientation.z);
+  msg.pose.orientation = tf2::toMsg(q);
+
+  pub_closestNodePathDisp_->publish(msg);
+
+
+  //
   car_msgs::msg::PathNode pathNodeMsg;
   pathNodeMsg.header.stamp = get_clock()->now();
   pathNodeMsg.header.frame_id = lastPath_->header.frame_id;
@@ -239,8 +255,7 @@ std::optional<PathProjection> Controller::projectOnPath(int first, int last, int
 
     if (dist < bestDist) {
       bestDist = dist;
-      best = PathProjection{qx, qy, std::atan2(dy, dx),
-        wrapAngle(a.th + t * wrapAngle(b.th - a.th)), t, i, dir};
+      best = PathProjection{qx, qy, std::atan2(dy, dx), t, i, dir};
     }
   }
   return best;
@@ -283,10 +298,10 @@ std::pair<float, float> Controller::calcSteering() {
 
   const float c = lastOccGrid_->data[Common::MapUtils::getMapIndexFromPos(x_ref, y_ref, gridMetaData_)];
 
-  const float cte = (y_ref - proj->y) * std::cos(proj->tangent) -
-    (x_ref - proj->x) * std::sin(proj->tangent);
+  const float cte = (y_ref - proj->y) * std::cos(proj->heading) -
+    (x_ref - proj->x) * std::sin(proj->heading);
 
-  const float yaw_target = proj->tangent + (dir == -1 ? std::numbers::pi_v<float> : 0.0f);
+  const float yaw_target = proj->heading + (dir == -1 ? std::numbers::pi_v<float> : 0.0f);
   const float heading_error = wrapAngle(yaw_target - yaw);
   const float cte_error = std::atan2(-gain_cte * cte, soft_cte + maxSpeed);
 
