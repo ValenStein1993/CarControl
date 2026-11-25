@@ -43,7 +43,7 @@ Pose motion(const Pose& p, float s, float phi) {
   const float dth = s / R;
   return {p.x + R * (std::sin(p.th + dth) - std::sin(p.th)),
           p.y - R * (std::cos(p.th + dth) - std::cos(p.th)),
-          p.th + dth};
+          Common::MathUtils::wrapAngle(p.th + dth)};
 }
 
 
@@ -232,7 +232,7 @@ PathNode Planner::getUpdateNode() {
 
     int idx_map = Common::MapUtils::getMapIndexFromPos(path_[i].x, path_[i].y, gridMetaData_);
     float c = lastOccGrid_->data[idx_map];
-    if (c >= Costmap::cost_update) break;
+    if (c >= Config::Costmap::cost_update) break;
     if (c <= cLast) idx_update = i;
     
     cLast = c;
@@ -342,9 +342,8 @@ std::vector<Pose> Planner::findShortestPath(PathNode startNode) {
     }
 
     // forward expansion to neighbors
-    float max_planSteering = 0.9 * config_vehicle_max_steering;
     for (int dir : {-1, 1}) {
-      for (float phi : {-max_planSteering, 0.0f, max_planSteering}) {
+      for (float phi : {-Config::Planner::maxSteering, 0.0f, Config::Planner::maxSteering}) {
         float s = dir * stepsize;
         
         float avgCost;
@@ -405,7 +404,7 @@ bool Planner::checkMapReady() {
   }
 
   for (int c : lastOccGrid_->data) {
-    if (c >= Costmap::cost_inscribed) {
+    if (c >= Config::Costmap::cost_inscribed) {
       mapHasObs = true;
       break;
     }
@@ -424,16 +423,16 @@ float Planner::moveVehicle(Pose& start, float s, float phi, Pose& end, float& av
     const int idx_c = Common::MapUtils::getMapIndexFromPos(x, y, gridMetaData_);
     if (idx_c < 0) return -1;
     int c = lastOccGrid_->data[idx_c];
-    if (c >= Costmap::cost_inscribed) return -1;
+    if (c >= Config::Costmap::cost_inscribed) return -1;
     return c;
   };
 
   // rear axle position measured from the rear end of the vehicle (rear overhang)
-  constexpr float x_rearAxle = 0.5f * (Vehicle::length - config_vehicle_wheelbase);
+  constexpr float x_rearAxle = 0.5f * (Config::Vehicle::length - config_vehicle_wheelbase);
   // circle centers relative to the rear axle
-  constexpr std::array<float, Footprint::n_circles> circles_x = [] {
-        std::array<float, Footprint::n_circles> xs{};
-        for (int i = 0; i < Footprint::n_circles; ++i) xs[i] = Footprint::spacing * (i + 0.5f) - x_rearAxle;
+  constexpr std::array<float, Config::Footprint::n_circles> circles_x = [] {
+        std::array<float, Config::Footprint::n_circles> xs{};
+        for (int i = 0; i < Config::Footprint::n_circles; ++i) xs[i] = Config::Footprint::spacing * (i + 0.5f) - x_rearAxle;
         return xs;
     }();
 

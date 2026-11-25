@@ -7,10 +7,12 @@
       "colorMap": "turbo"
     },
     "/scan": {
-      "visible": false,
-      "colorField": "intensity",
-      "colorMode": "colormap",
-      "colorMap": "turbo"
+      "visible": true,
+      "colorField": "range",
+      "colorMode": "flat",
+      "colorMap": "turbo",
+      "pointSize": 3,
+      "flatColor": "#ef0101ff"
     },
     "/constraint_list": {
       "visible": false
@@ -41,6 +43,9 @@
     },
     "/closest_node_disp": {
       "visible": true
+    },
+    "/closest_node_path": {
+      "visible": true
     }
   },
   "layers": {
@@ -51,13 +56,13 @@
   },
   "cameraState": {
     "perspective": true,
-    "distance": 4.078136514914077,
-    "phi": 0.00005754586380905727,
-    "thetaOffset": -19.178196503160173,
+    "distance": 3.874229689162712,
+    "phi": 8.02302097956741,
+    "thetaOffset": -11.243396426644669,
     "targetOffset": [
-      2.146847856526293,
-      -0.6708462558844001,
-      -7.762901053498919e-19
+      0.5239039672225883,
+      -0.19347900826820308,
+      -6.449111137377877e-19
     ],
     "target": [
       0,

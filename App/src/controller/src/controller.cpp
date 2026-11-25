@@ -145,8 +145,7 @@ void Controller::publish_closestNode() {
   msg.pose.position.y = lastPath_->poses[closestNode_.idx].pose.position.y;
   msg.pose.position.z = 0.0;
   
-  q.setRPY(0, 0, lastPath_->poses[closestNode_.idx].pose.orientation.z);
-  msg.pose.orientation = tf2::toMsg(q);
+  msg.pose.orientation = lastPath_->poses[closestNode_.idx].pose.orientation;
 
   pub_closestNodePathDisp_->publish(msg);
 
@@ -239,6 +238,7 @@ std::optional<PathProjection> Controller::projectOnPath(int first, int last, int
 
     const Pose a = trackedAxle(poses[i].pose, dir);
     const Pose b = trackedAxle(poses[i + 1].pose, dir);
+    const Pose c = i == last ? b : trackedAxle(poses[i + 2].pose, dir);
     const float ax = a.x;
     const float ay = a.y;
     const float bx = b.x;
@@ -255,7 +255,7 @@ std::optional<PathProjection> Controller::projectOnPath(int first, int last, int
 
     if (dist < bestDist) {
       bestDist = dist;
-      best = PathProjection{qx, qy, std::atan2(dy, dx), t, i, dir};
+      best = PathProjection{qx, qy, (1.0f - t) * b.th + t * c.th, t, i, dir};
     }
   }
   return best;
@@ -301,7 +301,7 @@ std::pair<float, float> Controller::calcSteering() {
   const float cte = (y_ref - proj->y) * std::cos(proj->heading) -
     (x_ref - proj->x) * std::sin(proj->heading);
 
-  const float yaw_target = proj->heading + (dir == -1 ? std::numbers::pi_v<float> : 0.0f);
+  const float yaw_target = proj->heading;
   const float heading_error = wrapAngle(yaw_target - yaw);
   const float cte_error = std::atan2(-gain_cte * cte, soft_cte + maxSpeed);
 
@@ -311,7 +311,7 @@ std::pair<float, float> Controller::calcSteering() {
 
   const float delta_phi = std::abs(phi - steeringAngleAct_);
 
-  const int idx_lookup = (c >= Costmap::cost_unknown ? 1 : 0) * 2 + (dir == 1 ? 0 : 1);
+  const int idx_lookup = ((c >= Config::Costmap::cost_unknown) | (phi >= 0.9 * Config::Planner::maxSteering) ? 1 : 0) * 2 + (dir == 1 ? 0 : 1);
   const float phiErrMax = pct_phiErrMax[idx_lookup] * config_vehicle_max_steering;
   const float phiTol = pct_phiTol[idx_lookup] * config_vehicle_max_steering;
   const float ratio = std::clamp((delta_phi - phiTol) / (phiErrMax - phiTol), 0.0f, 1.0f);

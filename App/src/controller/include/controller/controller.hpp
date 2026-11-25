@@ -28,11 +28,12 @@ constexpr float maxSpeedDist = 0.3;
 constexpr float gain_cte = 2.0;
 constexpr float soft_cte = 0.1;
 
-// cols: direction, rows: cost (0: low risk, 1: >= unknown)
+// cols: direction, rows: risk (0: low risk, 1: high risk)
 constexpr std::array<float, 4> pct_phiErrMax = {
     0.8,  0.2, 
-    0.1, 0.01,    
+    0.1, 0.05,    
 };
+
 constexpr std::array<float, 4> pct_phiTol = {
     0.4,  0.02, 
     0.05, 0.01,    
